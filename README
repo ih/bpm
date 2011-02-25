@@ -1,0 +1,20 @@
+====PATH INFORMATION====
+It's assumed you already have ikarus installed.  You'll want to add the following to the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
+
+PATH=$PATH:[inst dir]/factor-graphics/bher/scheme:[inst dir]/factor-graphics/bher:.
+
+(note: it seems important for [inst dir]/factor-graphics/bher/scheme to come before [inst dir]/factor-graphics/bher:)
+
+IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[inst dir]/factor-graphics/bher:.
+
+====TESTING SETUP====
+To see if everything works you can do the following
+$cd [inst dir]/factor-graphics/bher
+[inst dir]/factor-graphics/bher$ bher tests/test.church
+
+(note: If you want to run a file that uses eval it seems like you need to run bher from the bher root directory e.g. 
+[inst dir]/factor-graphics/bher$ bher tests/beam-learning-tests.church 
+works but
+[inst dir]/factor-graphics/bher/tests$ bher beam-learning-tests.churhc 
+doesn't)
+
