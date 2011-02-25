@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/6/basic-string-ports
+END
+compat.larceny.sls
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/6/basic-string-ports/compat.larceny.sls
+END
+compat.ypsilon.sls
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/6/basic-string-ports/compat.ypsilon.sls
+END
+compat.ikarus.sls
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/6/basic-string-ports/compat.ikarus.sls
+END

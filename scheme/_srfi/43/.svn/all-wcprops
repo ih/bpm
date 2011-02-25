@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/43
+END
+vectors.sls
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/43/vectors.sls
+END
+vector-lib.scm
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/mit-church/!svn/ver/279/tags/0.1.2/_srfi/43/vector-lib.scm
+END

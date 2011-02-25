@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/mit-church/!svn/ver/279/tags/0.1.2/church/external
+END
+r-histogram.ss
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/r-histogram.ss
+END
+gsl-bindings.ikarus.ss
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/gsl-bindings.ikarus.ss
+END
+mpi-bindings.ikarus.ss
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/mpi-bindings.ikarus.ss
+END
+py-pickle.ss
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/py-pickle.ss
+END
+math-env.ss
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/math-env.ss
+END
+include-paths.ss
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/include-paths.ss
+END
+r.ss
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/r.ss
+END
+gsl-paths.ss
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/gsl-paths.ss
+END
+parallel-comm.ss
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/parallel-comm.ss
+END
+r-project.ss
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/r-project.ss
+END
+binding-utils.ss
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/binding-utils.ss
+END
+gsl-bindings.mzscheme.ss
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/mit-church/!svn/ver/279/tags/0.1.2/church/external/gsl-bindings.mzscheme.ss
+END
