@@ -1,20 +1,25 @@
-(define (prototype) (node 'a (node 'b (node 'a (node 'b) (node 'b)))))
 
-(define (two-node) (node 'a (node 'b)))
+;; (define (prototype) (node 'a (node 'b (node 'a (node 'b) (node 'b)))))
 
-(define (gen-data model amount)
-  (delete '() (repeat amount model)))
+;; (define (two-node) (node 'a (node 'b)))
 
-(define prototype-data (map lazy-list->all-list (gen-data prototype 5)))
+;; (define (gen-data model amount)
+;;   (delete '() (repeat amount model)))
 
+;; (define prototype-data (map lazy-list->all-list (gen-data prototype 5)))
 
+;;;growth and label noise setting tests
+
+(map lazy-list->all-list (repeat 20 (lambda () (eval '(node 'a)))))
+(set-label-noise! 1)
+(map lazy-list->all-list (repeat 20 (lambda () (eval '(node 'a)))))
 
 ;;;learn-model tests
-(member?-test "make-initial-sexpr evaluation" (lazy-list->all-list (eval (make-initial-sexpr (list '(a) '(a (b)))))) (list '(a) '(a (b)) '(b) '(b (b))))
+;; (member?-test "make-initial-sexpr evaluation" (lazy-list->all-list (eval (make-initial-sexpr (list '(a) '(a (b)))))) (list '(a) '(a (b)) '(b) '(b (b))))
 
-(define timed-learn-model (time-it learn-model))
+;; (define timed-learn-model (time-it learn-model))
 
-(member?-test "learned-model" (lazy-list->all-list ((timed-learn-model '((a) (a (b))) 0 1))) '((a) (b) (a (b)) (b (b))))
+;; (member?-test "learned-model" (lazy-list->all-list ((timed-learn-model '((a) (a (b))) 0 1))) '((a) (b) (a (b)) (b (b))))
 
 
 ;;;sort-by-size-and-score related
@@ -23,8 +28,8 @@
 (define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))
 
 ;;;scoring tests just to see if it runs
-(evaluates?-test "score a single node program" (scoring '(node 'a) simplest-data  10))
-(evaluates?-test "score a list of programs" (map (lambda (prog) (scoring prog simplest-data 10)) possible-program-sexprs))
+;; (evaluates?-test "score a single node program" (scoring '(node 'a) simplest-data  10))
+;; (evaluates?-test "score a list of programs" (map (lambda (prog) (scoring prog simplest-data 10)) possible-program-sexprs))
 
 ;;;list-sorting tests 
 ;; ;;partition test
@@ -39,11 +44,20 @@
 ;; (equal?-test "combine-size-score test" (combine-size-score sizes scores 1 .1) '(2.0 4.0 6.0))
 ;;;sort-by-score-and-size tests
 ;;test where growth noise is higher than label noise
+;; (set-growth-noise! .8)
+;; (set-label-noise! .2)
 ;; (define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
 
-;; (equal?-test "sort-by-score-and-size simplest data, based on score only" (sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))) '(uniform-draw (list (node 'b))))))
+;; (equal?-test "high-growth/low-label noise sort-by-score-and-size simplest data, based on score only" (sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))) '(uniform-draw (list (node 'b))))))
+
+;;test where growth noise is lower than label noise
+;; (set-growth-noise! .2)
+;; (set-label-noise! .8)
+
+;; (equal?-test "low-growth/high-label noise sort-by-score-and-size simplest data, based on score only" (sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))))))
 
 ;; (equal?-test "sort-by-score-and-size simplest data, based on weight only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b)))))))
+
 
 ;;;best-n tests
 ;; (define timed-best-n (time-it best-n "best-n"))
@@ -52,25 +66,25 @@
 ;;;church-iterated-compressions test
 ;; (define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
 
-(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
+;;(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
 
 ;; (evaluates?-test "my-iterated-compressions test" (my-iterated-compressions (lambda (x) x) compressible-program))
 
 ;;;beam-learn-search-compressions test
-(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
-(define simplest-program (make-program '() '(uniform-draw (list (node 'a)))))
+;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+;; (define simplest-program (make-program '() '(uniform-draw (list (node 'a)))))
 
-(evaluates?-test "beam-learn-search-compressions simplest-data" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1))
+;; (evaluates?-test "beam-learn-search-compressions simplest-data" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1))
 
-(define aaaadata '(a (a (a (a)))))
+;; (define aaaadata '(a (a (a (a)))))
 
 ;; (evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
 
 ;;;beam-learn test
-(define init-data '((a) (a (b))))
-(define init-expr (make-initial-sexpr init-data))
-(define timed-beam-learn (time-it beam-learn))
-(evaluates?-test "beam-learn test" (timed-beam-learn init-data init-expr 10 0 1))
+;; (define init-data '((a) (a (b))))
+;; (define init-expr (make-initial-sexpr init-data))
+;; (define timed-beam-learn (time-it beam-learn))
+;; (evaluates?-test "beam-learn test" (timed-beam-learn init-data init-expr 10 0 1))
 
 
 

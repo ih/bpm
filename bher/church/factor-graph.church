@@ -1,6 +1,10 @@
 ;;;node code
-(define growth-noise .2)
-(define label-noise .2)
+(define noise-params (pair .2 .2))
+;;set-growth/label-noise! won't work as desired until eval uses current-envirnoment instead of loading factor-graph.church each time 
+(define (set-growth-noise! new-val) (set-car! noise-params new-val))  
+(define (set-label-noise! new-val) (set-cdr! noise-params new-val))
+(define growth-noise first)
+(define label-noise rest)
 (define labels '(a b))
 
 (define root '(a))
@@ -10,7 +14,7 @@
    (lambda (item0 . items)
      (if (null? items)
          (lazy-pair (noisy-label item0) '())
-         (lazy-pair (noisy-label item0) (if (flip (- 1 growth-noise))
+         (lazy-pair (noisy-label item0) (if (flip (- 1 (growth-noise noise-params)))
                                             (apply node items)
                                             '()))))))
 
@@ -18,7 +22,7 @@
   (lazify
    (lambda (x)
   (if (symbol? x)
-      (if (flip (- 1 label-noise))
+      (if (flip (- 1 (label-noise noise-params)))
           x
           (if (equal? x 'a)
               'b

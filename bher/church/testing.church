@@ -16,7 +16,7 @@
     (display "deterministic test: ")(display name)
     (if (not (equal? test-val true-val))
         (for-each display (list ".. failed! true value: "  true-val ", test value: " test-val "\n"))
-        (display ".. passed.\n"))))
+        (display ".. passed!\n"))))
 
 (define timed-equal?-test (time-it equal?-test))
 
@@ -25,7 +25,7 @@
     (display "deterministic test: ")(display name)
     (if (not (member test-val set-of-true-vals))
         (for-each display (list " true values: "  set-of-true-vals ", test value: " test-val ".. failed!\n"))
-        (for-each display (list " true values:  " set-of-true-vals ", test-value: " test-val ".. passed.\n")))))
+        (display ".. passed!\n"))))
 
 
 (define (with-proposer-test distribution with-proposer-distribution expectation-fn true-expectation tolerance name)
@@ -42,6 +42,6 @@
            [errors (map (lambda (estimate) (abs (- estimate true-expectation))) estimates)]
            [mean-abs-error (mean errors)])
       (if (> mean-abs-error tolerance)
-          (for-each display (list name ".. failed! true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) "\n"))
-          (for-each display (list name " passed. true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) "\n"))))))
+          (for-each display (list name " true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) ".. failed!\n"))
+          (for-each display (list name ".. passed! \n"))))))
 
