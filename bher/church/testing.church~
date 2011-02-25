@@ -1,0 +1,47 @@
+(define (time-it proc . name)
+  (lambda args
+    (let ([start-time (current-time)]
+          [value (apply proc args)]
+          [end-time (current-time)])
+      (for-each display (list name " run-time:" (time-second (time-difference start-time end-time)) "\n"))
+      value)))
+
+
+(define (evaluates?-test name value)
+  (begin
+    (for-each display (list name " value:" value "...passed!"))))
+
+(define (equal?-test name test-val true-val)
+  (begin
+    (display "deterministic test: ")(display name)
+    (if (not (equal? test-val true-val))
+        (for-each display (list ".. failed! true value: "  true-val ", test value: " test-val "\n"))
+        (display ".. passed.\n"))))
+
+(define timed-equal?-test (time-it equal?-test))
+
+(define (member?-test name test-val set-of-true-vals)
+  (begin
+    (display "deterministic test: ")(display name)
+    (if (not (member test-val set-of-true-vals))
+        (for-each display (list " true values: "  set-of-true-vals ", test value: " test-val ".. failed!\n"))
+        (for-each display (list " true values:  " set-of-true-vals ", test-value: " test-val ".. passed.\n")))))
+
+
+(define (with-proposer-test distribution with-proposer-distribution expectation-fn true-expectation tolerance name)
+  (begin
+    (pretty-print name)
+    (display "with-proposer NOT used....")
+    (check-test distribution expectation-fn true-expectation tolerance name)
+    (display "with-proposer used....")
+    (check-test with-proposer-distribution expectation-fn true-expectation tolerance name)))
+
+(define (check-test info expectation-fn true-expectation tolerance name)
+  (begin
+    (let* ([estimates (map (lambda (run) (mean (map expectation-fn run))) info)]
+           [errors (map (lambda (estimate) (abs (- estimate true-expectation))) estimates)]
+           [mean-abs-error (mean errors)])
+      (if (> mean-abs-error tolerance)
+          (for-each display (list name ".. failed! true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) "\n"))
+          (for-each display (list name " passed. true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) "\n"))))))
+

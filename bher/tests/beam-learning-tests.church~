@@ -1,0 +1,73 @@
+(define (prototype) (node 'a (node 'b (node 'a (node 'b) (node 'b)))))
+
+(define (two-node) (node 'a (node 'b)))
+
+(define (gen-data model amount)
+  (delete '() (repeat amount model)))
+
+(define prototype-data (map lazy-list->all-list (gen-data prototype 5)))
+
+
+;;;learn-model tests
+;; (member?-test "make-initial-sexpr evaluation" (lazy-list->all-list (eval (make-initial-sexpr (list '(a) '(a (b)))))) (list '(a) '(a (b))))
+
+;; (member?-test "learned-model" (lazy-list->all-list ((learn-model '((a) (a (b)))))) '((a) (a (b))))
+
+
+;;;sort-by-size-and-score related
+(define simplest-data (lazy-list 'a))
+(define possible-program-sexprs  (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b))))))
+(define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))
+
+;;;scoring tests just to see if it runs
+(evaluates?-test "score a single node program" (scoring '(node 'a) simplest-data  10) simplest-data )
+;;(evaluates?-test "score a list of programs" (map (lambda (prog) (scoring prog simplest-data 10)) possible-program-sexprs))
+
+;;;list-sorting tests 
+;;partition test
+(define test-list '(1 2 3 5 6 7))
+(equal?-test "split with 4" (my-partition < 4 test-list) '((1 2 3) (5 6 7)))
+;;my-list-sort test
+(equal?-test "sorting test" (my-list-sort > test-list) (reverse test-list))
+;;;combine-size-score test
+(define sizes '(1 2 3))
+(define scores '(-10 -20 -30))
+
+(equal?-test "combine-size-score test" (combine-size-score sizes scores 1 .1) '(2.0 4.0 6.0))
+;;;sort-by-score-and-size tests
+;;test where growth noise is higher than label noise
+(define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
+
+(equal?-test "sort-by-score-and-size simplest data, based on score only" (sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))) '(uniform-draw (list (node 'b))))))
+
+(equal?-test "sort-by-score-and-size simplest data, based on weight only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b)))))))
+
+;;;best-n tests
+(define timed-best-n (time-it best-n "best-n"))
+(equal?-test "best-n by score only" (timed-best-n 2 possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))))))
+
+;;;church-iterated-compressions test
+(define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
+
+(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
+
+(evaluates?-test "my-iterated-compressions test" (my-iterated-compressions (lambda (x) x) compressible-program))
+
+;;;beam-learn-search-compressions test
+(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+(define simplest-program (make-program '() '(uniform-draw (list (node 'a)))))
+
+(evaluates?-test "beam-learn-search-compressions simplest-data" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1))
+
+(define aaaadata (list->lazy-list '(a (a (a (a))))))
+
+(evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
+
+
+
+
+
+
+
+
+(exit)

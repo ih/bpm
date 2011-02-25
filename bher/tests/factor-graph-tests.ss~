@@ -1,0 +1,35 @@
+(import (pi abstract2))
+(import (church readable-scheme))
+;;;hypothetical query for producing factor graphs
+;; (mh-query
+;;  samples lag
+;;  (define program (grammar))
+;;  (define compute-likelihood (smc-eval-obs-marginalize program particle-quantity))
+
+;;  program ;;query value
+
+;;  (compute-likelihood render observed-data))
+
+
+;;;abstraction examples
+(define o-line '(node o 0 5 (node o 0 5 (node o 0 5 (node o 0 5 (node o 0 5 (node o 0 5)))))))
+(define rg-bent-line '(node r 0 5 (node r 0 5 (node r 0 5 (node r 0 5 (node r 0 5 (node r 0 5 (node r 90 5 
+                             (node g 0 5 (node g 0 5 (node g 0 5 (node g 0 5 (node g 0 5 (node g 0 5 (node g 90 5)))))))))))))))
+
+(define yb-bent-line '(node y 0 5 (node y 0 5 (node y 0 5 (node y 0 5 (node y 0 5 (node y 0 5 (node y 80 5 
+                             (node b 0 5 (node b 0 5 (node b 0 5 (node b 0 5 (node b 0 5 (node b 0 5 (node b 90 5)))))))))))))))
+
+
+;;(display two-branch1)
+(pretty-print (list "rg-bent-line compression:" (beam-compression rg-bent-line 3)))
+(pretty-print (list "yb-bent-line compression:" (beam-compression yb-bent-line 3)))
+
+(pretty-print (beam-compression (list rg-bent-line yb-bent-line) 3))
+
+(pretty-print (beam-compression (list o-line rg-bent-line yb-bent-line) 3))
+;;(display "two-branch2 compression:" (all-iterated-compressions '(let () two-branch1 two-branch2)) "\n")
+;;(display "two-branch compression:" (all-iterated-compressions '(let () (begin two-branch1 two-branch2))) "\n")
+
+
+
+(exit)

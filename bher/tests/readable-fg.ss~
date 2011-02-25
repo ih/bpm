@@ -1,0 +1,17 @@
+(define add-tail
+  (lambda (color last-node)
+    (node color 0 5 last-node)))
+
+(define draw-line
+  (lambda (tail color)
+    (add-tail color
+          (add-tail color
+                (add-tail color (add-tail color (add-tail color tail)))))))
+
+(define F265
+  (lambda (V1157 V1156 V1153)
+    (F244
+     (add-tail V1157
+           (node V1157 V1153 5
+                 (F244 (add-tail V1156 (node V1156 90 5)) V1156)))
+     V1157)))

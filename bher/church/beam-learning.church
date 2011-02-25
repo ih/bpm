@@ -1,0 +1,93 @@
+
+;;;searches through compressions of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation
+(define (learn-model data)
+  (let* ([initial-sexpr (make-initial-sexpr data)]
+         [learned-sexpr (beam-learn data initial-sexpr)]
+         [model (lambda () (lazy-list->all-list (eval learned-sexpr)))])
+    (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
+    model))
+
+;;;turns each of the examples into a program then wraps that in a uniform draw
+(define (make-initial-sexpr data)
+  (let* ([literal-sexprs (map graph->program data)])
+    (list 'uniform-draw (pair 'list literal-sexprs))))
+         
+(define (beam-learn data sexpr)
+  sexpr)
+
+;; (define (beam-learn-draft data sexpr beam-size)
+;;            (for-each display (list "original expr:\n" sexpr "\n"
+;;                                    "size: " (size sexpr)
+;;                                    "\n\n"
+;;                                    "compressing...\n"))
+;;            (first (sort-by-size
+;;             (unique-programs
+;;              (beam-learn-search-compressions data beam-size (make-program '() sexpr))))))
+
+
+(define (beam-learn-search-compressions data beam-size program size-weight score-weight)
+  (my-iterated-compressions (lambda (progs) (best-n beam-size (unique-programs progs) data size-weight score-weight)) program))
+
+(define (my-iterated-compressions cfilter program)
+  (let ([compressed-programs (cfilter (compressions program))])
+    (append compressed-programs
+            (apply append (map (lambda (prog) (my-iterated-compressions cfilter prog)) compressed-programs)))))
+
+
+(define (best-n n programs data size-weight score-weight)
+  (max-take (sort-by-score-and-size programs data size-weight score-weight) n))
+
+
+(define (sort-by-score-and-size programs data size-weight score-weight)
+  (let* ([program-sizes (map (compose size program->sexpr) programs)]
+         ;[program-scores (make-list (length programs) 0)]
+         [program-scores (map (compose (lambda (prog) (scoring prog data 10)) program->sexpr) programs)]
+         [total-weight (combine-size-score program-sizes program-scores size-weight score-weight)]
+         [programs-with-weights (zip programs total-weight)]
+         [weight< (lambda (a b) (< (second a) (second b)))])
+    (map first (my-list-sort weight< programs-with-weights))))
+
+;;;list sorting via something like quicksort
+(define (my-list-sort compare lst)
+  (if (null? lst)
+      '()
+      (let* ([pivot (first lst)]
+             [lst (rest lst)]
+             [lessthan+greaterthan (my-partition compare pivot lst)])
+        (append (my-list-sort compare (first lessthan+greaterthan)) (pair pivot (my-list-sort compare (second lessthan+greaterthan)))))))
+
+;;;returns a two item list where the first item is a list of all the elements where (compare item pivot) is true and the second is a list where the values are false
+(define (my-partition compare pivot lst)
+  (if (null? lst)
+      (list '() '())
+      (let* ([comparestrue+comparesfalse (my-partition compare pivot (rest lst))]
+             [comparestrue (first comparestrue+comparesfalse)]
+             [comparesfalse (second comparestrue+comparesfalse)]
+             [current-item (first lst)])
+        (if (compare current-item pivot)
+            (list (pair current-item comparestrue) comparesfalse)
+            (list comparestrue (pair current-item comparesfalse))))))
+         
+
+(define (combine-size-score sizes scores size-weight score-weight)
+  (map +
+       (map (lambda (x) (* x size-weight)) sizes)
+       (map (lambda (x) (* x (- score-weight))) scores)))
+
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+(define scoring  
+  (lambda (prog data popsize) ;;scorer
+    (let* ((samples (smc-core (map list (iota (+ 1 (lazy-list-size  data)))) popsize 0
+                                   (lambda (depth) (lambda () (let ((s (eval prog)))
+                                                                (pair (lazy-equal? s data depth)
+                                                                      (lambda () (first (lazy-list->list s depth)))))))))
+                ;;remove duplicates in order to do selective model averaging:
+                (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
+                (scores (map mcmc-state->score samples))
+                (score (if (null? scores)
+                           -inf.0
+                           (apply log-sum-exp scores))))
+           score)))
+

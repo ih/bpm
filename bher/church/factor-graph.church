@@ -1,0 +1,34 @@
+;;;node code
+(define growth-noise .2)
+(define label-noise .2)
+(define labels '(a b))
+
+(define root '(a))
+
+(define node
+  (lazify 
+   (lambda (item0 . items)
+     (if (null? items)
+         (lazy-pair (noisy-label item0) '())
+         (lazy-pair (noisy-label item0) (if (flip (- 1 growth-noise))
+                                            (apply node items)
+                                            '()))))))
+
+(define noisy-label
+  (lazify
+   (lambda (x)
+  (if (symbol? x)
+      (if (flip (- 1 label-noise))
+          x
+          (if (equal? x 'a)
+              'b
+              'a))
+      x))))
+
+
+(define (graph->program graph)
+  (if (null? graph)
+      '()
+      (append (list 'node (list 'quote (first graph)))
+              (map graph->program (rest graph)))))
+

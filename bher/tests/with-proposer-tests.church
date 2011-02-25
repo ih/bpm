@@ -1,0 +1,138 @@
+(define samples 100)
+(define lag 2)
+(define runs 5)
+(define error-tolerance 0.05)
+
+
+;; ;;;sanity check, flip-proposer should never be called since the with-proposer proc is not used in a mh-query
+;; (define (flip-proposer value)
+;;   (let ([db (pretty-print "if you see this there is an error in random,no query test")])
+;;     (list (not value) 0.0 0.0)))
+
+;; (with-proposer-test (repeat runs
+;;                             (lambda ()
+;;                               (repeat samples (lambda () (flip 0.7)))))
+;;                     (repeat runs
+;;                             (lambda ()
+;;                               (repeat samples (with-proposer (lambda () (flip 0.7)) flip-proposer))))
+;;                     (lambda (x) (if x 1 0))
+;;                     0.7
+;;                     error-tolerance
+;;                     "random, no query" )
+
+;; ;;;test to make sure if proposal distribution is modified via a with-proposer the target distribution remains unchanged
+;; (define (flip-proposer2 value)
+;;     (list #t 0.0 0.0))
+
+;; (with-proposer-test (repeat runs
+;;                             (lambda ()
+;;                               (mh-query samples lag
+;;                                         (define a (/ 1 3))
+;;                                         (define b ((lambda () (flip a))))
+;;                                         a
+;;                                         b )))
+;;                     (repeat runs
+;;                             (lambda ()
+;;                               (mh-query samples lag
+;;                                         (define a (/ 1 3))
+;;                                         (define b ((with-proposer (lambda () (flip a)) flip-proposer2)))
+;;                                         a
+;;                                         b)))
+;;                     (lambda (b) b)
+;;                     (/ 1 3)
+;;                     error-tolerance
+;;                     "flip test" )
+
+;; ;;xor test, should fail when not using with-proposer because the proposal distribution is not irreducible
+;; (define (switch-proposer value)
+;;   (let ([first-value (first value)]
+;;         [second-value (second value)])
+;;     (list (list second-value first-value) 0.0 0.0)))
+
+;; (with-proposer-test (repeat runs
+;;                             (lambda ()
+;;                               (mh-query
+;;                                samples lag
+;;                                (define (xor a b) (not (eq? a b)))
+;;                                (define vals (lambda () (lazy-list (flip .8) (flip .6))))
+;;                                (define two-flips (lazy-list->all-list (vals)))
+;;                                (first two-flips)
+;;                                (apply xor two-flips))
+;;                               ))
+;;                     (repeat runs
+;;                             (lambda ()
+;;                               (mh-query
+;;                                samples lag
+;;                                (define (xor a b) (not (eq? a b)))
+;;                                (define vals (with-proposer (lambda () (lazy-list (flip .8) (flip .6))) switch-proposer))
+;;                                (define two-flips (lazy-list->all-list (vals)))
+;;                                (first two-flips)
+;;                                (apply xor two-flips))))
+;;                     (lambda (x) (if x 1 0))
+;;                     .7272
+;;                     error-tolerance
+;;                     "xor test" )
+
+;;;small "grammar" tests, where the grammar draws from a list of expressions one of which can lead to multiple compressions
+(define (abstraction-proposer expr)
+  (let* ([program+scores (abstraction-move expr)]
+         [renamed-program (normalize-names (first program+scores))]
+         [scores (rest program+scores)])
+    (pair renamed-program scores)))
+
+
+;;;sample from the distribution P(expression is a definition), checks that using with-proposer does not change the target distribution
+;; (with-proposer-test (repeat runs
+;;                             (lambda ()
+;;                               (mh-query
+;;                                samples lag
+;;                                (define (choose-expr) (list->lazy-list (uniform-draw (test-exprs))))
+;;                                (define program (choose-expr))
+;;                                (if (equal? (first (third (lazy-list->all-list program))) 'define) 1 0)
+;;                                #t)))
+;;                                ;;(eq? (eval program) #t))))
+;;                     (repeat runs
+;;                             (lambda ()
+;;                               (mh-query
+;;                                100 20
+;;                                (define (choose-expr) (list->lazy-list (uniform-draw (test-exprs))))
+;;                                (define program ((with-proposer choose-expr abstraction-proposer)))
+;;                                (if (equal? (first (third (lazy-list->all-list program))) 'define) 1 0)
+;;                                #t)))
+
+;;                                ;;(eq? (eval program) #t))))
+;;                     (lambda (x) x)
+;;                     .75
+;;                     error-tolerance
+;;                     "P(expression is a definition)")
+
+;;;test where target distribution is the same when only the basic proposal-distribution is used or only the with-proposer-distribution is used
+;;;right now you have to manually go into mcmc-preamble.church and adjust the probability of choosing between a basic proposal and with-proposer proposal (this is inside the basic-proposal-distribution function
+(with-proposer-test (repeat runs
+                            (lambda ()
+                              (mh-query
+                               samples lag
+                               (define (choose-expr) (list->lazy-list (uniform-draw (test-exprs))))
+                               (define program (choose-expr))
+                               (if (equal? (first (third (lazy-list->all-list program))) 'define) 1 0)
+                               (or (equal? (first (third (lazy-list->all-list program))) 'define)
+                                       (not (equal? (second (third (lazy-list->all-list program))) #t))))))
+                               ;;(eq? (eval program) #t))))
+                    (repeat runs
+                            (lambda ()
+                              (mh-query
+                               samples lag
+                               (define (choose-expr) (list->lazy-list (uniform-draw (test-exprs))))
+                               (define program ((with-proposer choose-expr abstraction-proposer)))
+                               (if (equal? (first (third (lazy-list->all-list program))) 'define) 1 0)
+                               (or (equal? (first (third (lazy-list->all-list program))) 'define)
+                                       (not (equal? (second (third (lazy-list->all-list program))) #t))))))
+
+                               ;;(eq? (eval program) #t))))
+                    (lambda (x) x)
+                    .857
+                    error-tolerance
+                    "P(expression is a definition | evals to true)")
+
+
+

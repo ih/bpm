@@ -1,0 +1,215 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Thu Feb 24 00:27:47 2011
+;; Desktop file format version 206
+;; Emacs version 23.1.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("iterated-c" "itera" "my-it" "church" "iterat" "chur" "apply" "church-app" "apply" "unif" "list" "iterat" "define (com" "compressions" "scoring" "iterat"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/trees.church"
+  "trees.church"
+  'church-mode
+  nil
+  119
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/beam-learning.church"
+  "beam-learning.church"
+  'church-mode
+  nil
+  1578
+  '(1861 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/beam-learning-tests.church"
+  "beam-learning-tests.church"
+  'church-mode
+  nil
+  3455
+  '(3195 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/abstract/abstract.ss"
+  "abstract.ss"
+  'scheme-mode
+  nil
+  25666
+  '(33811 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/header.ss"
+  "header.ss"
+  'scheme-mode
+  nil
+  3218
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/scheme/lib/pi/lazy.ss"
+  "lazy.ss"
+  'scheme-mode
+  nil
+  192
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/scheme/lib/pi/abstract2.ss"
+  "abstract2.ss"
+  'scheme-mode
+  nil
+  25928
+  '(25654 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "church"
+  'dired-mode
+  nil
+  215
+  '(nil nil)
+  t
+  '("/home/ih/Code/bher/church/")
+  nil)
+
+(desktop-create-buffer 206
+  nil
+  "bher"
+  'dired-mode
+  nil
+  615
+  '(nil nil)
+  t
+  '("/home/ih/Code/bher/")
+  nil)
+
+(desktop-create-buffer 206
+  "/home/ih/abstract/abstract-tests.ss"
+  "abstract-tests.ss"
+  'scheme-mode
+  nil
+  3329
+  '(7066 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/desugar.ss"
+  "desugar.ss"
+  'scheme-mode
+  nil
+  2567
+  '(77 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/compiler.ss"
+  "compiler.ss"
+  'scheme-mode
+  nil
+  1519
+  '(818 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/scheme-mem.ss"
+  "scheme-mem.ss<2>"
+  'scheme-mode
+  nil
+  183
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/node-eval-tests.church"
+  "node-eval-tests.church"
+  'church-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/church/scheme-mem.ss"
+  "scheme-mem.ss"
+  'scheme-mode
+  nil
+  995
+  '(628 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/scheme/lib/mem.ss"
+  "mem.ss"
+  'scheme-mode
+  nil
+  970
+  '(289 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/Code/bher/scheme-compilers/header-ikarus.sc"
+  "header-ikarus.sc"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "scheme-compilers"
+  'dired-mode
+  nil
+  221
+  '(nil nil)
+  t
+  '("/home/ih/Code/bher/scheme-compilers/")
+  nil)
+

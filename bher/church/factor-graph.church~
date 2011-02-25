@@ -1,0 +1,71 @@
+;;;node code
+(define growth-noise .2)
+(define label-noise .2)
+(define labels '(a b))
+
+(define root '(a))
+
+(define node
+  (lazify 
+   (lambda (item0 . items)
+     (if (null? items)
+         (lazy-pair (noisy-label item0) '())
+         (lazy-pair (noisy-label item0) (if (flip (- 1 growth-noise))
+                                            (apply node items)
+                                            '()))))))
+
+
+
+;; (define (node x . subtrees)
+;;   (if (flip (- 1 growth-noise))
+;;       (apply lazy-list (delete '() (pair (noisy-label x) subtrees)))
+;;       '()))
+
+(define noisy-label
+  (lazify
+   (lambda (x)
+  (if (symbol? x)
+      (if (flip (- 1 label-noise))
+          x
+          (if (equal? x 'a)
+              'b
+              'a))
+      x))))
+
+
+;;;tree grammar
+(define (gen-program)
+  (let* ([functions '()]
+         [function-signatures '()]
+         [body (gen-expr '() function-signatures)]
+         [reset-symbols (reset-symbol-indizes!)])
+    (combine-program-parts functions body)))
+(define (combine-program-parts functions body)
+  (lazy-append (lazy-append (lazy-list 'let '()) functions) (lazy-list body)))
+
+
+(define (gen-expr vars function-signatures)
+  (cond [(and (null? vars) (null? function-signatures))
+         (sample gen-tree)]
+        [else '()]))
+
+(define gen-tree
+  (lazify
+   (lambda ()
+     (let ([color (uniform-draw '(a b))])
+       (lazy-list 'node color)))))
+
+
+;;find the literal translation of a tree into code
+(define (tree->program tree)
+  (if (null? tree)
+      '()
+      (append (list 'node (list 'quote (first tree)))
+              (map tree->program (rest tree)))))
+
+(define (tree->generative-program proc-code)
+  (list 'lambda '() (tree->program proc-code)))
+     
+
+
+;;(eval (lazy-list->all-list (gen-program)))
