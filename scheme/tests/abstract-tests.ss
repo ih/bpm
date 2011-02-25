@@ -28,7 +28,7 @@
 ;;     (pretty-print (replace-matches test-tree abstraction))
 ;;     (pretty-print (replace-matches test-tree abstraction2))))
 
-(define (test-compression sexpr)
+(define (test-beam-search-compressions sexpr)
   (for-each display (list "original expr:\n" sexpr "\n"
                           "size: " (size sexpr)
                           "\n\n"
@@ -37,6 +37,21 @@
        (sort-by-size
         (unique-programs
          (beam-search-compressions 10 (make-program '() sexpr))))))
+
+;;;displays all the compressions created by compressing function, compressing-function takes a program and returns a list of compressions
+(define (test-compressions name compressing-function sexpr)
+  (for-each display (list name
+                          "\noriginal expr:\n" sexpr "\n"
+                          "size: " (size sexpr)
+                          "\n\n"
+                          "compressed exprs:\n"))
+  (map pretty-print-program
+       (sort-by-size
+        (unique-programs
+         (compressing-function (make-program '() sexpr))))))
+
+(test-compressions "compressions" compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))
+(test-compressions "all-compressions" all-compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))
 
 ;; (define (test-redundant-variables)
 ;;   (let* ([tabs (make-abstraction '(+ A B C D) '(A B C D))]
@@ -77,22 +92,22 @@
 ;; ;;(test-inline)
 ;; ;;(recursive? '(f (f x)))
 ;;;compression test for sexpr without comrpessions
-(test-compression '('a))
+;;(test-beam-search-compressions '('a))
 
-(beam-compression '('a) 2)
-;;(test-compression '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))
-(display (beam-compression '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))) 2))
+;;(beam-compression '('a) 2)
+;;(test-beam-search-compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))
+;;(display (beam-compression '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))) 2))
 ;; ;; (test-repeated-variable-pattern)
-;; ;; (test-compression '((f (f (f (f (f (f (f (f (f (f (f (f x))))))))))))))
-;; ;;(test-compression '((h (m (h (m (h (m (h (m (c))))))))) (h (m (h (m (h (m (c))))))) (h (m (h (m (c))))) (h (m (c))) (f (f (f (f (f (f (f (f (f (f (f (f x))))))))))))))
-;; ;; (test-compression '(f (a x) (f (a x) (f (a x) b (a x)) (a x)) (a x)))
-;; ;; (test-compression '(f (a b (x y (u k l)))
+;; ;; (test-beam-search-compressions '((f (f (f (f (f (f (f (f (f (f (f (f x))))))))))))))
+;; ;;(test-beam-search-compressions '((h (m (h (m (h (m (h (m (c))))))))) (h (m (h (m (h (m (c))))))) (h (m (h (m (c))))) (h (m (c))) (f (f (f (f (f (f (f (f (f (f (f (f x))))))))))))))
+;; ;; (test-beam-search-compressions '(f (a x) (f (a x) (f (a x) b (a x)) (a x)) (a x)))
+;; ;; (test-beam-search-compressions '(f (a b (x y (u k l)))
 ;; ;;                       (a b c)
 ;; ;;                       (a b (z d (u k l)))
 ;; ;;                       (a b c)))
-;; ;; (test-compression '(a (a (foo bar) b) (a (bar foo) b) (a (bzar fzoo) b)))
-;; ;;(test-compression '(f (a x) (f (a x) (f (a x) b (a x)) (a x)) (a x)))
-;; ;; (test-compression '(k (h (g (f (a b (x y (u k l)))
+;; ;; (test-beam-search-compressions '(a (a (foo bar) b) (a (bar foo) b) (a (bzar fzoo) b)))
+;; ;;(test-beam-search-compressions '(f (a x) (f (a x) (f (a x) b (a x)) (a x)) (a x)))
+;; ;; (test-beam-search-compressions '(k (h (g (f (a b (x y (u k l)))
 ;; ;;                               (a b c)
 ;; ;;                               (a b (z d (u k l)))
 ;; ;;                               (a b c))
@@ -125,7 +140,7 @@
 ;; ;;                               (a b (z d (u k l)))
 ;; ;;                               (a b c))))))
 
-;; ;;(test-compression '((f (f (f (f x)))) (g (g (g (g x))))))
+;; ;;(test-beam-search-compressions '((f (f (f (f x)))) (g (g (g (g x))))))
 
 ;; (define (test-proposal)
 ;;   (let ([init (make-program '() '(+ (+ (+ a a a) (+ c c c) (+ d d d)) (f (f (f (f (f (f (f (f (f (f (f (+ a a a)))))))))))) (+ a a a)))])

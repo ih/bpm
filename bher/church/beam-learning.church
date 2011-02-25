@@ -1,8 +1,9 @@
 
 ;;;searches through compressions of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation
-(define (learn-model data)
+(define (learn-model data size-weight score-weight)
   (let* ([initial-sexpr (make-initial-sexpr data)]
-         [learned-sexpr (beam-learn data initial-sexpr)]
+         [learned-sexpr (beam-learn data initial-sexpr 5 size-weight score-weight)]
+         [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
          [model (lambda () (lazy-list->all-list (eval learned-sexpr)))])
     (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
     model))
@@ -12,17 +13,21 @@
   (let* ([literal-sexprs (map graph->program data)])
     (list 'uniform-draw (pair 'list literal-sexprs))))
          
-(define (beam-learn data sexpr)
-  sexpr)
+;; (define (beam-learn data sexpr)
+;;   sexpr)
 
-;; (define (beam-learn-draft data sexpr beam-size)
-;;            (for-each display (list "original expr:\n" sexpr "\n"
-;;                                    "size: " (size sexpr)
-;;                                    "\n\n"
-;;                                    "compressing...\n"))
-;;            (first (sort-by-size
-;;             (unique-programs
-;;              (beam-learn-search-compressions data beam-size (make-program '() sexpr))))))
+(define (beam-learn data sexpr beam-size size-weight score-weight)
+           (for-each display (list "original expr:\n" sexpr "\n"
+                                   "size: " (size sexpr)
+                                   "\n\n"
+                                   "compressing...\n"))
+           (let ([top-compressions 
+                  (sort-by-score-and-size
+                   (unique-programs
+                    (beam-learn-search-compressions data beam-size (make-program '() sexpr) size-weight score-weight)))])
+             (if (null? top-compressions)
+                 sexpr
+                 (first top-compressions))))
 
 
 (define (beam-learn-search-compressions data beam-size program size-weight score-weight)
@@ -77,17 +82,21 @@
 (define (compose f g)
   (lambda (x) (f (g x))))
 
+
+;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 (define scoring  
-  (lambda (prog data popsize) ;;scorer
-    (let* ((samples (smc-core (map list (iota (+ 1 (lazy-list-size  data)))) popsize 0
-                                   (lambda (depth) (lambda () (let ((s (eval prog)))
-                                                                (pair (lazy-equal? s data depth)
-                                                                      (lambda () (first (lazy-list->list s depth)))))))))
-                ;;remove duplicates in order to do selective model averaging:
-                (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
-                (scores (map mcmc-state->score samples))
-                (score (if (null? scores)
-                           -inf.0
-                           (apply log-sum-exp scores))))
-           score)))
+  (mem
+   (lambda (prog data popsize) 
+     (let* ([lazified-data (list->lazy-list data)]
+            (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 0
+                               (lambda (depth) (lambda () (let ((s (eval prog)))
+                                                            (pair (lazy-equal? s lazified-data depth)
+                                                                  (lambda () (first (lazy-list->list s depth)))))))))
+            ;;remove duplicates in order to do selective model averaging:
+            (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
+            (scores (map mcmc-state->score samples))
+            (score (if (null? scores)
+                       -inf.0
+                       (apply log-sum-exp scores))))
+       score))))
 

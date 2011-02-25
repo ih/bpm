@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol var-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol var-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -479,20 +479,29 @@
            (apply max (map get-index tagged-symbols)))
 
                   
-         ;; compute a list of compressed programs
-         (define (compressions program)
+         ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
+         (define (compressions program . nofilter)
            (let* ([none (set! abstraction-instances (make-hash-table eqv?))]
                   [none (raise-func/var-indices! program)] ;;in case program already has function symbols and variable symbols higher than current indices
                   [abstraction-instances (make-hash-table eqv?)]
                   [condensed-program (condense-program program)]
                   [abstractions (self-matches (enumerate-tree condensed-program))]
-                  [valid-abstractions (get/make-valid-abstractions abstractions)] ;; [1]
+                  [valid-abstractions (get/make-valid-abstractions abstractions)] 
                   [compressed-programs (map (curry compress-program program) valid-abstractions)]
                   [program-size (size (program->sexpr program))]
-                  [valid-compressed-programs (filter (lambda (cp) (<= (size (program->sexpr cp))
-                                                                      (+ program-size 1)))
-                                                     compressed-programs)])
-             valid-compressed-programs))
+                  [valid-compressed-programs
+                   (if (not (null? nofilter))
+                       compressed-programs
+                       (filter (lambda (cp) (<= (size (program->sexpr cp))
+                                                (+ program-size 1)))
+                               compressed-programs))])
+                  valid-compressed-programs))
+
+         (define (true-compressions program)
+           (compressions program))
+
+         (define (all-compressions program)
+           (compressions program 'all))
 
          ;; both compressee and compressor are abstractions
          (define (compress-abstraction compressor compressee)
