@@ -66,19 +66,19 @@
 ;;;church-iterated-compressions test
 ;; (define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
 
-;;(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
+(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
 
 ;; (evaluates?-test "my-iterated-compressions test" (my-iterated-compressions (lambda (x) x) compressible-program))
 
 ;;;beam-learn-search-compressions test
-;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
 ;; (define simplest-program (make-program '() '(uniform-draw (list (node 'a)))))
 
 ;; (evaluates?-test "beam-learn-search-compressions simplest-data" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1))
 
-;; (define aaaadata '(a (a (a (a)))))
+(define aaaadata '(a (a (a (a)))))
 
-;; (evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
+(evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
 
 ;;;beam-learn test
 ;; (define init-data '((a) (a (b))))

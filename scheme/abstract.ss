@@ -15,16 +15,15 @@
                  (church readable-scheme)
                  (util)
                  (sym)
-                 (mem))
+                 (mem)
+                 (unification-policies))
 
          (define (identity x) x)
 
          ;;var-symbol and func-symbol are functions that return symbols so that they can be used in bher
-         (define (var-symbol) 'V)
-         (define (func-symbol) 'F)
+         ;;think about moving these to a constants file since they're now separated due to unification-policies
+         (define (func-symbol) 'F) 
 
-         (define (more-than-one lst)
-           (> (length lst) 1))
 
          ;; compute the size of a program
          (define (size tree)
@@ -63,10 +62,7 @@
 
 
 
-         ;; data structures & associated functions
-         (define etree->id first)
-         (define etree->tree cdr) ;; non-recursive
-         (define etree->children cddr)
+
 
          (define (make-abstraction pattern variables)
            (make-named-abstraction (sym (func-symbol)) pattern variables))
@@ -303,27 +299,8 @@
          ;; (f (f c))
          ;; returns:
          ;; (if (flip) var2 (var1 (rec
-         (define anti-unify
-           (mem (lambda (et1 et2 ignore-id-matches)
-                  (begin 
-                    (define variables '())
-                    (define (add-variable!)
-                      (set! variables (pair (sym (var-symbol)) variables))
-                      (first variables))
-                    (define (build-pattern et1 et2 ignore-id-matches)
-                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (add-variable!))]
-                            [(or (primitive? et1) (primitive? et2)) (add-variable!)]
-                            [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
-                            [(not (eqv? (length et1) (length et2))) (add-variable!)]
-                            [else
-                             (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
-                                                      (etree->tree et1)
-                                                      (etree->tree et2))])
-                               (if (any false? unified-tree)
-                                   #f
-                                   unified-tree))]))
-                    (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
-                      (list variables pattern))))))
+         (define anti-unify (get-anti-unify original-unification-policy))
+           
 
          ;; replcae a few uninteresting abstractions with #f
          ;; (single variable or singleton list)
@@ -379,27 +356,9 @@
          ;; second (operand) pass: (P (P a))
          ;; returns #f if abstraction cannot be applied, otherwise variable assignments
          ;; ! assumes that each variable occurs only once in sv [2]
-         (define unify
-           (mem (lambda (s sv vars)
-                  (begin
-                    (define (variable? obj)
-                      (member obj vars))
-                    (cond [(variable? sv) (list (pair sv s))]
-                          [(and (primitive? s) (primitive? sv)) (if (eq? s sv) '() #f)]
-                          [(or (primitive? s) (primitive? sv)) #f]
-                          [(not (eqv? (length s) (length sv))) #f]
-                          [else
-                           (let ([assignments (map (lambda (si sj) (unify si sj vars)) s sv)])
-                             (if (any false? assignments)
-                                 #f
-                                 (check/remove-repeated (apply append assignments))))])))))
+         (define unify (get-unify original-unification-policy))
+           
 
-         ;;returns false if any repeated variable in pattern doesn't have the same value or any of the assignments are false, returns a set of unique variable assignments
-         (define (check/remove-repeated unified-vars)
-           (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])
-             (if (and (all (map all-equal? repeated-vars)) (not (any false? unified-vars)))
-                 (delete-duplicates unified-vars)
-                 #f)))
 
 
          ;; doesn't deal with partial matches, could use more error checking; 
