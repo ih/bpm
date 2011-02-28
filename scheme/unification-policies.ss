@@ -1,5 +1,5 @@
 (library (unification-policies)
-         (export original-unification-policy get-anti-unify get-unify var-symbol noisy-number-policy noisy-number-threshold)
+         (export original-unification-policy get-anti-unify get-unify var-symbol noisy-number-policy noisy-number-threshold no-var-policy unenumerate-tree)
          (import (rnrs)
                  (_srfi :1)
                  (church readable-scheme)
@@ -14,11 +14,18 @@
 
 
          (define (var-symbol) 'V)
+         
+         (define (unenumerate-tree t)
+           (if (primitive? t)
+               t
+               (map unenumerate-tree (rest t))))
+
 
          ;; data structures & associated functions
          (define etree->id first)
-         (define etree->tree cdr) ;; non-recursive
 
+         (define etree->tree cdr) ;; non-recursive
+;;;original-policy
          ;; returns #f if trees cannot be unified,
          ;; otherwise tree with variable in places where they differ
          ;; returns for (the enumerated version of) trees
@@ -87,7 +94,7 @@
          
          (define original-unification-policy (build-unification-policy original-anti-unify original-unify))
 
-
+;;;noisy-number policy
          ;;noisy-number anti-unify
          (define noisy-number-anti-unify
            (mem (lambda (et1 et2 ignore-id-matches)
@@ -138,7 +145,29 @@
                                  (check/remove-repeated (apply append assignments))))])))))
 
 
-         (define noisy-number-policy (build-unification-policy noisy-number-anti-unify noisy-number-unify))         
+         (define noisy-number-policy (build-unification-policy noisy-number-anti-unify noisy-number-unify))
+;;;no-var policy
+         (define no-var-anti-unify
+           (mem (lambda (et1 et2 ignore-id-matches)
+                  (begin 
+                    (define (choose-branch et1 et2)
+                      (unenumerate-tree et1))
+                    (define (build-pattern et1 et2 ignore-id-matches)
+                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (choose-branch et1 et2))]
+                            [(or (primitive? et1) (primitive? et2)) (choose-branch et1 et2)]
+                            [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
+                            [(not (eqv? (length et1) (length et2))) (choose-branch et1 et2)]
+                            [else
+                             (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
+                                                      (etree->tree et1)
+                                                      (etree->tree et2))])
+                               (if (any false? unified-tree)
+                                   #f
+                                   unified-tree))]))
+                    (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
+                      (list '() pattern))))))
+
+         (define no-var-policy (build-unification-policy no-var-anti-unify original-unify))
          )
 
 

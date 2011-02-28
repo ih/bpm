@@ -52,6 +52,20 @@
 (check (unify '(node 25 3 'd) '(node 24 3 COLOR) '(COLOR)) => '((COLOR . 'd)))
 (check (unify '(node 0 3 'd) '(node 24 3 COLOR) '(COLOR)) => #f)
 
+;;;no-var anti-unify
+(set! anti-unify (get-anti-unify no-var-policy))
+
+(check (anti-unify (enumerate-tree '(node 25 3 'd)) (enumerate-tree '(node 25 3 'a)) #t)
+       =>
+       '(() (node 25 3 'd)))
+
+(check (anti-unify (enumerate-tree '(node 25 3 'd (node 11 95 'c))) (enumerate-tree '(node 25 3 'a)) #t)
+       =>
+       '(() (node 25 3 'd (node 11 95 'c))))
+
+
+
+
 
 (check-report)
 

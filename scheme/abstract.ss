@@ -267,10 +267,6 @@
                t
                (pair (sym '$) (map enumerate-tree t))))
 
-         (define (unenumerate-tree t)
-           (if (primitive? t)
-               t
-               (map unenumerate-tree (rest t))))
 
          ;; list all (enumerated) subtrees
          (define (all-subtrees t)
