@@ -1,5 +1,5 @@
 (library (unification-policies)
-         (export original-unification-policy get-anti-unify get-unify var-symbol)
+         (export original-unification-policy get-anti-unify get-unify var-symbol noisy-number-policy noisy-number-threshold)
          (import (rnrs)
                  (_srfi :1)
                  (church readable-scheme)
@@ -85,6 +85,57 @@
            (> (length lst) 1))
          
          (define original-unification-policy (build-unification-policy original-anti-unify original-unify))
+
+
+         ;;noisy-number anti-unify
+         (define noisy-number-anti-unify
+           (mem (lambda (et1 et2 ignore-id-matches)
+                  (begin 
+                    (define variables '())
+                    (define (add-variable!)
+                      (set! variables (pair (sym (var-symbol)) variables))
+                      (first variables))
+                    (define (build-pattern et1 et2 ignore-id-matches)
+                      (cond [(and (number? et1) (number? et2)) (if (close? et1 et2) (make-noisy-number et1 et2) (add-variable!))]
+                            [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (add-variable!))]
+                            [(or (primitive? et1) (primitive? et2)) (add-variable!)]
+                            [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
+                            [(not (eqv? (length et1) (length et2))) (add-variable!)]
+                            [else
+                             (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
+                                                      (etree->tree et1)
+                                                      (etree->tree et2))])
+                               (if (any false? unified-tree)
+                                   #f
+                                   unified-tree))]))
+                    (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
+                      (list variables pattern))))))
+         (define noisy-number-threshold 3)
+         (define (close? a b)
+           (< (abs (- b a)) noisy-number-threshold))
+
+         (define (make-noisy-number et1 et2)
+           23)
+         
+         ;;noisy-number unify
+         (define noisy-number-unify
+           (mem (lambda (s sv vars)
+                  (begin
+                    (define (variable? obj)
+                      (member obj vars))
+                    (cond [(variable? sv) (list (pair sv s))]
+                          [(and (number? s) (number? sv)) (if (close? s sv) '() #f)]
+                          [(and (primitive? s) (primitive? sv)) (if (eq? s sv) '() #f)]
+                          [(or (primitive? s) (primitive? sv)) #f]
+                          [(not (eqv? (length s) (length sv))) #f]
+                          [else
+                           (let ([assignments (map (lambda (si sj) (noisy-number-unify si sj vars)) s sv)])
+                             (if (any false? assignments)
+                                 #f
+                                 (check/remove-repeated (apply append assignments))))])))))
+
+
+         (define noisy-number-policy (build-unification-policy noisy-number-anti-unify noisy-number-unify))         
          )
 
 
