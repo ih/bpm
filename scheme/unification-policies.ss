@@ -3,6 +3,7 @@
          (import (rnrs)
                  (_srfi :1)
                  (church readable-scheme)
+                 (church external math-env)
                  (mem)
                  (util)
                  (sym))
@@ -114,8 +115,10 @@
          (define (close? a b)
            (< (abs (- b a)) noisy-number-threshold))
 
+         (define variance 1)
          (define (make-noisy-number et1 et2)
-           23)
+           (let ([mean (/ (+ et1 et2) 2)])
+             (sample-gaussian mean variance)))
          
          ;;noisy-number unify
          (define noisy-number-unify

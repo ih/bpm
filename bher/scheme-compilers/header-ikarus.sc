@@ -24,5 +24,6 @@
  (util)
  (sym)
  (testing)
+ (churchpytest) ;;temporary
  )
 
