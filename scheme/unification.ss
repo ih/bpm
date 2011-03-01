@@ -30,23 +30,28 @@
 
                     (define variables '())
 
-                    (define (mismatch-policy! et1 et2)
-                      (cond [(eq? policy 'original) (add-variable!)]
-                            [(eq? policy 'noisy-number)
-                             (if (and (number? et1) (number? et2))
-                                 (if (close? et1 et2) (make-noisy-number et1 et2) (add-variable!))
-                                 (add-variable!))]
+                    (define (mismatch-policy!)
+                      (cond [(eq? policy 'original) original-policy]
+                            [(eq? policy 'noisy-number) noisy-number-policy]
                             [else (error "no such matching policy for anti-unification!")]))
 
+                    (define (original-policy et1 et2)
+                      (add-variable!))
+
+                    (define (noisy-number-policy et1 et2)
+                      (if (and (number? et1) (number? et2))
+                                 (if (close? et1 et2) (make-noisy-number et1 et2) (add-variable!))
+                                 (add-variable!)))
+                      
                     (define (add-variable!)
                       (set! variables (pair (sym (var-symbol)) variables))
                       (first variables))
                     
                     (define (build-pattern et1 et2 ignore-id-matches)
-                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (mismatch-policy! et1 et2))]
-                            [(or (primitive? et1) (primitive? et2)) (mismatch-policy! et1 et2)]
+                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 ((mismatch-policy!) et1 et2))]
+                            [(or (primitive? et1) (primitive? et2)) ((mismatch-policy!) et1 et2)]
                             [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
-                            [(not (eqv? (length et1) (length et2))) (mismatch-policy! et1 et2)]
+                            [(not (eqv? (length et1) (length et2))) ((mismatch-policy!) et1 et2)]
                             [else
                              (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
                                                       (etree->tree et1)
