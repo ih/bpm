@@ -37,18 +37,24 @@
          ;; (f (f c))
          ;; returns:
          ;; (if (flip) var2 (var1 (rec
+         (define policy 'original)
+         
          (define original-anti-unify
            (mem (lambda (et1 et2 ignore-id-matches)
                   (begin 
                     (define variables '())
-                    (define (add-variable!)
-                      (set! variables (pair (sym (var-symbol)) variables))
-                      (first variables))
+                    (define (mismatch-policy! et1 et2)
+                      (cond [(eq? policy 'original)
+                             (begin
+                               (set! variables (pair (sym (var-symbol)) variables))
+                               (first variables))]
+                            [else (error "no such matching policy for anti-unification!")]))
+
                     (define (build-pattern et1 et2 ignore-id-matches)
-                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (add-variable!))]
-                            [(or (primitive? et1) (primitive? et2)) (add-variable!)]
+                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 (mismatch-policy! et1 et2))]
+                            [(or (primitive? et1) (primitive? et2)) (mismatch-policy! et1 et2)]
                             [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
-                            [(not (eqv? (length et1) (length et2))) (add-variable!)]
+                            [(not (eqv? (length et1) (length et2))) (mismatch-policy! et1 et2)]
                             [else
                              (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
                                                       (etree->tree et1)
@@ -58,7 +64,9 @@
                                    unified-tree))]))
                     (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
                       (list variables pattern))))))
+         
 
+         
          ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
          ;; s = (foo (foo a b c) b c)
          ;; sv = (foo V b c)

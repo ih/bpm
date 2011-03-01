@@ -6,22 +6,24 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol var-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-tree)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-tree)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
                  (_srfi :69)
                  (only (srfi :13) string-drop)
                  (church readable-scheme)
+                 (unification)
                  (util)
                  (sym)
-                 (mem)
-                 (unification-policies))
+                 (mem))
+                 
 
          (define (identity x) x)
 
          ;;var-symbol and func-symbol are functions that return symbols so that they can be used in bher
          ;;think about moving these to a constants file since they're now separated due to unification-policies
+
          (define (func-symbol) 'F) 
 
 
@@ -283,6 +285,7 @@
                 (primitive? (first obj))
                 (null? (rest obj))))
 
+         ;; data structures & associated functions
 
          ;; returns #f if trees cannot be unified,
          ;; otherwise tree with variable in places where they differ
@@ -295,8 +298,9 @@
          ;; (f (f c))
          ;; returns:
          ;; (if (flip) var2 (var1 (rec
-         (define anti-unify (get-anti-unify original-unification-policy))
-           
+
+
+         
 
          ;; replcae a few uninteresting abstractions with #f
          ;; (single variable or singleton list)
@@ -352,7 +356,7 @@
          ;; second (operand) pass: (P (P a))
          ;; returns #f if abstraction cannot be applied, otherwise variable assignments
          ;; ! assumes that each variable occurs only once in sv [2]
-         (define unify (get-unify original-unification-policy))
+         (define unify '());;(get-unify original-unification-policy))
            
 
 
