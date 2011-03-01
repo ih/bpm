@@ -1,5 +1,5 @@
 (library (unification)
-         (export anti-unify var-symbol unenumerate-tree set-policy!) 
+         (export anti-unify unify var-symbol unenumerate-tree set-policy!) 
          (import (rnrs)
                  (_srfi :1)
                  (church readable-scheme)
@@ -23,7 +23,7 @@
          (define policy 'original)
          (define (set-policy! new-policy)
            (set! policy new-policy))
-         
+;;;anti-unification         
          (define anti-unify
            (mem (lambda (et1 et2 ignore-id-matches)
                   (begin
@@ -33,6 +33,7 @@
                     (define (mismatch-policy!)
                       (cond [(eq? policy 'original) original-policy]
                             [(eq? policy 'noisy-number) noisy-number-policy]
+                            [(eq? policy 'no-var) no-var-policy]
                             [else (error "no such matching policy for anti-unification!")]))
 
                     (define (original-policy et1 et2)
@@ -42,7 +43,11 @@
                       (if (and (number? et1) (number? et2))
                                  (if (close? et1 et2) (make-noisy-number et1 et2) (add-variable!))
                                  (add-variable!)))
-                      
+
+                    ;;eventually change this to probabilistically return et1 or et2, returns et1 now for testing purposes
+                    (define (no-var-policy et1 et2)
+                      (unenumerate-tree et1))
+                    
                     (define (add-variable!)
                       (set! variables (pair (sym (var-symbol)) variables))
                       (first variables))
@@ -72,6 +77,44 @@
          (define (make-noisy-number et1 et2)
            (let ([mean (/ (+ et1 et2) 2)])
              (sample-gaussian mean variance)))
+;;;unification
+         (define unify
+           (mem (lambda (s sv vars)
+                  (begin
+                    (define (variable? obj)
+                      (member obj vars))
+                    (define (match-policy?)
+                      (cond [(eq? policy 'original) original-policy]
+                            [(eq? policy 'noisy-number) noisy-number-policy]
+                            [(eq? policy 'no-var) original-policy]
+                            [else (error "no such matching policy for unification!")]))
+
+                    (define original-policy eq?)
+
+                    (define (noisy-number-policy s sv)
+                      (if (and (number? s) (number? sv))
+                          (if (close? s sv) '() #f)
+                          (eq? s sv)))
+                    
+                    (cond [(variable? sv) (list (pair sv s))]
+                          [(and (primitive? s) (primitive? sv)) (if ((match-policy?) s sv) '() #f)]
+                          [(or (primitive? s) (primitive? sv)) #f]
+                          [(not (eqv? (length s) (length sv))) #f]
+                          [else
+                           (let ([assignments (map (lambda (si sj) (unify si sj vars)) s sv)])
+                             (if (any false? assignments)
+                                 #f
+                                 (check/remove-repeated (apply append assignments))))])))))
+
+         (define (check/remove-repeated unified-vars)
+           (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])
+             (if (and (all (map all-equal? repeated-vars)) (not (any false? unified-vars)))
+                 (delete-duplicates unified-vars)
+                 #f)))
+
+         (define (more-than-one lst)
+           (> (length lst) 1))
 
 
+         
          )

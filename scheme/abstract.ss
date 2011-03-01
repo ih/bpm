@@ -356,7 +356,7 @@
          ;; second (operand) pass: (P (P a))
          ;; returns #f if abstraction cannot be applied, otherwise variable assignments
          ;; ! assumes that each variable occurs only once in sv [2]
-         (define unify '());;(get-unify original-unification-policy))
+         
            
 
 
