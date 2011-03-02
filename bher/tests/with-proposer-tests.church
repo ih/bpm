@@ -3,7 +3,7 @@
 (define runs 5)
 (define error-tolerance 0.05)
 
-
+;;;ALL with-proposer-testS NEED TO BE REFACTORED USING make-check-test-with-runs
 ;; ;;;sanity check, flip-proposer should never be called since the with-proposer proc is not used in a mh-query
 ;; (define (flip-proposer value)
 ;;   (let ([db (pretty-print "if you see this there is an error in random,no query test")])

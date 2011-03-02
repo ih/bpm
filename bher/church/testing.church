@@ -27,7 +27,7 @@
         (for-each display (list " true values: "  set-of-true-vals ", test value: " test-val ".. failed!\n"))
         (display ".. passed!\n"))))
 
-
+;;;NEEDS TO BE REFACTORED USING make-check-test-with-runs
 (define (with-proposer-test distribution with-proposer-distribution expectation-fn true-expectation tolerance name)
   (begin
     (pretty-print name)
@@ -36,15 +36,6 @@
     (display "with-proposer used....")
     (check-test with-proposer-distribution expectation-fn true-expectation tolerance name)))
 
-;;info should be a function that returns a list of lists of size runs and each sublist should be of size samples
-(define (check-test info expectation-fn true-expectation tolerance name)
-  (begin
-    (let* ([estimates (map (lambda (run) (mean (map expectation-fn run))) info)]
-           [errors (map (lambda (estimate) (abs (- estimate true-expectation))) estimates)]
-           [mean-abs-error (mean errors)])
-      (if (> mean-abs-error tolerance)
-          (for-each display (list name " true expectation: "  true-expectation ", test mean: " (* (mean estimates) 1.) ".. failed!\n"))
-          (for-each display (list name ".. passed! \n"))))))
 
 (define (make-check-test-with-runs runs)
   (lambda (info expectation-fn true-expectation tolerance name)
