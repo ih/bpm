@@ -1,7 +1,17 @@
+(define samples 50)
+(define runs 1)
+(define error-tolerance 0.07)
+
+(define check-test (make-check-test-with-runs runs))
+
 ;;;single node test
 (check-test (lambda ()
-              (repeat samples (lambda () (eval (node 3 4 'a)))))
-            (lambda (x) (if (eq? (third x) 'a) 1 0))
-            label-noise
+              (repeat samples (lambda () (lazy-list->all-list (eval '(node2 'a 3 4))))))
+            (lambda (x) (if (eq? (first x) 'a) 1 0))
+            (- 1 (label-noise noise-params))
             error-tolerance
             "single node test")
+
+;;;line test
+
+
