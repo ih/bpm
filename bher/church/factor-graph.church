@@ -18,15 +18,6 @@
                                             (apply node items)
                                             '()))))))
 
-(define node2
-  (lazify 
-   (lambda (label distance angle . items)
-     (if (null? items)
-         (lazy-pair (noisy-label label) (lazy-pair distance (lazy-pair angle '())))
-         (lazy-pair (noisy-label label) (lazy-pair distance (lazy-pair angle (if (flip (- 1 (growth-noise noise-params)))
-                                                                                 (apply node items)
-                                                                                 '()))))))))
-
 
 (define noisy-label
   (lazify
