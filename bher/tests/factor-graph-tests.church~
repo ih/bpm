@@ -1,10 +1,1 @@
-;;;hypothetical query for factor graphs
-(mh-query
- samples lag
- (define program (grammar))
- (define compute-likelihood (smc-eval-obs-marginalize program particle-quantity))
-
- program ;;query value
-
- (compute-likelihood render observed-data))
-          
+;;;single node test

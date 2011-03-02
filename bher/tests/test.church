@@ -5,7 +5,7 @@
 (define runs 5)
 (define error-tolerance 0.07)
 
-
+(define check-test2 (make-check-test-with-runs runs))
 
 (equal?-test "deterministic test: begin-define"
             (begin (define a 10)
@@ -82,6 +82,16 @@
             0.7
             error-tolerance
             "random, no query" )
+
+(check-test2 (lambda ()
+               (repeat samples (lambda () (flip 0.7))))
+            (lambda (x) (if x 1 0))
+            0.7
+            error-tolerance
+            "CHECK TEST WITH RUNS"
+            )
+
+ 
 
 (check-test (repeat runs
                     (lambda ()

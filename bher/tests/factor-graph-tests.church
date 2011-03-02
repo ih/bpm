@@ -1,0 +1,7 @@
+;;;single node test
+(check-test (lambda ()
+              (repeat samples (lambda () (eval (node 3 4 'a)))))
+            (lambda (x) (if (eq? (third x) 'a) 1 0))
+            label-noise
+            error-tolerance
+            "single node test")
