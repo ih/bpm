@@ -27,5 +27,5 @@
             '(a 3 4 (b 5 10 (c 5 10) (c 5 10))))
 
 
-
+(forward-sample '(node 'a 3 4 (node 'b 5 10)))
 

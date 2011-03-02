@@ -84,6 +84,7 @@
                           '(lazy)
                           '(util)
                           '(sym)
+                          '(python-fg-lib)
                           '(rnrs mutable-pairs)
                           '(_srfi :1)
                           '(rename (church external math-env) (sample-discrete discrete-sampler))
