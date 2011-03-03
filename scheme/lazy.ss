@@ -1,9 +1,10 @@
 #!r6rs
 ;;lazy functions
 (library (lazy)
-         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size)
+         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size set-policy!)
          (import (rnrs)
                  (util)
+                 (noisy-number)
                  (church readable-scheme))
          (define lazy-null '())
          (define lazy-null? null?)
@@ -15,6 +16,15 @@
          (define (lazy-pair? a) (if (procedure? a) (eq? 'lazy-pair (a 'type?)) false))
 
          (define lazy-list (lambda args (if (pair? args) (lazy-pair (first args) (apply lazy-list (rest args))) args)))
+         (define policy 'original)
+         (define (set-policy! new-policy)
+           (set! policy new-policy))
+
+         (define (eq-policy)
+           (cond [(eq? policy 'original) eq?]
+                 [(eq? policy 'noisy-number) noisy-number-eq?]
+                 [else (error "eq-policy not handled in lazy-equal!")]))
+
 
          ;;returns false if finds missmatch, otherwise returns amount of sexprs matched.
          (define (seq-sexpr-equal? t1 t2 depth)
@@ -25,7 +35,7 @@
                      (if (eq? false left)
                          false
                          (seq-sexpr-equal? (t1 'rest) (t2 'rest) left)))
-                   (if (eq? t1 t2)
+                   (if ((eq-policy) t1 t2)
                        (- depth 1)
                        false))))
 
@@ -33,7 +43,7 @@
            (if (and (lazy-pair? t1) (lazy-pair? t2))
                (and (sexpr-equal? (t1 'first) (t2 'first))
                     (sexpr-equal? (t1 'rest) (t2 'rest)))
-               (eq? t1 t2)))
+               ((eq-policy) t1 t2)))
 
          (define (lazy-equal? a b . depth)
            (if (null? depth)

@@ -1,10 +1,15 @@
 #!r6rs
-(import
-  (rnrs)
-  (pi lazy)
-  (church readable-scheme)
-  (srfi :78 lightweight-testing))
+(import (rnrs)
+        (lazy)
+        (church readable-scheme)
+        (srfi :78 lightweight-testing))
 
-(pretty-print (compute-depth #t))
-(pretty-print (lazy-equal? #t #t 3))
-
+;;;lazy-equal with different policy tests
+(set-policy! 'original)
+(check (lazy-equal? (lazy-list 'a 20 300) (lazy-list 'a 20 300)) => #t)
+(check (lazy-equal? (lazy-list 'a 19 300) (lazy-list 'a 20 300)) => #f)
+(set-policy! 'noisy-number)
+(check (lazy-equal? (lazy-list 'a 19 300) (lazy-list 'a 20 300)) => #t)
+(check (lazy-equal? (lazy-list 'a 19 30) (lazy-list 'a 20 300)) => #f)
+       
+(check-report)

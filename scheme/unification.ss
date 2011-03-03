@@ -2,8 +2,8 @@
          (export anti-unify unify var-symbol unenumerate-tree set-policy!) 
          (import (rnrs)
                  (_srfi :1)
+                 (noisy-number)
                  (church readable-scheme)
-                 (church external math-env)
                  (mem)
                  (util)
                  (sym))
@@ -70,13 +70,6 @@
          
 
          ;;noisy number related
-         (define noisy-number-threshold 3)
-         (define (close? a b)
-           (< (abs (- b a)) noisy-number-threshold))
-         (define variance 1)
-         (define (make-noisy-number et1 et2)
-           (let ([mean (/ (+ et1 et2) 2)])
-             (sample-gaussian mean variance)))
 ;;;unification
          (define unify
            (mem (lambda (s sv vars)
