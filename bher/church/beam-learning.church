@@ -1,5 +1,5 @@
 
-;;;searches through compressions of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation
+;;;searches through compressions of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data size-weight score-weight)
   (let* ([initial-sexpr (make-initial-sexpr data)]
          [learned-sexpr (beam-learn data initial-sexpr 5 size-weight score-weight)]
@@ -84,7 +84,7 @@
 
 
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
-(define scoring  
+(define score-fg-program 
   (mem
    (lambda (prog data popsize) 
      (let* ([lazified-data (list->lazy-list data)]
@@ -95,8 +95,12 @@
             ;;remove duplicates in order to do selective model averaging:
             (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
             (scores (map mcmc-state->score samples))
+            (db (pretty-print (list (length scores) scores)))
             (score (if (null? scores)
                        -inf.0
-                       (apply log-sum-exp scores))))
+                       (- (apply log-sum-exp scores) (log (length scores))))))
        score))))
 
+;;;computes p(data|program)=\Pi_{fg\in data}p(fg|program) where data is a list of factor graphs
+(define (scoring prog data popsize)
+  (apply * (map (lambda (fg) (score-fg-program prog fg popsize)) data)))

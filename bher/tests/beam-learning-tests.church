@@ -1,31 +1,24 @@
-
-;; (define (prototype) (node 'a (node 'b (node 'a (node 'b) (node 'b)))))
-
-;; (define (two-node) (node 'a (node 'b)))
-
-;; (define (gen-data model amount)
-;;   (delete '() (repeat amount model)))
-
-;; (define prototype-data (map lazy-list->all-list (gen-data prototype 5)))
-
-;;;growth and label noise setting tests
-
-(map lazy-list->all-list (repeat 20 (lambda () (eval '(node 'a)))))
-(set-label-noise! 1)
-(map lazy-list->all-list (repeat 20 (lambda () (eval '(node 'a)))))
-
-;;;learn-model tests
-;; (member?-test "make-initial-sexpr evaluation" (lazy-list->all-list (eval (make-initial-sexpr (list '(a) '(a (b)))))) (list '(a) '(a (b)) '(b) '(b (b))))
-
-;; (define timed-learn-model (time-it learn-model))
-
-;; (member?-test "learned-model" (lazy-list->all-list ((timed-learn-model '((a) (a (b))) 0 1))) '((a) (b) (a (b)) (b (b))))
+;;;score-fg|program tests
+(define error-tolerance .07)
+(define samples 1)
+(define check-test (make-check-test-with-runs 1))
 
 
-;;;sort-by-size-and-score related
-(define simplest-data '(a))
-(define possible-program-sexprs  (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b))))))
-(define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))
+;;exact match
+(check-test (lambda () (repeat samples (lambda () (score-fg-program '(node 'a 20 4) '(a 20 4) 10))))
+            (lambda (x) (exp x))
+            (- 1 (label-noise noise-params));;calculated by hand
+            error-tolerance
+            "single factor-graph check; exact match")
+            
+;;geometry differs slightly
+;;(score-fg-program '(node 'a 19 4) '(a 20 4))
+;;;scoring tests
+
+
+;; (define simplest-data '(a))
+;; (define possible-program-sexprs  (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b))))))
+;; (define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))
 
 ;;;scoring tests just to see if it runs
 ;; (evaluates?-test "score a single node program" (scoring '(node 'a) simplest-data  10))
@@ -66,19 +59,19 @@
 ;;;church-iterated-compressions test
 ;; (define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
 
-(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
+;;(define compressible-program (make-program '() '(node 'a (node 'a (node 'a (node 'a))))))
 
 ;; (evaluates?-test "my-iterated-compressions test" (my-iterated-compressions (lambda (x) x) compressible-program))
 
 ;;;beam-learn-search-compressions test
-(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+;;(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
 ;; (define simplest-program (make-program '() '(uniform-draw (list (node 'a)))))
 
 ;; (evaluates?-test "beam-learn-search-compressions simplest-data" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1))
 
-(define aaaadata '(a (a (a (a)))))
+;; (define aaaadata '(a (a (a (a)))))
 
-(evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
+;; (evaluates?-test "beam-learn-search-compressions 4a data" (timed-beam-learn-search-compressions aaaadata 5 compressible-program 0 1))
 
 ;;;beam-learn test
 ;; (define init-data '((a) (a (b))))
@@ -87,5 +80,12 @@
 ;; (evaluates?-test "beam-learn test" (timed-beam-learn init-data init-expr 10 0 1))
 
 
+
+;;;learn-model tests
+;; (member?-test "make-initial-sexpr evaluation" (lazy-list->all-list (eval (make-initial-sexpr (list '(a) '(a (b)))))) (list '(a) '(a (b)) '(b) '(b (b))))
+
+;; (define timed-learn-model (time-it learn-model))
+
+;; (member?-test "learned-model" (lazy-list->all-list ((timed-learn-model '((a) (a (b))) 0 1))) '((a) (b) (a (b)) (b (b))))
 
 

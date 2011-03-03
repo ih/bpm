@@ -9,6 +9,7 @@
 
 (define root '(a))
 
+;;;assumes all node information comes in a list as item0 e.g. (node '(label distance angle) children) where children is a list of nodes
 (define node
   (lazify 
    (lambda (item0 . items)
@@ -22,13 +23,18 @@
 (define noisy-label
   (lazify
    (lambda (x)
-  (if (symbol? x)
-      (if (flip (- 1 (label-noise noise-params)))
-          x
-          (if (equal? x 'a)
-              'b
-              'a))
-      x))))
+     (if (list? x)
+         (if (symbol? (first x))
+             (if (flip (- 1 (label-noise noise-params)))
+                 x
+                 (let ([label (first x)]
+                       [geometry (rest x)])
+                   (if (equal? label 'a)
+                       (pair 'b geometry)
+                       (pair 'a geometry))))
+             x)
+         x))))
+
 
 
 (define (graph->program graph)

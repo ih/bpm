@@ -6,26 +6,31 @@
 
 ;;;single node test
 (check-test (lambda ()
-              (repeat samples (lambda () (lazy-list->all-list (eval '(node 'a 3 4))))))
-            (lambda (x) (if (eq? (first x) 'a) 1 0))
+              (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4)))))))
+            (lambda (x) (if (equal? '((a 3 4)) x) 1 0))
             (- 1 (label-noise noise-params))
             error-tolerance
             "single node test")
 
+
 ;;;line test
-(set-label-noise! 0)
-(set-growth-noise! 0)
-(equal?-test "line test"
-            (lazy-list->all-list (node 'a 3 4 (node 'b 5 10)))
-            '(a 3 4 (b 5 10)))
+(check-test (lambda ()
+              (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10))))))))
+            (lambda (x) (if (equal? '((a 3 4) ((b 5 10))) x) 1 0))
+            (* (expt (- 1 (label-noise noise-params)) 2) (- 1 (growth-noise noise-params)))
+            error-tolerance
+            "line test")
+
+
 
 ;;;line that branches
-(set-label-noise! 0)
-(set-growth-noise! 0)
-(equal?-test "line that branches test"
-            (lazy-list->all-list (node 'a 3 4 (node 'b 5 10 (node 'c 5 10) (node 'c 5 10))))
-            '(a 3 4 (b 5 10 (c 5 10) (c 5 10))))
+(check-test (lambda ()
+              (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10) (node '(b 5 10)) (node '(a 5 10)))))))))
+            (lambda (x) (if (equal? '((a 3 4) ((b 5 10) ((c 5 10)) ((c 5 10)))) x) 1 0))
+            (* (expt (- 1 (label-noise noise-params)) 4) (expt (- 1 (growth-noise noise-params)) 3))
+            error-tolerance
+            "line that branches test")
 
 
-(forward-sample '(node 'a 3 4 (node 'b 5 10)))
+;; (forward-sample '(node 'a 3 4 (node 'b 5 10)))
 
