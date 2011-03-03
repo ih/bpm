@@ -31,34 +31,69 @@
 ;;             "single factor-graph check; one node fg, mislabeled node vs the best program")
 
 
-(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
-            (lambda (x) (if x 1 0))
-            1;;calculated by hand
-            error-tolerance
-            "single factor-graph check; one node fg, multiple derivations program vs the best program")
+;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; one node fg, multiple derivations program vs the best program")
 
-(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
-            (lambda (x) (if x 1 0))
-            1;;calculated by hand
-            error-tolerance
-            "single factor-graph check; one node fg, mislabeled node vs the best program")
+;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; one node fg, mislabeled node vs the best program")
 
-;;geometry differs slightly
-(check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 19 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
-            (lambda (x) (if x 1 0))
-            1;;calculated by hand
-            error-tolerance
-            "similar geometry test")
+;; ;;geometry differs slightly
+;; (set-policy! 'noisy-number)
+;; (check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 19 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "similar geometry test")
 
-(check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 10 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
-            (lambda (x) (if x 1 0))
-            1;;calculated by hand
-            error-tolerance
-            "non-similar geometry test")
+;; (check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 10 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "non-similar geometry test")
+
+;; ;;line test
+;; (check-test (lambda () (repeat
+;;                         samples
+;;                         (lambda ()
+;;                           (> (score-fg-program-test (lambda () (node '(a 20 4) (node '(b 20 6))))
+;;                                                     '((a 20 4) ((b 20 6))) 30)
+;;                              (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4) ((b 20 6))) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; two node fg, two node program vs one node program")
+
+;;line with branching
+(set-growth-noise! 0)
+(set-label-noise! 0)
+(check-test (lambda () (repeat
+                        samples
+                        (lambda ()
+                          (= (score-fg-program-test
+                              (lambda () (if (flip)
+                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))
+                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))))
+                                             '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)
+                             (score-fg-program-test
+                              (lambda () (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))))
+                              '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)))))
+                    (lambda (x) (if x 1 0))
+                    1;;calculated by hand
+                    error-tolerance
+                    "single factor-graph check; line with branching fg, two programs that perform the same different derviation")
 
 ;;;scoring tests
+(pretty-print (equal? (lazy-list->all-list ((lambda () (if (flip)                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))) 
+                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))))))) '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6))))))
 
 
+(pretty-print (lazy-equal? ((lambda () (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))))) (list->lazy-list '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))))))
 ;; (define simplest-data '(a))
 ;; (define possible-program-sexprs  (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b))))))
 ;; (define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))

@@ -16,7 +16,7 @@
          (define (lazy-pair? a) (if (procedure? a) (eq? 'lazy-pair (a 'type?)) false))
 
          (define lazy-list (lambda args (if (pair? args) (lazy-pair (first args) (apply lazy-list (rest args))) args)))
-         (define policy 'original)
+         (define policy 'noisy-number)
          (define (set-policy! new-policy)
            (set! policy new-policy))
 
