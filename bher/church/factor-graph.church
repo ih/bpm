@@ -26,14 +26,14 @@
      (if (list? x)
          (if (symbol? (first x))
              (if (flip (- 1 (label-noise noise-params)))
-                 x
+                 (list->lazy-list x)
                  (let ([label (first x)]
                        [geometry (rest x)])
                    (if (equal? label 'a)
-                       (pair 'b geometry)
-                       (pair 'a geometry))))
-             x)
-         x))))
+                       (list->lazy-list (pair 'b geometry))
+                       (list->lazy-list (pair 'a geometry)))))
+             (list->lazy-list x))
+         (list->lazy-list x)))))
 
 
 

@@ -5,12 +5,48 @@
 
 
 ;;exact match
-(check-test (lambda () (repeat samples (lambda () (score-fg-program '(node 'a 20 4) '(a 20 4) 10))))
-            (lambda (x) (exp x))
-            (- 1 (label-noise noise-params));;calculated by hand
+;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(node '(a 20 4)) '((a 20 4)) 10))))
+;;             (lambda (x) (exp x))
+;;             (- 1 (label-noise noise-params));;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; exact match")
+;;program w/ multiple possible derivations for the fg
+;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(if (flip) (node '(a 20 4)) (node '(b 20 4))) '((a 20 4)) 30))))
+;;             (lambda (x) (exp x))
+;;             (+ (* .5 (- 1 (label-noise noise-params))) (* .5 (label-noise noise-params)));;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; multiple derivations")
+
+;;only check relative scores until selective model averaging is figured out
+;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(node '(a 20 4)) '((a 20 4)) 30) (score-fg-program '(if (flip) (node '(a 20 4)) (node '(b 20 4))) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; one node fg, multiple derivations program vs the best program")
+
+;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(node '(a 20 4)) '((a 20 4)) 30) (score-fg-program '(node '(b 20 4)) '((a 20 4)) 30)))))
+;;             (lambda (x) (if x 1 0))
+;;             1;;calculated by hand
+;;             error-tolerance
+;;             "single factor-graph check; one node fg, mislabeled node vs the best program")
+
+
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
             error-tolerance
-            "single factor-graph check; exact match")
-            
+            "single factor-graph check; one node fg, multiple derivations program vs the best program")
+
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "single factor-graph check; one node fg, mislabeled node vs the best program")
+
+
+
+
+
 ;;geometry differs slightly
 ;;(score-fg-program '(node 'a 19 4) '(a 20 4))
 ;;;scoring tests
