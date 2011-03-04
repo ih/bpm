@@ -3,49 +3,40 @@
 (define samples 1)
 (define check-test (make-check-test-with-runs 1))
 
-;; (define a 'a)
-;; (define b 'b)
-;; (let ([prog (eval '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))])
-;;   (repeat 50 (lazy-list->all-list (prog))))
-
-;; (let ([p (eval '(lambda () (node '(a 1 2))))])
-;;   (map lazy-list->all-list (repeat 50 p)))
-
-
 ;;exact match
-;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(node '(a 20 4)) '((a 20 4)) 10))))
-;;             (lambda (x) (exp x))
-;;             (- 1 (label-noise noise-params));;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; exact match")
+(check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 10))))
+            (lambda (x) (exp x))
+            (- 1 (label-noise noise-params));;calculated by hand
+            error-tolerance
+            "p(fg|program), best program")
 ;;program w/ multiple possible derivations for the fg
-;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(if (flip) (node '(a 20 4)) (node '(b 20 4))) '((a 20 4)) 30))))
-;;             (lambda (x) (exp x))
-;;             (+ (* .5 (- 1 (label-noise noise-params))) (* .5 (label-noise noise-params)));;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; multiple derivations")
+(check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30))))
+            (lambda (x) (exp x))
+            (+ (* .5 (- 1 (label-noise noise-params))) (* .5 (label-noise noise-params)));;calculated by hand
+            error-tolerance
+            "p(fg|program), program w/ multiple derivations")
 
 ;;only check relative scores until selective model averaging is figured out
-;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(node '(a 20 4)) '((a 20 4)) 30) (score-fg-program '(if (flip) (node '(a 20 4)) (node '(b 20 4))) '((a 20 4)) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; one node fg, multiple derivations program vs the best program")
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "relative scoring test p(fg|program), multiple derivations program vs the best program")
 
-;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(node '(a 20 4)) '((a 20 4)) 30) (score-fg-program '(node '(b 20 4)) '((a 20 4)) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; one node fg, mislabeled node vs the best program")
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "relative scoring test p(fg|program), mislabeled node vs the best program")
 
 
-(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
             (lambda (x) (if x 1 0))
             1;;calculated by hand
             error-tolerance
             "single factor-graph check; one node fg, multiple derivations program vs the best program")
 
-(check-test (lambda () (repeat samples (lambda () (> (score-fg-program-test '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program-test '(lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
+(check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (node '(b 20 4))) '((a 20 4)) 30)))))
             (lambda (x) (if x 1 0))
             1;;calculated by hand
             error-tolerance
@@ -53,67 +44,57 @@
 
 ;; ;;geometry differs slightly
 ;; (set-policy! 'noisy-number)
-;; (check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 19 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "similar geometry test")
+(check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program '(lambda () (node '(a 19 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "similar geometry test")
 
-;; (check-test (lambda () (repeat samples (lambda () (equal? (score-fg-program-test (lambda () (node '(a 10 4))) '((a 20 4)) 30) (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4)) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "non-similar geometry test")
+(check-test (lambda () (repeat samples (lambda () (not (equal? (score-fg-program '(lambda () (node '(a 10 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30))))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "non-similar geometry test")
 
-;; ;;line test
-;; (check-test (lambda () (repeat
-;;                         samples
-;;                         (lambda ()
-;;                           (> (score-fg-program-test (lambda () (node '(a 20 4) (node '(b 20 6))))
-;;                                                     '((a 20 4) ((b 20 6))) 30)
-;;                              (score-fg-program-test (lambda () (node '(a 20 4))) '((a 20 4) ((b 20 6))) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; two node fg, two node program vs one node program")
+;;line test
+(check-test (lambda () (repeat
+                        samples
+                        (lambda ()
+                          (> (score-fg-program '(lambda () (node '(a 20 4) (node '(b 20 6))))
+                                                    '((a 20 4) ((b 20 6))) 30)
+                             (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4) ((b 20 6))) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "single factor-graph check; two node fg, two node program vs one node program")
 
 ;; ;;line with branching
-;; (set-growth-noise! 0)
-;; (set-label-noise! 0)
-;; (check-test (lambda () (repeat
-;;                         samples
-;;                         (lambda ()
-;;                           (= (score-fg-program-test
-;;                               (lambda () (if (flip)
-;;                                              (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))
-;;                                              (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))))
-;;                                              '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)
-;;                              (score-fg-program-test
-;;                               (lambda () (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))))
-;;                               '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)))))
-;;                     (lambda (x) (if x 1 0))
-;;                     1;;calculated by hand
-;;                     error-tolerance
-;;                     "single factor-graph check; line with branching fg, two programs that perform the same different derviation")
+(check-test (lambda () (repeat
+                        samples
+                        (lambda ()
+                          (= (score-fg-program
+                              '(lambda () (if (flip)
+                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))
+                                             (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6))))))
+                                             '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)
+                             (score-fg-program
+                              '(lambda () (node '(a 20 4) (node '(b 20 6) (node '(a 20 6)) (node '(a 20 6)))))
+                              '((a 20 4) ((b 20 6) ((a 20 6)) ((a 20 6)))) 100)))))
+                    (lambda (x) (if x 1 0))
+                    1;;calculated by hand
+                    error-tolerance
+                    "single factor-graph check; line with branching fg, two programs that perform the same different derviation")
 
-;; ;;;scoring tests
-;; (set-growth-noise! .2)
-;; (set-label-noise! .2)
+;;;scoring tests
+(set-growth-noise! .2)
+(set-label-noise! .2)
 
-;; (check-test (lambda () (repeat samples (lambda () (> (scoring (lambda () (node '(a 20 4))) '(((a 20 4)) ((a 20 4)) ((a 20 4))) 30) (score-fg-program-test (lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
-;;             (lambda (x) (if x 1 0))
-;;             1;;calculated by hand
-;;             error-tolerance
-;;             "single factor-graph check; one node fg, multiple derivations program vs the best program")
+(check-test (lambda () (repeat samples (lambda () (> (scoring '(lambda () (node '(a 20 4))) '(((a 20 4)) ((a 20 4)) ((a 20 4))) 30) (scoring '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '(((a 20 4)) ((a 20 4)) ((a 20 4))) 30)))))
+            (lambda (x) (if x 1 0))
+            1;;calculated by hand
+            error-tolerance
+            "scoring test")
 
-
-;; ;; (define simplest-data '(a))
-;; ;; (define possible-program-sexprs  (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b))))))
-;; ;; (define possible-programs (map (lambda (prog) (make-program '() prog)) possible-program-sexprs))
-
-;; ;;;scoring tests just to see if it runs
-;; ;; (evaluates?-test "score a single node program" (scoring '(node 'a) simplest-data  10))
-;; ;; (evaluates?-test "score a list of programs" (map (lambda (prog) (scoring prog simplest-data 10)) possible-program-sexprs))
 
 ;; ;;;list-sorting tests 
 ;; ;; ;;partition test
@@ -126,46 +107,37 @@
 ;; ;; (define scores '(-10 -20 -30))
 
 ;; ;; (equal?-test "combine-size-score test" (combine-size-score sizes scores 1 .1) '(2.0 4.0 6.0))
-;; ;;;sort-by-score-and-size tests
-;; (define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
-;; ;;test where growth noise is higher than label noise
-;; (set-growth-noise! .8)
-;; (set-label-noise! .2)
+;;;sort-by-score-and-size
+(define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
+(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 3 2)) (node '(b 1 2))))) '(lambda () (node '(a 1 2))))]
+       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
+       [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (equal?-test "sort-by-score-and-size" (timed-sort-by-score-and-size possible-programs simplest-data 0 1) (reverse possible-programs)))
 
 
-;; (equal?-test "high-growth/low-label noise sort-by-score-and-size simplest data, based on score only" (timed-sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))) '(uniform-draw (list (node 'b))))))
 
-;; ;;test where growth noise is lower than label noise
-;; ;; (set-growth-noise! .2)
-;; ;; (set-label-noise! .8)
-
-;; ;; (equal?-test "low-growth/high-label noise sort-by-score-and-size simplest data, based on score only" (sort-by-score-and-size possible-programs simplest-data 0 1) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'a (node 'b)))))))
-
-;; ;; (equal?-test "sort-by-score-and-size simplest data, based on weight only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (map (lambda (prog) (make-program '() prog)) (list '(uniform-draw (list (node 'a))) '(uniform-draw (list (node 'b))) '(uniform-draw (list (node 'a (node 'b)))))))
-
-
-;; ;;;best-n tests
-;; (define timed-best-n (time-it best-n "best-n"))
-;; (let* ([sexprs (list '(lambda () (uniform-draw (list (node (a 1 2))))) '(lambda () (uniform-draw (list (node (a 1 2)) (node (b 1 2))))))]
-;;        [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-;;        [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (equal?-test "best-n by score only" (timed-best-n 1 possible-programs simplest-data 0 1) (list (make-porgram '() '(lambda () (uniform-draw (list (node (a 1 2)))))))))
+;;;best-n tests
+(define timed-best-n (time-it best-n "best-n"))
+(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2))))) '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(b 1 2))))))]
+       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
+       [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (equal?-test "best-n by score only" (timed-best-n 1 possible-programs simplest-data 0 1) (list (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)))))))))
 
 ;; ;;;church-iterated-compressions test
-;; (define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
-;; (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node (a 1 2)) (node (a 1 2))))))])
-;;   (evaluates?-test "my-iterated-compressions test" (timed-iterated-compressions (lambda (x) x) compressible-program)))
+(define timed-iterated-compressions (time-it my-iterated-compressions "my-iterated-compressions"))
+(let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))])
+  (evaluates?-test "my-iterated-compressions test" (timed-iterated-compressions (lambda (x) x) compressible-program)))
 
-;; ;;;beam-learn-search-compressions test
-;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+;;;beam-learn-search-compressions test
+(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
 
-;; (let ([simplest-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2))))))]
+(let ([simplest-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2))))))]
+      [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (evaluates?-test "beam-learn-search-compressions simplest program" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1)))
+
+;; (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))]
 ;;       [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (evaluates?-test "beam-learn-search-compressions simplest program" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1)))
-
-;; (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node (a 1 2)) (node (a 1 2))))))]
-;;       [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1)))
+;;   (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-compressions simplest-data 10 compressible-program 0 1)))
 
 
 

@@ -64,8 +64,7 @@
                                (if (any false? unified-tree)
                                    #f
                                    unified-tree))]))
-                    (let ([db (pretty-print policy)]
-                          [pattern (build-pattern et1 et2 ignore-id-matches)])
+                    (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
                       (list variables pattern))))))
          
 
