@@ -1,4 +1,4 @@
-It's assumed you already have ikarus, bher, and Andreas Stuhlmueller's scheme-tools set up on your system.  [fg-dir] is the factor-graphics directory e.g. ~/factor-graphics.  [bher dir] is the bher directory e.g. ~/bher-read-only/
+It's assumed you already have ikarus, bher, and Andreas Stuhlmuller's scheme-tools set up on your system.  [fg-dir] is the factor-graphics directory e.g. ~/factor-graphics.  [bher dir] is the bher directory e.g. ~/bher-read-only/
 
 ====Modifications to bher source====
 1) change bher
