@@ -18,12 +18,12 @@
 
 
 ;;;line test
-(check-test (lambda ()
-              (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10))))))))
-            (lambda (x) (if (equal? '((a 3 4) ((b 5 10))) x) 1 0))
-            (* (expt (- 1 (label-noise noise-params)) 2) (- 1 (growth-noise noise-params)))
-            error-tolerance
-            "line test")
+;; (check-test (lambda ()
+;;               (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10))))))))
+;;             (lambda (x) (if (equal? '((a 3 4) ((b 5 10))) x) 1 0))
+;;             (* (expt (- 1 (label-noise noise-params)) 2) (- 1 (growth-noise noise-params)))
+;;             error-tolerance
+;;             "line test")
 
 
 
@@ -37,7 +37,7 @@
 
 ;;;graph->program tests
 ;; (equal?-test "graph->program test" (graph->program '((a 3 4) ((b 5 10) ((c 20 20)) ((c 20 20))))) '(node '(a 3 4) (node '(b 5 10) (node '(c 20 20)) (node '(c 20 20)))))
-;; (forward-sample '(node 'a 3 4 (node 'b 5 10)))
+(forward-sample '(node 'a 3 4 (node 'b 5 10)))
 
 ;;(repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4))))))
 ;; (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10)))))))

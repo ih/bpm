@@ -1,4 +1,4 @@
-It's assumed you already have ikarus installed and bher.  [fg dir] is the factor-graphics directory e.g. ~/factor-graphics/.  [bher dir] is the bher directory e.g. ~/bher-read-only/
+It's assumed you already have ikarus, bher, and Andreas Stuhlmueller's scheme-tools set up on your system.  [fg dir] is the factor-graphics directory e.g. ~/factor-graphics/.  [bher dir] is the bher directory e.g. ~/bher-read-only/
 
 ====Modifications to bher source====
 1) change bher
@@ -85,7 +85,7 @@ to be
                             (load "beam-learning.church")
                             ,@top-list))
 
-4) change header-ikarus.sc
+5) change header-ikarus.sc
   a) open [bher dir]/scheme-compilers/header-ikarus.sc
   b) add the following inside the import form (e.g. after (rnrs eval)
  (lazy)
@@ -95,16 +95,29 @@ to be
  (python-fg-lib)
  (churchpytest)
 
+6) change python-fg-lib
+  a) open [fg-dir]/scheme/python-fg-lib.ss
+  b) modify 
+
+(define fg-dir "/home/ih/factor-graphics/")	
+
+to be
+
+(define fg-dir "[fg-dir]")	
+where fg-dir is your directory for factor-graphics.  Make sure to end the directory with '/' e.g. /home/ih/factor-graphics/
+
+
 ====PATH INFORMATION====
 
 
-You'll want to add the following to the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
+You'll want to have the following paths on the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
 
-PATH=$PATH:[inst dir]/factor-graphics/bher/scheme:[inst dir]/factor-graphics/bher:.
+PATH=$PATH:[bher dir]:.
 
 (note: it seems important for [inst dir]/factor-graphics/bher/scheme to come before [inst dir]/factor-graphics/bher:)
 
-IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[bher dir]:.
+IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[scheme-tools dir]:[bher dir]:.
+here scheme-tools dir is the directory containing scheme-tools.
 
 ====TESTING SETUP====
 To see if everything works you can do the following

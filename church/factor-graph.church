@@ -54,8 +54,8 @@
       (append (list 'node (list 'quote (first graph)))
               (map graph->program (rest graph)))))
 
-;; (define (forward-sample fg-program)
-;;   (let* ([factor-graph (lazy-list->all-list (eval fg-program))])
-;;     (pretty-print factor-graph)
-;;     (fg->image factor-graph)))
+(define (forward-sample fg-program)
+  (let* ([factor-graph (lazy-list->all-list (eval fg-program))])
+    (pretty-print factor-graph)
+    (fg->image factor-graph)))
 
