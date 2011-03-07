@@ -1,4 +1,4 @@
-It's assumed you already have ikarus, bher, and Andreas Stuhlmueller's scheme-tools set up on your system.  [fg dir] is the factor-graphics directory e.g. ~/factor-graphics/.  [bher dir] is the bher directory e.g. ~/bher-read-only/
+It's assumed you already have ikarus, bher, and Andreas Stuhlmueller's scheme-tools set up on your system.  [fg-dir] is the factor-graphics directory e.g. ~/factor-graphics.  [bher dir] is the bher directory e.g. ~/bher-read-only/
 
 ====Modifications to bher source====
 1) change bher
@@ -20,7 +20,7 @@ call(("ikarus %(debug)s --r6rs-script '%(compiler)s' " +
 
 to be
 
-(define include-paths  (list "./" "include/" "[bher dir]/church/" "[fg dir]/church/"))
+(define include-paths  (list "./" "include/" "[bher dir]/church/" "[fg-dir]/church/"))
 
 i.e. use the absolute path for your bher directory
 
@@ -103,7 +103,7 @@ to be
 
 to be
 
-(define fg-dir "[fg-dir]")	
+(define fg-dir "[fg-dir]/")	
 where fg-dir is your directory for factor-graphics.  Make sure to end the directory with '/' e.g. /home/ih/factor-graphics/
 
 
@@ -114,19 +114,15 @@ You'll want to have the following paths on the PATH and IKARUS_LIBRARY_PATH envi
 
 PATH=$PATH:[bher dir]:.
 
-(note: it seems important for [inst dir]/factor-graphics/bher/scheme to come before [inst dir]/factor-graphics/bher:)
 
-IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[scheme-tools dir]:[bher dir]:.
+IKARUS_LIBRARY_PATH=[fg-dir]/scheme:[scheme-tools dir]:[bher dir]:.
 here scheme-tools dir is the directory containing scheme-tools.
 
 ====TESTING SETUP====
 To see if everything works you can do the following
-$cd [inst dir]/factor-graphics/bher
-[inst dir]/factor-graphics/bher$ bher tests/test.church
+$cd [fg-dir]/church/tests
+$ bher factor-graph-tests.church
+$ bher beam-learning-tests.church
 
-(note: If you want to run a file that uses eval it seems like you need to run bher from the bher root directory e.g. 
-[inst dir]/factor-graphics/bher$ bher tests/beam-learning-tests.church 
-works but
-[inst dir]/factor-graphics/bher/tests$ bher beam-learning-tests.churhc 
-doesn't)
+(note: due to path issues you currently have to run bher from the directory containing the church file being run if it uses eval)
 

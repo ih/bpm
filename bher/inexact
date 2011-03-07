@@ -1,6 +1,0 @@
-./church/mcmc-preamble.church:         (+ (log (exact->inexact (sum (map (lambda (val) (exp (- val max-log-val))) log-vals))))
-./church/header.ss:                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
-./church/.svn/text-base/header.ss.svn-base:                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
-./church/.svn/text-base/mcmc-preamble.church.svn-base:         (+ (log (exact->inexact (sum (map (lambda (val) (exp (- val max-log-val))) log-vals))))
-./scheme-compilers/header-ikarus.sc:               exact->inexact) ;;this isn't really needed.
-./scheme-compilers/.svn/text-base/header-ikarus.sc.svn-base:               exact->inexact) ;;this isn't really needed.
