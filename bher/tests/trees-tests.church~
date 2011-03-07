@@ -1,5 +1,0 @@
-;;(import (srfi :78))
-;;the following assume noise is 0
-(equal?-test "single node" (lazy-list->all-list (eval '(node 'a))) '(a))
-
-(equal?-test "node list test" (lazy-list->all-list (eval '(node 'a (node 'b (node 'c))))) '(a (b (c))))

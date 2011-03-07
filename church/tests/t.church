@@ -1,0 +1,2 @@
+(load "../testing.church")
+(equal?-test "addition" (+ 2 2) 4)

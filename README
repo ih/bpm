@@ -1,11 +1,110 @@
+It's assumed you already have ikarus installed and bher.  [fg dir] is the factor-graphics directory e.g. ~/factor-graphics/.  [bher dir] is the bher directory e.g. ~/bher-read-only/
+
+====Modifications to bher source====
+1) change bher
+  a) open the file [bher dir]/bher
+  b) replace the lines 
+
+ call(("cd '%(bher_path)s' && ikarus %(debug)s --r6rs-script '%(compiler)s' " +
+ "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
+
+with 
+
+call(("ikarus %(debug)s --r6rs-script '%(compiler)s' " +
+              "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
+
+2) change desugar.ss
+  a) open [bher dir]/church/desugar.ss
+  b) modify the line 
+(define include-paths  (list "./" "include/" "./church/"))
+
+to be
+
+(define include-paths  (list "./" "include/" "[bher dir]/church/" "[fg dir]/church/"))
+
+i.e. use the absolute path for your bher directory
+
+3) change header.ss
+  a) open [bher dir]/church/header.ss
+  b) modify 
+(define *lazy* false)
+
+to be
+
+(define *lazy* true)
+
+  c) modify 
+(environment '(rnrs)
+                          '(rnrs mutable-pairs)
+                          '(_srfi :1)
+                          '(rename (church external math-env) (sample-discrete discrete-sampler))
+                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
+                          '(_srfi :19)
+                          '(church compiler)
+                          '(rnrs eval)  )
+
+to be 
+
+(environment '(rnrs)
+                          '(abstract)
+                          '(lazy)
+                          '(util)
+                          '(sym)
+                          '(python-fg-lib)
+                          '(rnrs mutable-pairs)
+                          '(_srfi :1)
+                          '(rename (church external math-env) (sample-discrete discrete-sampler))
+                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
+                          '(_srfi :19)
+                          '(church compiler)
+                          '(rnrs eval))
+
+4) change compiler.ss
+  a) open [bher dir]/church/compiler.ss
+  b) modify
+  (define *lazy* false)
+
+to be
+
+  (define *lazy* true)
+
+  c) modify 
+  (church-sexpr  `(begin
+                            (load "standard-preamble.church")
+                            (load "xrp-preamble.church")
+                            (load "mcmc-preamble.church")
+                            ,@top-list))
+
+to be 
+
+(church-sexpr  `(begin
+                            (load "standard-preamble.church")
+                            (load "xrp-preamble.church")
+                            (load "mcmc-preamble.church")
+                            (load "factor-graph.church")
+                            (load "beam-learning.church")
+                            ,@top-list))
+
+4) change header-ikarus.sc
+  a) open [bher dir]/scheme-compilers/header-ikarus.sc
+  b) add the following inside the import form (e.g. after (rnrs eval)
+ (lazy)
+ (abstract)
+ (util)
+ (sym)
+ (python-fg-lib)
+ (churchpytest)
+
 ====PATH INFORMATION====
-It's assumed you already have ikarus installed.  You'll want to add the following to the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
+
+
+You'll want to add the following to the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
 
 PATH=$PATH:[inst dir]/factor-graphics/bher/scheme:[inst dir]/factor-graphics/bher:.
 
 (note: it seems important for [inst dir]/factor-graphics/bher/scheme to come before [inst dir]/factor-graphics/bher:)
 
-IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[inst dir]/factor-graphics/bher:.
+IKARUS_LIBRARY_PATH=[inst dir]/factor-graphics/scheme:[bher dir]:.
 
 ====TESTING SETUP====
 To see if everything works you can do the following

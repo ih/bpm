@@ -25,7 +25,7 @@
  (define (letrec? exp) (tagged-list? exp 'letrec))
 
 ;;;include paths
- (define include-paths  (list "./" "include/" "./church/" "./tests/")) ;;FIXME: include scheme search-path?
+ (define include-paths  (list "./" "include/" "/home/ih/factor-graphics/bher/church/" "/home/ih/factor-graphics/bher/tests/")) ;;FIXME: include scheme search-path?
  ;;(append (list "./" "include/") (map (lambda (search-path) (string-append search-path "/include/")) (search-paths))))
 
                                         ; goes through a list of library paths and opens
@@ -37,7 +37,7 @@
          (if (file-exists? (string-append (first path-list) filename))
              (open-input-file (string-append (first path-list) filename))
              (loop-through-paths (rest path-list)))))
-   (loop-through-paths include-paths))
+     (loop-through-paths include-paths))
 
 ;;;Gimme some sugar!
 

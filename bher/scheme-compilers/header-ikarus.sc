@@ -23,7 +23,6 @@
  (abstract)
  (util)
  (sym)
- (testing)
  (python-fg-lib)
  (churchpytest) ;;temporary
 

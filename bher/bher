@@ -91,7 +91,9 @@ Examples:
             call("cp '%(in_path)s' '%(in_path)s.tmp'" % settings, verbose)
 
         vprint("compiling church->scheme", verbose)
-        call(("cd '%(bher_path)s' && ikarus %(debug)s --r6rs-script '%(compiler)s' " +
+        # call(("cd '%(bher_path)s' && ikarus %(debug)s --r6rs-script '%(compiler)s' " +
+        #      "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
+        call(("ikarus %(debug)s --r6rs-script '%(compiler)s' " +
               "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
         call("rm -f '%(in_path)s.tmp'" % settings, verbose, allow_fail=True)
         

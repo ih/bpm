@@ -94,12 +94,15 @@
               ;;remove duplicates in order to do selective model averaging: is this removing duplicates correctly???
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
               (scores (map mcmc-state->score samples))
-              ;(db (pretty-print (list (length scores) scores)))
+
+              (db (pretty-print (list (length scores) scores (map mcmc-state->addrval samples))))
               (score (if (null? scores)
                          -inf.0
                          (apply log-sum-exp scores))))
                                         ;(- (apply log-sum-exp scores) (log (length scores))))))
          score)))))
+
+(define (mcmc-state->addrval s) (map (lambda (d) (pair (xrp-draw-address d) (xrp-draw-value d))) (mcmc-state->xrp-draws s)) )
 
 ;;;computes p(data|program)=\Pi_{fg\in data}p(fg|program) where data is a list of factor graphs
 (define (scoring prog data popsize)

@@ -28,10 +28,8 @@
                             (load "standard-preamble.church")
                             (load "xrp-preamble.church")
                             (load "mcmc-preamble.church")
-                            (load "factor-graph.church")
                             (load "testing.church")
                             (load "node-eval.church")
-                            (load "beam-learning.church")
                             ,@top-list))
           (ds-sexpr (de-sugar-all church-sexpr))
           (ds-sexpr (if *lazy*

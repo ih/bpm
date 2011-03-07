@@ -19,7 +19,6 @@
                                             (apply node items)
                                             '()))))))
 
-
 (define noisy-label
   (lazify
    (lambda (x)
@@ -27,13 +26,25 @@
          (if (symbol? (first x))
              (if (flip (- 1 (label-noise noise-params)))
                  (list->lazy-list x)
-                 (let ([label (first x)]
-                       [geometry (rest x)])
-                   (if (equal? label 'a)
-                       (list->lazy-list (pair 'b geometry))
-                       (list->lazy-list (pair 'a geometry)))))
-             (list->lazy-list x))
-         (list->lazy-list x)))))
+                 (if (equal? (first x) 'a)
+                     (list->lazy-list (pair 'b (rest x)))
+                     (list->lazy-list (pair 'a (rest x)))))             (list->lazy-list x))
+         x))))
+
+
+;; (define noisy-label
+;;   (lazify
+;;    (lambda (x)
+;;      (if (list? x)
+;;          (if (symbol? (first x))
+;;              (if (flip (- 1 (label-noise noise-params)))
+;;                  (list->lazy-list x)
+;;                  (let ([label (first x)]
+;;                        [geometry (rest x)])
+;;                    (if (equal? label 'a)
+;;                        (list->lazy-list (pair 'b geometry))
+;;                        (list->lazy-list (pair 'a geometry)))))             (list->lazy-list x))
+;;          x))))
 
 
 
@@ -43,9 +54,8 @@
       (append (list 'node (list 'quote (first graph)))
               (map graph->program (rest graph)))))
 
-(define (forward-sample fg-program)
-  (let* ([factor-graph (lazy-list->all-list (eval fg-program))])
-    (pretty-print factor-graph)
-    (fg->image factor-graph)))
-         
-    
+;; (define (forward-sample fg-program)
+;;   (let* ([factor-graph (lazy-list->all-list (eval fg-program))])
+;;     (pretty-print factor-graph)
+;;     (fg->image factor-graph)))
+
