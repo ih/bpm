@@ -83,7 +83,6 @@
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
 (define score-fg-program 
-  (mem
    (lambda (sexpr data popsize)
      (let ([prog (eval sexpr)])
        (let* ([lazified-data (list->lazy-list data)]
@@ -91,18 +90,64 @@
                                  (lambda (depth) (lambda () (let ((s (prog)))
                                                               (pair (lazy-equal? s lazified-data depth)
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
-              ;;remove duplicates in order to do selective model averaging: is this removing duplicates correctly???
-              (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s) (map mcmc-state->addrval a)) a (pair s a))) '() samples))
-              (scores (map mcmc-state->score samples))
+              ;;remove duplicates in order to do selective model averaging:
+              ;;find symbol for repeat function and delete (temporary fix)
+              (repeat-symbol (find-repeat-symbol samples))
+              [db (pretty-print (list "symbol" repeat-symbol))]
+              (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
 
-              (db (pretty-print (list (length scores) scores (map mcmc-state->addrval samples))))
+              (scores (map mcmc-state->score samples))
               (score (if (null? scores)
                          -inf.0
                          (apply log-sum-exp scores))))
                                         ;(- (apply log-sum-exp scores) (log (length scores))))))
-         score)))))
+         score))))
 
-(define (mcmc-state->addrval s) (map (lambda (d) (pair (xrp-draw-address d) (xrp-draw-value d))) (mcmc-state->xrp-draws s)) )
+
+;;temporary fix of addresses for same xrps not being the same; this is due to the way smc-core creates the particles
+;;the fix works because factor graph programs only contain node expressions and function definition (no uses of repeat)
+;;a more permanent fix would be to use the rejection-initializer that can be passed an explicit starting address
+;;assumes argument is a list and there is only one address that repeats (if at all) across all xrps
+
+;;need to address the fact that the address containing the repeated address only once will not delete 
+(define (mcmc-state->addrval s repeated)
+  (map (lambda (d)
+         (pair (delete repeated (xrp-draw-address (rest d))) (xrp-draw-value (rest d)))) (mcmc-state->xrp-draws s)))
+
+
+(define (find-repeat-symbol states)
+  (if (null? states)
+      '()
+      (let ([repeat-symbol (find-repeat-symbol-in-state (map rest (mcmc-state->xrp-draws (first states))))])
+        (if (null? repeat-symbol)
+            (find-repeat-symbol (rest states))
+            repeat-symbol))))
+
+(define (find-repeat-symbol-in-state state-xrp-draws)
+  (if (null? state-xrp-draws)
+      '()
+      (let* ([addr (xrp-draw-address (first state-xrp-draws))]
+             [repeat-symbol (find-repeated addr)])
+        (if (null? repeat-symbol)
+            (find-repeat-symbol-in-state (rest state-xrp-draws))
+            repeat-symbol))))
+
+(define (find-repeated addr-lst)
+  (if (more-than-one? addr-lst)
+      (let ([current (first addr-lst)])
+        (if (and (equal? current (second addr-lst)) (not (null? current)))
+            current
+            (find-repeated (rest addr-lst))))
+      '()))
+
+;;assumes argument is a list
+(define (more-than-one? lst)
+  (if (null? lst)
+      #f
+      (if (null? (rest lst))
+              #f
+              #t)))
+
 
 ;;;computes p(data|program)=\Pi_{fg\in data}p(fg|program) where data is a list of factor graphs
 (define (scoring prog data popsize)

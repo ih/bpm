@@ -10,6 +10,12 @@
 (define root '(a))
 
 ;;;assumes all node information comes in a list as item0 e.g. (node '(label distance angle) children) where children is a list of nodes
+(define f
+  (lazify
+   (lambda ()
+     (flip))))
+     ;p(lazy-pair (flip) '()))))
+
 (define node
   (lazify 
    (lambda (item0 . items)
@@ -28,7 +34,8 @@
                  (list->lazy-list x)
                  (if (equal? (first x) 'a)
                      (list->lazy-list (pair 'b (rest x)))
-                     (list->lazy-list (pair 'a (rest x)))))             (list->lazy-list x))
+                     (list->lazy-list (pair 'a (rest x)))))
+             (list->lazy-list x))
          x))))
 
 

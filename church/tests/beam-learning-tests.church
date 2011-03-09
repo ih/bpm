@@ -4,6 +4,13 @@
 (define samples 1)
 (define check-test (make-check-test-with-runs 1))
 
+;;debug fg-scoring
+ ;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (f)) #t 10))))
+ ;;        (lambda (x) (exp x))
+ ;;        .5
+ ;;        error-tolerance
+ ;;        "flip test")
+
 ;;exact match
 (check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 10))))
             (lambda (x) (exp x))
@@ -12,10 +19,10 @@
             "p(fg|program), best program")
 ;;program w/ multiple possible derivations for the fg
 ;; (check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30))))
-;;             (lambda (x) (exp x))
-;;             (+ (* .5 (- 1 (label-noise noise-params))) (* .5 (label-noise noise-params)));;calculated by hand
-;;             error-tolerance
-;;             "p(fg|program), program w/ multiple derivations")
+;;              (lambda (x) (exp x))
+;;              (+ (* .5 (- 1 (label-noise noise-params))) (* .5 (label-noise noise-params)));;calculated by hand
+;;              error-tolerance
+;;              "p(fg|program), program w/ multiple derivations")
 
 ;; ;;only check relative scores until selective model averaging is figured out
 ;; (check-test (lambda () (repeat samples (lambda () (> (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 30) (score-fg-program '(lambda () (if (flip) (node '(a 20 4)) (node '(b 20 4)))) '((a 20 4)) 30)))))
