@@ -1,114 +1,18 @@
-It's assumed you already have ikarus, bher, and Andreas Stuhlmuller's scheme-tools set up on your system.  [fg-dir] is the factor-graphics directory e.g. ~/factor-graphics.  [bher dir] is the bher directory e.g. ~/bher-read-only/
+It's assumed you already have ikarus, bher, and Andreas Stuhlmuller's scheme-tools set up on your system.  [fg-dir] is the absolute path for the factor-graphics directory e.g. /home/ih/factor-graphics/ (it's important to have the trailing '/').  [bher dir] is the absolute path for the bher directory e.g. /home/ih/bher-read-only/
+
+
+
 
 ====Modifications to bher source====
-1) change bher
-  a) open the file [bher dir]/bher
-  b) replace the lines 
+1) run the configure script
+  a) change directories to your factor-graphics directory
+$cd [fg-dir]
+e.g. $cd /home/ih/factor-graphics/
 
- call(("cd '%(bher_path)s' && ikarus %(debug)s --r6rs-script '%(compiler)s' " +
- "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
-
-with 
-
-call(("ikarus %(debug)s --r6rs-script '%(compiler)s' " +
-              "'%(in_path)s.tmp' '%(out_path)s.tmp' '%(ext)s' %(pretty)s") % settings, verbose)
-
-2) change desugar.ss
-  a) open [bher dir]/church/desugar.ss
-  b) modify the line 
-(define include-paths  (list "./" "include/" "./church/"))
-
-to be
-
-(define include-paths  (list "./" "include/" "[bher dir]/church/" "[fg-dir]/church/"))
-
-i.e. use the absolute path for your bher directory
-
-3) change header.ss
-  a) open [bher dir]/church/header.ss
-  b) modify 
-(define *lazy* false)
-
-to be
-
-(define *lazy* true)
-
-  c) modify 
-(environment '(rnrs)
-                          '(rnrs mutable-pairs)
-                          '(_srfi :1)
-                          '(rename (church external math-env) (sample-discrete discrete-sampler))
-                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
-                          '(_srfi :19)
-                          '(church compiler)
-                          '(rnrs eval)  )
-
-to be 
-
-(environment '(rnrs)
-                          '(abstract)
-                          '(lazy)
-                          '(util)
-                          '(sym)
-                          '(python-fg-lib)
-                          '(rnrs mutable-pairs)
-                          '(_srfi :1)
-                          '(rename (church external math-env) (sample-discrete discrete-sampler))
-                          '(rename (only (ikarus) gensym pretty-print exact->inexact) (gensym scheme-gensym))
-                          '(_srfi :19)
-                          '(church compiler)
-                          '(rnrs eval))
-
-4) change compiler.ss
-  a) open [bher dir]/church/compiler.ss
-  b) modify
-  (define *lazy* false)
-
-to be
-
-  (define *lazy* true)
-
-  c) modify 
-  (church-sexpr  `(begin
-                            (load "standard-preamble.church")
-                            (load "xrp-preamble.church")
-                            (load "mcmc-preamble.church")
-                            ,@top-list))
-
-to be 
-
-(church-sexpr  `(begin
-                            (load "standard-preamble.church")
-                            (load "xrp-preamble.church")
-                            (load "mcmc-preamble.church")
-                            (load "factor-graph.church")
-                            (load "beam-learning.church")
-                            ,@top-list))
-
-5) change header-ikarus.sc
-  a) open [bher dir]/scheme-compilers/header-ikarus.sc
-  b) add the following inside the import form (e.g. after (rnrs eval)
- (lazy)
- (abstract)
- (util)
- (sym)
- (python-fg-lib)
- (churchpytest)
-
-6) change python-fg-lib
-  a) open [fg-dir]/scheme/python-fg-lib.ss
-  b) modify 
-
-(define fg-dir "/home/ih/factor-graphics/")	
-
-to be
-
-(define fg-dir "[fg-dir]/")	
-where fg-dir is your directory for factor-graphics.  Make sure to end the directory with '/' e.g. /home/ih/factor-graphics/
-
+  b) run the script 
+$python configure.py "[bher-dir]" "[fg-dir]"
 
 ====PATH INFORMATION====
-
 
 You'll want to have the following paths on the PATH and IKARUS_LIBRARY_PATH environment variables.  [inst dir] is the directory containing factor-graphics.  I'm not sure about the exact syntax for your system, but it'll probably be something like this...
 
