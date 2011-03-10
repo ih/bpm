@@ -42,9 +42,9 @@
 
 (define (sort-by-score-and-size programs data size-weight score-weight)
   (let* ([program-sizes (map (compose size program->sexpr) programs)]
-         ;[program-scores (make-list (length programs) 0)]
          [program-scores (map (compose (lambda (prog) (scoring prog data 10)) program->sexpr) programs)]
          [total-weight (combine-size-score program-sizes program-scores size-weight score-weight)]
+         [db (pretty-print (list "tw" total-weight "sizes" program-sizes "scores" program-scores))]
          [programs-with-weights (zip programs total-weight)]
          [weight< (lambda (a b) (< (second a) (second b)))])
     (map first (my-list-sort weight< programs-with-weights))))
@@ -74,7 +74,7 @@
 (define (combine-size-score sizes scores size-weight score-weight)
   (map +
        (map (lambda (x) (* x size-weight)) sizes)
-       (map (lambda (x) (* x (- score-weight))) scores)))
+       (map (lambda (x) (* (exp x) (- score-weight))) scores)))
 
 (define (compose f g)
   (lambda (x) (f (g x))))
@@ -93,10 +93,11 @@
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
               (repeat-symbol (find-repeat-symbol samples))
-              [db (pretty-print (list "symbol" repeat-symbol))]
+              ;;[db (pretty-print (list "symbol" repeat-symbol))]
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
 
               (scores (map mcmc-state->score samples))
+              (db (pretty-print (list "scores" (map exp scores))))
               (score (if (null? scores)
                          -inf.0
                          (apply log-sum-exp scores))))
@@ -151,4 +152,4 @@
 
 ;;;computes p(data|program)=\Pi_{fg\in data}p(fg|program) where data is a list of factor graphs
 (define (scoring prog data popsize)
-  (apply * (map (lambda (fg) (score-fg-program prog fg popsize)) data)))
+  (apply + (map (lambda (fg) (score-fg-program prog fg popsize)) data)))

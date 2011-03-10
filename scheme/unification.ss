@@ -53,7 +53,7 @@
                       (first variables))
                     
                     (define (build-pattern et1 et2 ignore-id-matches)
-                      (cond [(and (primitive? et1) (primitive? et2)) (if (eq? et1 et2) et1 ((mismatch-policy!) et1 et2))]
+                      (cond [(and (primitive? et1) (primitive? et2)) (if (equal? et1 et2) et1 ((mismatch-policy!) et1 et2))]
                             [(or (primitive? et1) (primitive? et2)) ((mismatch-policy!) et1 et2)]
                             [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
                             [(not (eqv? (length et1) (length et2))) ((mismatch-policy!) et1 et2)]

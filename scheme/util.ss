@@ -58,9 +58,19 @@
            (+ (random-integer (+ (- b a) 1)) a))
 
          (define (primitive? expr)
-           (or (symbol? expr) (boolean? expr) (number? expr)))
+           (or (symbol? expr) (boolean? expr) (number? expr) (quoted? expr)))
 
-           
+         (define (non-empty-list? expr)
+           (if (list? expr)
+               (if (null? expr)
+                   #f
+                   #t)
+               #f))
+         
+         (define (quoted? expr)
+           (if (non-empty-list? expr)
+               (eq? (first expr) 'quote)))
+               
 
          (define (depth tree)
            (if (or (not (list? tree)) (null? tree))
