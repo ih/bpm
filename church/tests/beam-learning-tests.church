@@ -89,35 +89,36 @@
 (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))])
   (evaluates?-test "my-iterated-compressions test" (timed-iterated-compressions (lambda (x) x) compressible-program)))
 
-;; ;;;beam-learn-search-compressions test
-;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
+;;;beam-learn-search-compressions test
+(define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
 
-;; (let ([simplest-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2))))))]
-;;       [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (evaluates?-test "beam-learn-search-compressions simplest program" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1)))
+(let ([simplest-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2))))))]
+      [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (equal?-test "beam-learn-search-compressions, simplest program no compression" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1) '()))
 
-;; (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '('a 1 2)) (node '('a 1 2))))))]
-;;       [simplest-data '((('a 1 2)) (('a 1 2)))])
-;;   (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-compressions simplest-data 10 compressible-program 0 1)))
-
-
-
-;; ;;;beam-learn test
-;; ;;beam learn takes a list of factors graphs as data and an sexpr
-;; (evaluates?-test "beam-learn runs" (beam-learn '(((a 1 2)) ((a 1 2))) (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) 5  0 1))
-;; (member?-test (lazy-list->all-list ((eval (beam-learn '(((a 1 2)) ((a 1 2))) (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) 5  0 1)))) '(((a 1 2)) ((b 1 2))))
-;; ;;;make-initial-sexpr test, this is a program that returns lazy factor graphs
-;; (equal?-test "initial-sexpr test sexpr" (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) '(lambda () (uniform-draw (list (node (a 1 2)) (node (a 1 2))))))
-
-;; (equal?-test "initial sexpr evalutes to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr '(((a 1 2)) ((a 1 2))))))) #t)
-
-;; (member?-test "initial sexpr evalutes correctly" (lazy-list->all-list ((eval (make-initial-sexpr '(((a 1 2)) ((a 1 2))))))) '(((a 1 2)) ((b 1 2))))
+(let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))]
+      [simplest-data '((('a 1 2)) (('a 1 2)))])
+  (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-compressions simplest-data 10 compressible-program 0 1)))
 
 
-;; ;;;learn-model tests
-;; ;;type check, learn-model should process a list of factor-graphs and return a function that generates factor graphs
-;; (define timed-learn-model (time-it learn-model))
-;; (member?-test "learned-model" ((timed-learn-model '(((a 1 2)) ((a 1 2))) 0 1)) '(((a 1 2)) ((b 1 2))))
+;;;make-initial-sexpr test, this is a program that returns lazy factor graphs
+(equal?-test "initial-sexpr test sexpr" (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))
+
+(equal?-test "initial sexpr evalutes to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr '(((a 1 2)) ((a 1 2))))))) #t)
+
+(member?-test "initial sexpr evalutes correctly" (lazy-list->all-list ((eval (make-initial-sexpr '(((a 1 2)) ((a 1 2))))))) '(((a 1 2)) ((b 1 2))))
+
+
+;;;beam-learn test
+;;beam learn takes a list of factors graphs as data and an sexpr
+(evaluates?-test "beam-learn runs" (beam-learn '(((a 1 2)) ((a 1 2))) (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) 5  1 0))
+
+(member?-test "result of beam-learn evalutes" (lazy-list->all-list ((eval (beam-learn '(((a 1 2)) ((a 1 2))) (make-initial-sexpr '(((a 1 2)) ((a 1 2)))) 5  0 1)))) '(((a 1 2)) ((b 1 2))))
+
+;;;learn-model tests
+;;type check, learn-model should process a list of factor-graphs and return a function that generates factor graphs
+(define timed-learn-model (time-it learn-model))
+(member?-test "learned-model" ((timed-learn-model '(((a 1 2)) ((a 1 2))) 0 1)) '(((a 1 2)) ((b 1 2))))
 
 
 

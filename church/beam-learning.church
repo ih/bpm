@@ -4,27 +4,24 @@
   (let* ([initial-sexpr (make-initial-sexpr data)]
          [learned-sexpr (beam-learn data initial-sexpr 5 size-weight score-weight)]
          [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
-         [model (lambda () (lazy-list->all-list (eval learned-sexpr)))])
+         [model (lambda () (lazy-list->all-list ((eval learned-sexpr))))])
     (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
     model))
 
 ;;;turns each of the examples into a program then wraps that in a uniform draw
 (define (make-initial-sexpr data)
   (let* ([literal-sexprs (map graph->program data)])
-    (list 'uniform-draw (pair 'list literal-sexprs))))
-         
+    (list 'lambda '() (list 'uniform-draw (pair 'list literal-sexprs)))))
+
+;;;returns an sexpr
 (define (beam-learn data sexpr beam-size size-weight score-weight)
-           (for-each display (list "original expr:\n" sexpr "\n"
-                                   "size: " (size sexpr)
-                                   "\n\n"
-                                   "compressing...\n"))
-           (let ([top-compressions 
-                  (sort-by-score-and-size
-                   (unique-programs
-                    (beam-learn-search-compressions data beam-size (make-program '() sexpr) size-weight score-weight)))])
-             (if (null? top-compressions)
-                 sexpr
-                 (first top-compressions))))
+  (let* ([top-compressions 
+          (sort-by-score-and-size
+           (unique-programs
+            (beam-learn-search-compressions data beam-size (make-program '() sexpr) size-weight score-weight)) data size-weight score-weight)])
+    (if (null? top-compressions)
+        sexpr
+        (program->sexpr (first top-compressions)))))
 
 
 (define (beam-learn-search-compressions data beam-size program size-weight score-weight)
@@ -44,7 +41,6 @@
   (let* ([program-sizes (map (compose size program->sexpr) programs)]
          [program-scores (map (compose (lambda (prog) (scoring prog data 10)) program->sexpr) programs)]
          [total-weight (combine-size-score program-sizes program-scores size-weight score-weight)]
-         [db (pretty-print (list "tw" total-weight "sizes" program-sizes "scores" program-scores))]
          [programs-with-weights (zip programs total-weight)]
          [weight< (lambda (a b) (< (second a) (second b)))])
     (map first (my-list-sort weight< programs-with-weights))))
@@ -93,11 +89,9 @@
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
               (repeat-symbol (find-repeat-symbol samples))
-              ;;[db (pretty-print (list "symbol" repeat-symbol))]
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
 
               (scores (map mcmc-state->score samples))
-              (db (pretty-print (list "scores" (map exp scores))))
               (score (if (null? scores)
                          -inf.0
                          (apply log-sum-exp scores))))
