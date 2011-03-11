@@ -50,7 +50,14 @@
         (unique-programs
          (compressing-function (make-program '() sexpr))))))
 
-(test-compressions "simple compression" compressions '((node '(a 20)) (node '(a 20)) (node '(a 20)) (node '(a 20))))
+;;(test-compressions "simple compression" compressions '((node '(a 20)) (node '(a 20)) (node '(a 20)) (node '(a 20))))
+
+;;(test-beam-search-compressions '((a (a (b) (b))) (a (a (c) (c))) (a (a (d) (d)))))
+
+(test-beam-search-compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
+
+;;(test-compressions "recursion" compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
+
 ;;(test-compressions "simple compression" compressions '((node (a 20)) (node (a 20)) (node (a 20)) (node (a 20))))
 ;; (test-compressions "compressions" compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))
 ;; (test-compressions "all-compressions" all-compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))

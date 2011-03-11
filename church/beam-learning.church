@@ -147,3 +147,11 @@
 ;;;computes p(data|program)=\Pi_{fg\in data}p(fg|program) where data is a list of factor graphs
 (define (scoring prog data popsize)
   (apply + (map (lambda (fg) (score-fg-program prog fg popsize)) data)))
+
+;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|program)}p(images|fg) where R is the nubmer of samples
+(define (scoring-fg-image prog sample-size)
+  (let* ([fg-sampler (eval prog)]
+         [fg-samples (repeat sample-size (lambda () (lazy-list->all-list (fg-sampler))))]
+         [likelihoods (map fg->img-score fg-samples)])
+    (/ (apply + likelihoods) sample-size)))  ;;;if likelihoods are probabilities and not log probabilities
+         

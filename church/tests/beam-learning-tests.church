@@ -1,12 +1,14 @@
 (load "../testing.church")
-;;;score-fg|program tests
+;;;test parameters
 (define error-tolerance .07)
 (define samples 1)
 (define check-test (make-check-test-with-runs 1))
 (define (almost= a b)
   (< (abs (- b a)) error-tolerance))
+;;;score-fg-image test
+(evaluates?-test "sore-fg-image" (scoring-fg-image '(lambda () (node '(a 20 4))) 20))
 
-
+;;;score-fg|program tests
 ;;;exact match
 (check-test (lambda () (repeat samples (lambda () (score-fg-program '(lambda () (node '(a 20 4))) '((a 20 4)) 10))))
             (lambda (x) (exp x))
