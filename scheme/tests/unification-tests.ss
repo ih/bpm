@@ -51,21 +51,14 @@
 
 (check (unify '(node 25 3 'd) '(node 25 3 COLOR) '(COLOR)) => '((COLOR . 'd)))
 
-
-
-
-
-;; ;;test for numeric entries are from the appropriate gaussian
-;; ;; (check (let ([gaussian (mean 25 24)]
-;; ;;              [output (anti-unify (enumerate-tree '(node 25 3 'd)) (enumerate-tree '(node 24 100 'a)) #t)]
-;; ;;              [pattern (second output)]
-;; ;;              [soft-match (match pattern (('node x _ _) x))])
-;; ;;          (drawn-from soft-match gaussian))
-;; ;;        =>
-;; ;;        #t)
-
-
-
+;;;floating point test
+(set-policy! 'original)
+(check (let ([none (reset-symbol-indizes!)])
+           (anti-unify (enumerate-tree '(n 25.0)) (enumerate-tree '(n 25.0)) #t))
+       =>
+       (let ([none (reset-symbol-indizes!)]
+             [var1 (sym (var-symbol))])
+         '(() (n 25.0))))
 
 
 

@@ -25,7 +25,7 @@
            (set! policy new-policy))
 ;;;anti-unification         
          (define anti-unify
-           (mem (lambda (et1 et2 ignore-id-matches)
+           (lambda (et1 et2 ignore-id-matches)
                   (begin
 
                     (define variables '())
@@ -65,13 +65,14 @@
                                    #f
                                    unified-tree))]))
                     (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
-                      (list variables pattern))))))
+                      (list variables pattern)))))
+
          
 
          ;;noisy number related
 ;;;unification
          (define unify
-           (mem (lambda (s sv vars)
+           (lambda (s sv vars)
                   (begin
                     (define (variable? obj)
                       (member obj vars))
@@ -96,7 +97,7 @@
                            (let ([assignments (map (lambda (si sj) (unify si sj vars)) s sv)])
                              (if (any false? assignments)
                                  #f
-                                 (check/remove-repeated (apply append assignments))))])))))
+                                 (check/remove-repeated (apply append assignments))))]))))
 
          (define (check/remove-repeated unified-vars)
            (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])

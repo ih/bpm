@@ -1,7 +1,33 @@
 #!r6rs
 ;;TODO:
 ;;- figure out a good way to test a library w/o exporting all the functions
-(import (abstract))
+(import (abstract)
+        (srfi :78))
+;;;test definitions
+(define (test-beam-search-compressions sexpr)
+  (for-each display (list "original expr:\n" sexpr "\n"
+                          "size: " (size sexpr)
+                          "\n\n"
+                          "compressed exprs:\n"))
+  (map pretty-print-program
+       (sort-by-size
+        (unique-programs
+         (beam-search-compressions 10 (make-program '() sexpr))))))
+
+(define (test-compressions name compressing-function sexpr)
+  (for-each display (list name
+                          "\noriginal expr:\n" sexpr "\n"
+                          "size: " (size sexpr)
+                          "\n\n"
+                          "compressed exprs:\n"))
+  (map pretty-print-program
+       (sort-by-size
+        (unique-programs
+         (compressing-function (make-program '() sexpr))))))
+
+;;;enumerate-tree tests
+(check (enumerate-tree '(n 25.0)) => '($1 n 25.0))
+
 
 ;; (define (test-unify)
 ;;   (let* ([sexpr '(a b c d)]
@@ -28,33 +54,30 @@
 ;;     (pretty-print (replace-matches test-tree abstraction))
 ;;     (pretty-print (replace-matches test-tree abstraction2))))
 
-(define (test-beam-search-compressions sexpr)
-  (for-each display (list "original expr:\n" sexpr "\n"
-                          "size: " (size sexpr)
-                          "\n\n"
-                          "compressed exprs:\n"))
-  (map pretty-print-program
-       (sort-by-size
-        (unique-programs
-         (beam-search-compressions 10 (make-program '() sexpr))))))
 
 ;;;displays all the compressions created by compressing function, compressing-function takes a program and returns a list of compressions
-(define (test-compressions name compressing-function sexpr)
-  (for-each display (list name
-                          "\noriginal expr:\n" sexpr "\n"
-                          "size: " (size sexpr)
-                          "\n\n"
-                          "compressed exprs:\n"))
-  (map pretty-print-program
-       (sort-by-size
-        (unique-programs
-         (compressing-function (make-program '() sexpr))))))
+
 
 ;;(test-compressions "simple compression" compressions '((node '(a 20)) (node '(a 20)) (node '(a 20)) (node '(a 20))))
 
 ;;(test-beam-search-compressions '((a (a (b) (b))) (a (a (c) (c))) (a (a (d) (d)))))
 
-(test-beam-search-compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
+;; (test-compressions "floating point test" compressions
+;;                    '(n .3))
+
+
+;; (test-compressions "new node" compressions
+;;                    '(N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))
+
+
+(test-compressions "new node" compressions
+                   '(GN2 
+                     (GN1
+                      (N1 ((radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                          (N2 ((radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+                              (N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
+
+;;(test-beam-search-compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
 
 ;;(test-compressions "recursion" compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
 
