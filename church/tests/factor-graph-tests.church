@@ -6,47 +6,80 @@
 
 (define check-test (make-check-test-with-runs runs))
 
+;;;factor graph format conversions
+;;example from the slides 
+(equal?-test "python to scheme format"
+             (eval (python-format->scheme-program
+                    '(GN2 
+                      (GN1
+                       (N1 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                           (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+                               (N3 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))))
+             '(((((1.2) (-0.2) (2 0.1) (0 0.1))
+                 (((0.8) (-0.1) (3 0.1) (0 0.1))
+                  (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
 
+(equal?-test "scheme to python format test: process-data"
+             (process-data '((1.2) (-0.2) (2 0.1) (0 0.1)))
+             '(data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))
+
+(equal?-test "scheme to python format test: process-nodes"
+             (process-nodes '(((1.2) (-0.2) (2 0.1) (0 0.1))
+                              (((0.8) (-0.1) (3 0.1) (0 0.1))
+                               (((0.6) (-0.2) (2 0.1) (0 0.1))))))
+             '(N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                           (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+                               (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))
+(reset-symbol-indizes!)
+(equal?-test "scheme to python format"
+             (scheme-format->python-format '(((((1.2) (-0.2) (2 0.1) (0 0.1))
+                                               (((0.8) (-0.1) (3 0.1) (0 0.1))
+                                                (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
+             '(GN2 
+                 (GN1
+                  (N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                      (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+                          (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
 
 ;;;single node test
-(check-test (lambda ()
-              (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4))))))
-            (lambda (x) (if (equal? '((a 3 4)) x) 1 0))
-            (- 1 (label-noise noise-params))
-            error-tolerance
-            "single node test")
+;; (check-test (lambda ()
+;;               (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4))))))
+;;             (lambda (x) (if (equal? '((a 3 4)) x) 1 0))
+;;             (- 1 (label-noise noise-params))
+;;             error-tolerance
+;;             "single node test")
 
-(check-test (lambda ()
-              (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4))))))
-            (lambda (x) (if (equal? '((b 3 4)) x) 1 0))
-            (label-noise noise-params)
-            error-tolerance
-            "single node test")
-
-
-
-;;;line test
-(check-test (lambda ()
-              (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4) (node '(b 5 10)))))))
-            (lambda (x) (if (equal? '((a 3 4) ((b 5 10))) x) 1 0))
-            (* (expt (- 1 (label-noise noise-params)) 2) (- 1 (growth-noise noise-params)))
-            error-tolerance
-            "line test")
+;; (check-test (lambda ()
+;;               (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4))))))
+;;             (lambda (x) (if (equal? '((b 3 4)) x) 1 0))
+;;             (label-noise noise-params)
+;;             error-tolerance
+;;             "single node test")
 
 
 
-;;;line that branches
-(check-test (lambda ()
-              (repeat (* 2 samples) (lambda () (lazy-list->all-list (node '(a 3 4) (node '(b 5 10) (node '(b 5 10)) (node '(a 5 10))))))))
-            (lambda (x) (if (equal? '((a 3 4) ((b 5 10) ((b 5 10)) ((a 5 10)))) x) 1 0))
-            (* (expt (- 1 (label-noise noise-params)) 4) (expt (- 1 (growth-noise noise-params)) 3))
-            error-tolerance
-            "line that branches test")
+;; ;;;line test
+;; (check-test (lambda ()
+;;               (repeat samples (lambda () (lazy-list->all-list (node '(a 3 4) (node '(b 5 10)))))))
+;;             (lambda (x) (if (equal? '((a 3 4) ((b 5 10))) x) 1 0))
+;;             (* (expt (- 1 (label-noise noise-params)) 2) (- 1 (growth-noise noise-params)))
+;;             error-tolerance
+;;             "line test")
 
-;;;graph->program tests
-(equal?-test "graph->program test" (graph->program '((a 3 4) ((b 5 10) ((c 20 20)) ((c 20 20))))) '(node '(a 3 4) (node '(b 5 10) (node '(c 20 20)) (node '(c 20 20)))))
 
-(forward-sample '(node 'a 3 4 (node 'b 5 10)))
+
+;; ;;;line that branches
+;; (check-test (lambda ()
+;;               (repeat (* 2 samples) (lambda () (lazy-list->all-list (node '(a 3 4) (node '(b 5 10) (node '(b 5 10)) (node '(a 5 10))))))))
+;;             (lambda (x) (if (equal? '((a 3 4) ((b 5 10) ((b 5 10)) ((a 5 10)))) x) 1 0))
+;;             (* (expt (- 1 (label-noise noise-params)) 4) (expt (- 1 (growth-noise noise-params)) 3))
+;;             error-tolerance
+;;             "line that branches test")
+
+;; ;;;graph->program tests
+;; (equal?-test "graph->program test" (graph->program '((a 3 4) ((b 5 10) ((c 20 20)) ((c 20 20))))) '(node '(a 3 4) (node '(b 5 10) (node '(c 20 20)) (node '(c 20 20)))))
+
+;; (forward-sample '(node 'a 3 4 (node 'b 5 10)))
 
 ;;(repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4))))))
 ;; (repeat samples (lambda () (lazy-list->all-list (eval '(node '(a 3 4) (node '(b 5 10)))))))

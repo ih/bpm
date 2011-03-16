@@ -1,5 +1,5 @@
 ;;;node code
-(define noise-params (pair .2 .2))
+(define noise-params (pair 0 0))
 ;;set-growth/label-noise! won't work as desired until eval uses current-envirnoment instead of loading factor-graph.church each time 
 (define (set-growth-noise! new-val) (set-car! noise-params new-val))  
 (define (set-label-noise! new-val) (set-cdr! noise-params new-val))
@@ -15,6 +15,30 @@
    (lambda ()
      (flip))))
      ;p(lazy-pair (flip) '()))))
+
+;;;basically put 'list at the front of every sub-expr
+(define (python-format->scheme-program py-sexpr)
+  (if (null? py-sexpr)
+      py-sexpr
+      (if (list? py-sexpr)
+          (pair 'list (map python-format->scheme-program (rest py-sexpr)))
+          py-sexpr)))
+
+(define (scheme-format->python-format scheme-sexpr)
+  (let ([non-ghost-nodes (first (first scheme-sexpr))])
+ (list 'GN2 (list 'GN1 (process-nodes non-ghost-nodes)))))
+
+(define (process-nodes scheme-sexpr)
+  (if (null? scheme-sexpr)
+      '()
+      (append (list (sym 'N) (process-data (first scheme-sexpr))) (map process-nodes (rest scheme-sexpr)))))
+
+(define (process-data data-list)
+  (let ([radius (first data-list)]
+        [blobbiness (second data-list)]
+        [distance-info (third data-list)]
+        [straightness (fourth data-list)])
+    (list 'data (pair 'radius radius) (pair 'blobbiness blobbiness) (pair 'Distance distance-info) (pair 'Straightness straightness))))
 
 (define node
   (lazify 

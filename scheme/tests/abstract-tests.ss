@@ -69,13 +69,27 @@
 ;; (test-compressions "new node" compressions
 ;;                    '(N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))
 
+;; (test-beam-search-compressions '(list 'n1 (list 1.2 -.2 (list 2 .1) (list 0 0.1)) 
+;;   (list 'n1 (list .8 -.1 (list 3 .1) (list 0 .1))
+;;     (list 'n1 (list .6 -.2 (list 2 .1) (list 0 .1))
+;;           (list 'n1 (list .6 -.2 (list 2 .1) (list 0 .1)))))))
 
-(test-compressions "new node" compressions
-                   '(GN2 
-                     (GN1
-                      (N1 ((radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                          (N2 ((radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
-                              (N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
+(test-beam-search-compressions '(((1.2) (-0.2) (2 0.1) (0 0.1))
+                                             (((0.8) (-0.1) (3 0.1) (0 0.1))
+                                              (((0.6) (-0.2) (2 0.1) (0 0.1))))))
+;; (test-compressions "two branch" compressions '((list 'a (list 'a (list 'b) (list 'b)))
+;;  (list 'a (list 'a (list 'c) (list 'c)))
+;;  (list 'a (list 'a (list 'd) (list 'd)))))
+
+;; (test-beam-search-compressions '((list 'a (list 'a (list 'b) (list 'b)))
+;;  (list 'a (list 'a (list 'c) (list 'c)))
+;;  (list 'a (list 'a (list 'd) (list 'd)))))
+;; (test-compressions "new node" compressions
+;;                    '(GN2 
+;;                      (GN1
+;;                       (N1 ((radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                           (N2 ((radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+;;                               (N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
 
 ;;(test-beam-search-compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
 

@@ -26,7 +26,6 @@
 
          (define (func-symbol) 'F) 
 
-
          ;; compute the size of a program
          (define (size tree)
            (if (list? tree)
@@ -61,10 +60,6 @@
                  ;; (string-prefix? var-pattern string-expr))))
                  (equal? (substring string-expr 0 1) func-string))
                #f))
-
-
-
-
 
          (define (make-abstraction pattern variables)
            (make-named-abstraction (sym (func-symbol)) pattern variables))
