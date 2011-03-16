@@ -21,7 +21,7 @@
   (if (null? py-sexpr)
       py-sexpr
       (if (list? py-sexpr)
-          (pair 'list (map python-format->scheme-program (rest py-sexpr)))
+          (pair 'node (map python-format->scheme-program (rest py-sexpr)))
           py-sexpr)))
 
 (define (scheme-format->python-format scheme-sexpr)
@@ -86,7 +86,8 @@
               (map graph->program (rest graph)))))
 
 (define (forward-sample fg-program)
-  (let* ([factor-graph (lazy-list->all-list (eval fg-program))])
-    (pretty-print factor-graph)
-    (fg->image factor-graph)))
+  (let* ([factor-graph (lazy-list->all-list (eval fg-program))]
+         [python-fg (scheme-format->python-format factor-graph)])
+    (for-each display (list "converted back to python format " python-fg "\n"))
+    (fg->image python-fg)))
 
