@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive?)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subtrees deep-find-all)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -40,9 +40,20 @@
                
 
          (define (sexp-search pred? func sexp)
-           (if (list? sexp)
-               (map (curry sexp-search pred? func) sexp)
-               (if (pred? sexp) (func sexp) sexp)))
+           (if (pred? sexp)
+               (func sexp)
+               (if (list? sexp)
+                   (map (curry sexp-search pred? func) sexp)
+                   sexp)))
+
+         (define (deep-find-all pred? sexp)
+           (filter pred? (all-subtrees sexp)))
+
+         (define (all-subtrees t)
+           (let loop ([t (list t)])
+             (cond [(null? t) '()]
+                   [(primitive? (first t)) (loop (rest t))]
+                   [else (pair (first t) (loop (append (first t) (rest t))))])))
 
                   ;; look up value for key in alist; if not found,
          ;; set (default-thunk) as value and return it

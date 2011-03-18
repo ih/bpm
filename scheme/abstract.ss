@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-tree)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-tree program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -77,10 +77,25 @@
                  (pattern (abstraction->pattern abstraction)))
              (list 'define name (list 'lambda variables pattern))))
 
+         (define (abstraction->variable-position abstraction variable)
+           (list-index (lambda (x) (equal? variable x)) (abstraction->vars abstraction)))
+
          (define (make-program abstractions body)
            (list 'program abstractions body))
          (define program->abstractions second)
          (define program->body third)
+
+         ;;it might also be possible to search over program->sexpr, but then we'd need a more complicated predicate to avoid the definition of the target-abstraction
+         (define (program->abstraction-applications program target-abstraction)
+           (define (target-abstraction-application? sexpr)
+             (if (non-empty-list? sexpr)
+                 (if (equal? (first sexpr) (abstraction->name target-abstraction))
+                     #t
+                     #f)
+                 #f))
+           (let* ([abstraction-patterns (map abstraction->pattern (program->abstractions program))]
+                  [possible-locations (pair (program->body program) abstraction-patterns)])
+             (deep-find-all target-abstraction-application? possible-locations)))
 
          (define (program->sexpr program)
            `(let ()  
@@ -264,15 +279,6 @@
                t
                (pair (sym '$) (map enumerate-tree t))))
 
-
-         ;; list all (enumerated) subtrees
-         (define (all-subtrees t)
-           (let loop ([t (list t)])
-             (cond [(null? t) '()]
-                   [(primitive? (first t)) (loop (rest t))]
-;;                   [(number? (first t)) (loop (rest t))]
-;;                   [(symbol? (first t)) (loop (rest t))]
-                   [else (pair (first t) (loop (append (first t) (rest t))))])))
 
          ;; is obj a list like '(x)?
          (define (singleton? obj)
