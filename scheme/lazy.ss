@@ -23,7 +23,13 @@
          (define (eq-policy)
            (cond [(eq? policy 'original) eq?]
                  [(eq? policy 'noisy-number) noisy-number-eq?]
+                 [(eq? policy 'topology-only) topology-only-eq?]
                  [else (error "eq-policy not handled in lazy-equal!")]))
+
+         (define (topology-only-eq? a b)
+           (if (and (number? a) (number? b))
+               #t
+               (eq? a b)))
 
 
          ;;returns false if finds missmatch, otherwise returns amount of sexprs matched.

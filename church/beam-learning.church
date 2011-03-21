@@ -135,7 +135,7 @@
             (find-repeated (rest addr-lst))))
       '()))
 
-;;assumes argument is a list
+;;assumes argument is a list, move this to util.ss
 (define (more-than-one? lst)
   (if (null? lst)
       #f

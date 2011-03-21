@@ -10,12 +10,12 @@
 ;;example from the slides 
 (equal?-test "python to scheme format"
              (lazy-list->all-list
-              (eval (python-format->scheme-program
-                     '(GN2 
-                       (GN1
-                        (N1 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                            (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
-                                (N3 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))))
+              ((eval (python-format->scheme-program
+                      '(GN2 
+                        (GN1
+                         (N1 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                             (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+                                 (N3 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))))))
              '(((((1.2) (-0.2) (2 0.1) (0 0.1))
                  (((0.8) (-0.1) (3 0.1) (0 0.1))
                   (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
@@ -51,6 +51,8 @@
                               (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))]
        [scheme-prog (python-format->scheme-program init-py-fg)])
  (forward-sample scheme-prog))
+
+
 
 ;;;single node test
 ;; (check-test (lambda ()

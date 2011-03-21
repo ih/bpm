@@ -99,9 +99,9 @@
 ;;                           (N2 ((radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
 ;;                               (N3 ((radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
 
-(test-beam-search-compressions '(list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a)))))
-
-;;(test-compressions "recursion" compressions '((a (a)) (a (a (a (a)))) (a (a (a))) (a) (a (a (a (a (a (a)))))) ))
+;;(test-beam-search-compressions '(list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a)))))
+;;(test-beam-search-compressions '((list a (list b (list d) (list d))) (list a (list b (list c) (list c)))))
+(test-compressions "recursion" compressions '(uniform-draw (list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a))) (list a) (list a (list a (list a (list a (list a (list a)))))))))
 
 ;;(test-compressions "simple compression" compressions '((node (a 20)) (node (a 20)) (node (a 20)) (node (a 20))))
 ;; (test-compressions "compressions" compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))

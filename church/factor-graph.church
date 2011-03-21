@@ -16,13 +16,17 @@
      (flip))))
      ;p(lazy-pair (flip) '()))))
 
-;;;basically put 'list at the front of every sub-expr
-(define (python-format->scheme-program py-sexpr)
-  (if (null? py-sexpr)
-      py-sexpr
-      (if (list? py-sexpr)
-          (pair 'node (map python-format->scheme-program (rest py-sexpr)))
-          py-sexpr)))
+;;;basically put 'node at the front of every sub-expr and wrap in a lambda
+(define (python-format->scheme-program py-format)
+  (let* ([body (nodify py-format)]) 
+    (list 'lambda '() body)))
+
+(define (nodify py-sexpr)
+   (if (null? py-sexpr)
+       py-sexpr
+       (if (list? py-sexpr)
+           (pair 'node (map nodify (rest py-sexpr)))
+           py-sexpr)))
 
 (define (scheme-format->python-format scheme-sexpr)
   (let ([non-ghost-nodes (first (first scheme-sexpr))])
@@ -86,7 +90,7 @@
               (map graph->program (rest graph)))))
 
 (define (forward-sample fg-program)
-  (let* ([factor-graph (lazy-list->all-list (eval fg-program))]
+  (let* ([factor-graph (lazy-list->all-list ((eval fg-program)))]
          [python-fg (scheme-format->python-format factor-graph)])
     (for-each display (list "converted back to python format " python-fg "\n"))
     (fg->image python-fg)))
