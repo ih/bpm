@@ -2,7 +2,10 @@
 ;;TODO:
 ;;- figure out a good way to test a library w/o exporting all the functions
 (import (abstract)
-        (srfi :78))
+        (srfi :78)
+        (sym)
+        (util)
+        (unification))
 ;;;test definitions
 (define (test-beam-search-compressions sexpr)
   (for-each display (list "original expr:\n" sexpr "\n"
@@ -27,6 +30,11 @@
 
 ;;;enumerate-tree tests
 (check (enumerate-tree '(n 25.0)) => '($1 n 25.0))
+(reset-symbol-indizes!)
+(check (enumerate-tree '(+ (+ 2 2) (- 2 5))) => '($3 + ($1 + 2 2) ($2 - 2 5)))
+;;;all-subtrees tests
+(let ([ etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))])
+  (check (map unenumerate-tree (all-subtrees etree)) => '((+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
 
 ;;;program->abstraction-applications tests
 (let* ([program (sexpr->program '(let ()
@@ -36,7 +44,7 @@
        [abstraction (define->abstraction '(define F8
                                             (lambda (V25) (list 'a (list 'a (list V25) (list V25))))))])
   (check (program->abstraction-applications program abstraction) => '((F8 'b) (F8 'c) (F8 'd))))
-
+(check-report)
 ;; (define (test-unify)
 ;;   (let* ([sexpr '(a b c d)]
 ;;          [pattern '(A b c A)] 
@@ -101,7 +109,8 @@
 
 ;;(test-beam-search-compressions '(list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a)))))
 ;;(test-beam-search-compressions '((list a (list b (list d) (list d))) (list a (list b (list c) (list c)))))
-(test-compressions "recursion" compressions '(uniform-draw (list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a))) (list a) (list a (list a (list a (list a (list a (list a)))))))))
+
+;; (test-compressions "recursion" compressions '(uniform-draw (list (list a (list a)) (list a (list a (list a (list a)))) (list a (list a (list a))) (list a) (list a (list a (list a (list a (list a (list a)))))))))
 
 ;;(test-compressions "simple compression" compressions '((node (a 20)) (node (a 20)) (node (a 20)) (node (a 20))))
 ;; (test-compressions "compressions" compressions '((f (f (f (f x)))) (f (f (f (f x)))) (f (f (f (f x)))) (g (f (f (f x))))))

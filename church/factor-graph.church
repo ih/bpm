@@ -95,3 +95,11 @@
     (for-each display (list "converted back to python format " python-fg "\n"))
     (fg->image python-fg)))
 
+;;;temporary
+(define data node)
+(define radius node)
+(define blobbiness node)
+(define Distance node)
+(define Straightness node)
+(define G1 node)
+(define G2 node)

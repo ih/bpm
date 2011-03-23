@@ -16,7 +16,7 @@
          (define (lazy-pair? a) (if (procedure? a) (eq? 'lazy-pair (a 'type?)) false))
 
          (define lazy-list (lambda args (if (pair? args) (lazy-pair (first args) (apply lazy-list (rest args))) args)))
-         (define policy 'noisy-number)
+         (define policy 'topology-only)
          (define (set-policy! new-policy)
            (set! policy new-policy))
 
@@ -27,7 +27,7 @@
                  [else (error "eq-policy not handled in lazy-equal!")]))
 
          (define (topology-only-eq? a b)
-           (if (and (number? a) (number? b))
+           (if (and (number? a) (number? b)) ;;just do (number? a) rather than (and (number? a) (number? b))
                #t
                (eq? a b)))
 

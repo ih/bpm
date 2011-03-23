@@ -273,7 +273,8 @@
          ;; transforms a tree like
          ;; (a (b) (c (d)) (e (f)))
          ;; into an enumerated tree like
-         ;; ($1 a ($2 b) ($3 c (4 d)) ($5 e ($6 f)))
+         ;; ($1 a ($2 b) ($3 c ($4 d)) ($5 e ($6 f)))
+         ;;basically assigns a unique identifier to each subexpression (excluding primitives)
          (define (enumerate-tree t)
            (if (primitive? t)
                t

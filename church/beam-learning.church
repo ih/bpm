@@ -149,9 +149,18 @@
   (apply + (map (lambda (fg) (score-fg-program prog fg popsize)) data)))
 
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|program)}p(images|fg) where R is the nubmer of samples
+;;;this is the likelihood 
 (define (scoring-fg-image prog sample-size)
-  (let* ([fg-sampler (eval prog)]
+  (let* ([none (set-policy! 'noisy-number)]
+         [fg-sampler (eval prog)]
          [fg-samples (repeat sample-size (lambda () (lazy-list->all-list (fg-sampler))))]
          [likelihoods (map fg->img-score fg-samples)])
     (/ (apply + likelihoods) sample-size)))  ;;;if likelihoods are probabilities and not log probabilities
-         
+
+
+;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
+;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
+;; (define (topology-sampler data prog sample-size)
+;;   (let* ([none (set-policy! 'topology-only)]
+;;          [fg-top (imgs->fg_top data)]
+;;          [fg+score-samples (repeat sample-size (lambda () (score+value-fg-program fgtop prog 10 )))])))
