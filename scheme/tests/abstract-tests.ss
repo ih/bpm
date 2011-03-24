@@ -33,8 +33,15 @@
 (reset-symbol-indizes!)
 (check (enumerate-tree '(+ (+ 2 2) (- 2 5))) => '($3 + ($1 + 2 2) ($2 - 2 5)))
 ;;;all-subtrees tests
-(let ([ etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))])
+(let ([etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))])
   (check (map unenumerate-tree (all-subtrees etree)) => '((+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
+;;;make-named-abstraction test
+(check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
+;;;self-matches tests
+;; (let ([etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))]
+;;       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
+;;       [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))])
+;;   (check (self-matches etree) => (list abstraction1 abstraction2)))
 
 ;;;program->abstraction-applications tests
 (let* ([program (sexpr->program '(let ()
