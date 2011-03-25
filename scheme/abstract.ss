@@ -50,6 +50,9 @@
                            (pairing-recursion (rest lst1) (rest lst2))))))
            (delete-duplicates (pairing-recursion lst (rest lst)) commutative-pair-equal))
 
+         (define (list-unique-commutative-pairs lst)
+           (unique-commutative-pairs lst list))
+
          ;;language specific functions ;use reg-exps
          ;;temp fix b/c problems access to srfi 13
          (define (var? expr)
@@ -360,7 +363,7 @@
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
          (define (possible-abstractions expr)
-           (let* ([subexpr-pairs (unique-commutative-pairs (all-subexprs expr))]
+           (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
                   [variables-patterns (map-apply anti-unify subexpr-pairs)]
                   [abstractions (map-apply make-abstraction variables-patterns)])
              (map capture-free-variables abstractions)))

@@ -37,11 +37,6 @@
   (check (map unenumerate-expr (all-subexprs eexpr)) => '((+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
 ;;;make-named-abstraction test
 (check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
-;; ;;;self-matches tests
-;; (let ([eexpr (enumerate-expr '(+ (+ 2 2) (- 2 5)))]
-;;       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
-;;       [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))])
-;;   (check (common-subexprs eexpr eexpr #t) => (list abstraction1 abstraction2)))
 
 ;;;unique-commutative-pairs tests
 (let* ([subexprs '((+ (+ 2 2) (- 2 5)) (+ 2 2) (+ 2 2) (+ 2 2) (- 2 5))]
@@ -50,6 +45,9 @@
        [pair3 '((+ 2 2) (+ 2 2))]
        [pair4 '((+ 2 2) (- 2 5))])
   (check (unique-commutative-pairs subexprs list) => (list pair1 pair2 pair3 pair4)))
+
+
+;;;anti-unify tests
 
 ;;;possible-abstractions tests
 ;;basic test

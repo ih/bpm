@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -77,6 +77,9 @@
                    #f
                    #t)
                #f))
+
+         (define (more-than-one lst)
+           (> (length lst) 1))
          
          (define (quoted? expr)
            (if (non-empty-list? expr)
