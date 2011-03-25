@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subtrees deep-find-all)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -47,9 +47,9 @@
                    sexp)))
 
          (define (deep-find-all pred? sexp)
-           (filter pred? (all-subtrees sexp)))
+           (filter pred? (all-subexprs sexp)))
 
-         (define (all-subtrees t)
+         (define (all-subexprs t)
            (let loop ([t (list t)])
              (cond [(null? t) '()]
                    [(primitive? (first t)) (loop (rest t))]
@@ -87,6 +87,11 @@
            (if (or (not (list? tree)) (null? tree))
                0
                (+ 1 (apply max (map depth tree)))))
+
+         ;;creates a lambda that performs an apply for the passed in function
+         ;;useful for map over arguments produced by some other function
+         (define (lambda-apply proc)
+           (lambda (arg-list) (apply proc arg-list)))
 
          ;;this function copies a tree, but applies proc to the tree at the passed in location.  
          (define (tree-apply-proc proc location tree)

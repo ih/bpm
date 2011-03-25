@@ -28,21 +28,43 @@
         (unique-programs
          (compressing-function (make-program '() sexpr))))))
 
-;;;enumerate-tree tests
-(check (enumerate-tree '(n 25.0)) => '($1 n 25.0))
+;;;enumerate-expr tests
+(check (enumerate-expr '(n 25.0)) => '($1 n 25.0))
 (reset-symbol-indizes!)
-(check (enumerate-tree '(+ (+ 2 2) (- 2 5))) => '($3 + ($1 + 2 2) ($2 - 2 5)))
-;;;all-subtrees tests
-(let ([etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))])
-  (check (map unenumerate-tree (all-subtrees etree)) => '((+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
+(check (enumerate-expr '(+ (+ 2 2) (- 2 5))) => '($3 + ($1 + 2 2) ($2 - 2 5)))
+;;;all-subexprs tests
+(let ([eexpr (enumerate-expr '(+ (+ 2 2) (- 2 5)))])
+  (check (map unenumerate-expr (all-subexprs eexpr)) => '((+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
 ;;;make-named-abstraction test
 (check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
 ;;;self-matches tests
-;; (let ([etree (enumerate-tree '(+ (+ 2 2) (- 2 5)))]
-;;       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
-;;       [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))])
-;;   (check (self-matches etree) => (list abstraction1 abstraction2)))
+(let ([eexpr (enumerate-expr '(+ (+ 2 2) (- 2 5)))]
+      [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
+      [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))])
+  (check (common-subexprs eexpr eexpr #t) => (list abstraction1 abstraction2)))
 
+;;;possible-abstractions tests
+;;basic test
+(let* ([expr '(+ (+ 2 2) (- 2 5))]
+       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
+       [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))]
+       [abstraction3 (make-named-abstraction 'F3 '(V5 V6 V7) '(V5 V6 V7))])
+  (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
+;;expr has free variables
+(let* ([expr '(+ (+ V1 V1) (+ V1 5))]
+       [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V2 V3))]
+       [abstraction2 (make-named-abstraction 'F2 '(+ V1 V4) '(V1 V4))]
+       [abstraction3 (make-named-abstraction 'F3 '(V5 V6 V7) '(V5 V6 V7))])
+  (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
+;;;compressions tests
+(let ([program '() '(+ (+ 2 2) (- 2 5))]
+      [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
+      [abstraction2 (make-named-abstraction 'F2 '(V3 2 V4) '(V3 V4))]
+      [abstraction3 (make-named-abstraction 'F3 '(V5 V6 V7) '(V5 V6 V7))]
+      [compressed1 (make-program (list abstraction1) '(F1 (F1 2 2) (- 2 5)))]
+      [compressed2 (make-program (list abstraction2) '(+ (F2 + 2) (F2 - 5)))]
+      [compressed3 (make-program (list abstraction3) '(F3 + (F3 + 2 2) (F3 - 2 5)))])
+  (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
 ;;;program->abstraction-applications tests
 (let* ([program (sexpr->program '(let ()
                                    (define F8

@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-tree program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction self-matches)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction self-matches common-subexprs)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -27,11 +27,11 @@
          (define (func-symbol) 'F) 
 
          ;; compute the size of a program
-         (define (size tree)
-           (if (list? tree)
-               (cond [(tagged-list? tree 'begin) (size (rest tree))] ;; ignore 'begin symbol
-                     [(tagged-list? tree 'define) (size (cddr tree))] ;; ignore 'define symbol + args
-                     [else (apply + (map size tree))])
+         (define (size expr)
+           (if (list? expr)
+               (cond [(tagged-list? expr 'begin) (size (rest expr))] ;; ignore 'begin symbol
+                     [(tagged-list? expr 'define) (size (cddr expr))] ;; ignore 'define symbol + args
+                     [else (apply + (map size expr))])
                1))
 
          (define (unique-commutative-pairs lst func)
@@ -270,15 +270,16 @@
                            (lambda () #f)))
 
 
-         ;; transforms a tree like
+         ;; transforms a expr like
          ;; (a (b) (c (d)) (e (f)))
-         ;; into an enumerated tree like
+         ;; into an enumerated expr like
          ;; ($1 a ($2 b) ($3 c ($4 d)) ($5 e ($6 f)))
-         ;;basically assigns a unique identifier to each subexpression (excluding primitives)
-         (define (enumerate-tree t)
+         ;;basically assigns a unique identifier to each expression (excluding primitives)
+         ;;used to make sure expressions are not matched with themselves
+         (define (enumerate-expr t)
            (if (primitive? t)
                t
-               (pair (sym '$) (map enumerate-tree t))))
+               (pair (sym '$) (map enumerate-expr t))))
 
 
          ;; is obj a list like '(x)?
@@ -289,9 +290,9 @@
 
          ;; data structures & associated functions
 
-         ;; returns #f if trees cannot be unified,
-         ;; otherwise tree with variable in places where they differ
-         ;; returns for (the enumerated version of) trees
+         ;; returns #f if exprs cannot be unified,
+         ;; otherwise expr with variable in places where they differ
+         ;; returns for (the enumerated version of) exprs
          ;; (z (a (x (i (j)) (h (m)))) (c) (d (f) (i)))
          ;; (z (a (x (k (l)) (h (m)))) (c) (d (h (f)) (i)))
          ;; this:
@@ -304,7 +305,7 @@
 
          
 
-         ;; replcae a few uninteresting abstractions with #f
+         ;; replace a few uninteresting abstractions with #f
          ;; (single variable or singleton list)
          ;; returns an abstraction or #f
          (define (filtered-anti-unify et1 et2 ignore-id-matches)
@@ -323,22 +324,22 @@
                        (make-abstraction pattern variables))))))
 
 
-         ;; anti-unify all combinations of subtrees
-         (define (common-subtrees et1 et2 ignore-id-matches)
+         ;; anti-unify all combinations of subexprs
+         (define (common-subexprs et1 et2 ignore-id-matches)
            (define (fau st1 st2)
              (list st1 st2 (filtered-anti-unify st1 st2 ignore-id-matches)))
-           (let ([sts1 (all-subtrees et1)]
-                 [sts2 (all-subtrees et2)])
+           (let ([sts1 (all-subexprs et1)]
+                 [sts2 (all-subexprs et2)])
              (apply append
                     (map (lambda (st1) (map (lambda (st2) (fau st1 st2)) sts2)) sts1))))
 
-         ;; return abstractions for all subtrees that enumerated tree et has in
+         ;; return abstractions for all subexprs that expr has in
          ;; common with itself, ignore identity matches
-         (define (self-matches et)
+         (define (self-matches expr)
            (define (fau st1 st2)
              (let* ([abstraction (filtered-anti-unify st1 st2 #t)]
-                    [exp1 (unenumerate-tree st1)]
-                    [exp2 (unenumerate-tree st2)])
+                    [exp1 (unenumerate-expr st1)]
+                    [exp2 (unenumerate-expr st2)])
                (if abstraction 
                    (let* ([none (replace-matches exp1 abstraction)]  ;;only used to track instances where an abstraction is used
                           [none (replace-matches exp2 abstraction)] ;;only used to track instances where an abstraction is used
@@ -346,24 +347,33 @@
                           [none (set! abstraction-instances (make-hash-table eqv?))])  ;;prevents abstract-instances from growing too big; called here because instances have already been examined for common variables
                      reduced-abstractions)
                    (list st1 st2 #f))))
-           (let ([sts (all-subtrees et)])
+           (let ([sts (all-subexprs expr)])
              (unique-commutative-pairs sts fau)))
 
+         ;;return valid abstractions for any matching subexpressions in expr
+         ;;valid abstractions are those without free variables
+         (define (possible-abstractions expr)
+           (let* ([subexpr-pairs (unique-commutative-pairs (all-subexprs expr))]
+                  [variables-patterns (map (lambda-apply anti-unify) subexpr-pairs)])
+             (map (compose capture-free-variables (lambda-apply make-abstraction)) variables-patterns)))
+           
 
-         ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
-         ;; s = (foo (foo a b c) b c)
-         ;; sv = (foo V b c)
-         ;; name = P
-         ;; first pass: (P (foo a b c))
-         ;; second (operand) pass: (P (P a))
-         ;; returns #f if abstraction cannot be applied, otherwise variable assignments
-         ;; ! assumes that each variable occurs only once in sv [2]
-         
+           ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
+           ;; s = (foo (foo a b c) b c)
+           ;; sv = (foo V b c)
+           ;; name = P
+           ;; first pass: (P (foo a b c))
+           ;; second (operand) pass: (P (P a))
+           ;; returns #f if abstraction cannot be applied, otherwise variable assignments
+           ;; ! assumes that each variable occurs only once in sv [2]
+           
            
 
 
 
-         ;; doesn't deal with partial matches, could use more error checking; 
+           ;; doesn't deal with partial matches, could use more error checking;
+           
+         
          (define (replace-matches s abstraction)
            (let ([unified-vars (unify s
                                       (abstraction->pattern abstraction)
@@ -382,18 +392,22 @@
            (equal? (second (third pattern)) var))
 
          ;; throw out any matches that are #f
-         (define (get-valid-abstractions subtree-matches)
-           (let ([abstractions (map third subtree-matches)])
+         
+         (define (get-valid-abstractions subexpr-matches)
+           (let ([abstractions (map third subexpr-matches)])
              (filter (lambda (x) x) abstractions)))
 
-         (define (get/make-valid-abstractions subtree-matches)
-           (let* ([abstractions (map third subtree-matches)]
+         (define (get/make-valid-abstractions subexpr-matches)
+           (let* ([abstractions (map third subexpr-matches)]
                   [non-false (filter (lambda (x) x) abstractions)]
-                  [no-free-vars (map capture-vars non-false)])
+                  [no-free-vars (map capture-free-variables non-false)])
              no-free-vars))
 
-         ;;free variables can occur when the pattern for an abstraction contains variables that were part of the matched expressions e.g. if the expression was (+ v1 v1 a) (+ v1 v1 b) then the pattern would be ((+ v1 v1 v2)
-         (define (capture-vars abstraction)
+         ;;free variables can occur when the pattern for an abstraction contains variables that were part of the matched expressions e.g. if the expression was (+ v1 v1 a) (+ v1 v1 b) then the pattern would be (+ v1 v1 v2)
+         ;;we "capture" the variables by adding them to the function definition
+         ;;an alternative approach would be to have nested abstractions
+         
+         (define (capture-free-variables abstraction)
            (let* ([free-vars (get-free-vars abstraction)]
                   [new-vars (append free-vars (abstraction->vars abstraction))] 
                   [old-pattern (abstraction->pattern abstraction)]
@@ -406,6 +420,7 @@
                  )))
 
          ;;searches through the body of the abstraction  and returns a list of free variables
+         
          (define (get-free-vars abstraction)
            (let* ([pattern (abstraction->pattern abstraction)]
                   [non-free (abstraction->vars abstraction)]
@@ -417,12 +432,14 @@
 
 
          ;; joins definitions and program body into one big list
+         
          (define (condense-program program)
            `(,@(map abstraction->pattern (program->abstractions program))
              ,(program->body program)))
 
          
          ;;if the program being compressed has function/variable symbols with higher indices that what is already in sym then functions might be made with the same name as already existing functions (ASSUMES NO FREE VARIABLES/FUNCTION NAMES)
+         
          (define (raise-func/var-indices! program)
            (let* ([defs (program->abstractions program)]
                   [funcs (map abstraction->name defs)]
@@ -436,19 +453,19 @@
              (set-symbol-index! tag largest-index)))
          (define (max-index tag tagged-symbols)
            (define (get-index tagged-symbol)
-             (string->number (string-drop (symbol->string tagged-symbol) (length (string->list (symbol->string tag))) )))
+             (string->number (string-drop (symbol->string tagged-symbol) (length (string->list (symbol->string tag))))))
            (apply max (map get-index tagged-symbols)))
 
                   
          ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
+         
          (define (compressions program . nofilter)
            (let* ([none (set! abstraction-instances (make-hash-table eqv?))]
                   [none (raise-func/var-indices! program)] ;;in case program already has function symbols and variable symbols higher than current indices
                   [abstraction-instances (make-hash-table eqv?)]
                   [condensed-program (condense-program program)]
-                  [abstractions (self-matches (enumerate-tree condensed-program))]
-                  [valid-abstractions (get/make-valid-abstractions abstractions)] 
-                  [compressed-programs (map (curry compress-program program) valid-abstractions)]
+                  [abstractions (possible-abstractions condense-program)]
+                  [compressed-programs (map (curry compress-program program) abstractions)]
                   [program-size (size (program->sexpr program))]
                   [valid-compressed-programs
                    (if (not (null? nofilter))
@@ -456,7 +473,7 @@
                        (filter (lambda (cp) (<= (size (program->sexpr cp))
                                                 (+ program-size 1)))
                                compressed-programs))])
-                  valid-compressed-programs))
+             valid-compressed-programs))
 
          (define (true-compressions program)
            (compressions program))
@@ -465,6 +482,7 @@
            (compressions program 'all))
 
          ;; both compressee and compressor are abstractions
+         
          (define (compress-abstraction compressor compressee)
            (make-named-abstraction (abstraction->name compressee)
                                    (replace-matches (abstraction->pattern compressee) compressor)
@@ -478,26 +496,31 @@
                            compressed-body)))
 
          ;; iteratively compress program, filter programs using cfilter before recursing
+         
          (define (iterated-compressions cfilter program)
            (let ([compressed-programs (cfilter (compressions program))])
              (append compressed-programs
                      (apply append (map (curry iterated-compressions cfilter) compressed-programs)))))
 
          ;; compute all entries of full (semi)lattice
+         
          (define all-iterated-compressions
            (curry iterated-compressions (lambda (x) x)))
 
          ;; before exploring, boil down set of programs to eliminate duplicates
          ;; NOTE: uses unique-programs which currently compares by length!
+         
          (define unique-iterated-compressions
            (curry iterated-compressions unique-programs))
 
          ;; NOTE: uses unique-programs which currently compares by length!
+         
          (define (beam-search-compressions n program)
            (iterated-compressions (lambda (progs) (shortest-n n (unique-programs progs)))
                                   program))
 
          ;;compress a single step, used as a mcmc proposal
+         
          (define (inverse-inline program prob-inverse-inline prob-inline)
            (let* (;;[db (pretty-print "inverse-inline")]
                   [possible-compressions (compressions program)])
@@ -511,12 +534,14 @@
                    (list compression-choice fw-prob bw-prob)))))
 
          ;;returns a new proposal along with forward/backward probability, used in mcmc
+         
          (define (proposal program)
            (let* ([prob-inline (- (log 2.0))]
                   [prob-inverse-inline (log (- 1 (exp prob-inline)))])
              (if (flip (exp prob-inline))
                  (inline program prob-inline prob-inverse-inline)
                  (inverse-inline program prob-inverse-inline prob-inline)))) ;;better way to do this?
+         
 
          (define (test-abstraction-proposer sexpr)
            (list '(if t f t) (log .2) (log .8)))
@@ -533,9 +558,10 @@
              (list new-sexpr fw-prob bw-prob)))
 
          ;;inlining or decompression code; returns an expanded program and the probability of moving to that particular expansion
+         
          (define (inline program prob-inline prob-inverse-inline)
            (let* ([abstractions (program->abstractions program)])
-                  ;;[db (pretty-print "inline")])
+             ;;[db (pretty-print "inline")])
              (if (null? abstractions)
                  ;;is this right? if you inline a program w/o abstraction you cannot get back by inverse-inlining (unless the inverse-inline has no possible abstractions) so should we use the prob-of-inline as the probability of returning to this state
                  (list program prob-inline prob-inline) 
@@ -550,12 +576,13 @@
                         [bw-prob (if (= 0 number-possible-compressions)
                                      -inf.0
                                      (+ prob-inverse-inline (- (log number-possible-compressions))))])
-                        ;;[db (pretty-print (list "fw bw" fw-prob bw-prob))])
+                   ;;[db (pretty-print (list "fw bw" fw-prob bw-prob))])
                    (list inlined-program fw-prob bw-prob)))))
          
 
          ;;given a program body and an abstraction replace all function applications of teh abstraction in the body with the instantiated pattern
-         ;;FIXME needs to be called recursively on subexpressions
+         ;;FIXME needs to be called recursively on expressions
+         
          (define (inverse-replace-matches abstraction sexpr)
            (cond
             [(abstraction-instance? sexpr abstraction)
@@ -566,6 +593,7 @@
             [else sexpr]))
 
          ;;test whether an expression is an application of the abstraction e.g. (F 3 4) for the abstraction F, also checks if abstraction is being used in higher-order function e.g. (G 3 F)
+         
          (define (abstraction-instance? sexpr abstraction)
            (if (and (list? sexpr) (not (null? sexpr)))
                (let* ([name (abstraction->name abstraction)]
@@ -576,6 +604,7 @@
 
 
          ;;the sexpr is of the form (F arg1...argN) where F is the name of the abstraction and N is the number of variables in the abstraction pattern; return the pattern with all the variables replaced by the arguments to F; the first case deals with the abstraction being used in a higher-order functions; the second case deals with abstraction
+         
          (define (instantiate-pattern sexpr abstraction)
            (cond [(equal? sexpr (abstraction->name abstraction))
                   (make-anon abstraction)]
@@ -587,18 +616,13 @@
            `(lambda ,(abstraction->vars abstraction) ,(abstraction->pattern abstraction)))
 
          ;;replace the named variable in the pattern with a value
+         
          (define (replace-var name-value pattern)
            (define name first)
            (define value second)
            (sexp-replace (name name-value) (value name-value) pattern))
 
-         ;; testing
 
-         (define (pretty-print-match m)
-           (for-each display
-                     (list "t1: " (unenumerate-tree (first m)) "\n"
-                           "t2: " (unenumerate-tree (second m)) "\n"
-                           "m: " (abstraction->pattern (third m)) "\n\n")))
 
          (define (pretty-print-program program)
            (let ([sexpr (program->sexpr program)])
@@ -618,7 +642,7 @@
                  (display "not compressible\n")
                  (first top-compressions))))
          
-         )
+         
     
 
 

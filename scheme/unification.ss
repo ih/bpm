@@ -1,5 +1,5 @@
 (library (unification)
-         (export anti-unify unify var-symbol unenumerate-tree set-policy!) 
+         (export anti-unify unify var-symbol unenumerate-expr set-policy!) 
          (import (rnrs)
                  (_srfi :1)
                  (noisy-number)
@@ -7,14 +7,14 @@
                  (mem)
                  (util)
                  (sym))
-         (define etree->id first)
+         (define eexpr->id first)
 
-         (define etree->tree cdr) ;; non-recursive
+         (define eexpr->expr cdr) ;; non-recursive
 
-         (define (unenumerate-tree t)
+         (define (unenumerate-expr t)
            (if (primitive? t)
                t
-               (map unenumerate-tree (rest t))))
+               (map unenumerate-expr (rest t))))
 
 
          
@@ -47,7 +47,7 @@
 
                ;;eventually change this to probabilistically return et1 or et2, returns et1 now for testing purposes
                (define (no-var-policy et1 et2)
-                 (unenumerate-tree et1))
+                 (unenumerate-expr et1))
                
                (define (add-variable!)
                  (set! variables (pair (sym (var-symbol)) variables))
@@ -56,17 +56,17 @@
                (define (build-pattern et1 et2 ignore-id-matches)
                  (cond [(and (primitive? et1) (primitive? et2)) (if (equal? et1 et2) et1 ((mismatch-policy!) et1 et2))]
                        [(or (primitive? et1) (primitive? et2)) ((mismatch-policy!) et1 et2)]
-                       [(and ignore-id-matches (eqv? (etree->id et1) (etree->id et2))) #f]
+                       [(and ignore-id-matches (eqv? (eexpr->id et1) (eexpr->id et2))) #f]
                        [(not (eqv? (length et1) (length et2))) ((mismatch-policy!) et1 et2)]
                        [else
-                        (let ([unified-tree (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
-                                                 (etree->tree et1)
-                                                 (etree->tree et2))])
-                          (if (any false? unified-tree)
+                        (let ([unified-expr (map (lambda (t1 t2) (build-pattern t1 t2 ignore-id-matches))
+                                                 (eexpr->expr et1)
+                                                 (eexpr->expr et2))])
+                          (if (any false? unified-expr)
                               #f
-                              unified-tree))]))
+                              unified-expr))]))
                (let ([pattern (build-pattern et1 et2 ignore-id-matches)])
-                 (list variables pattern)))))
+                 (list pattern variables)))))
 
          
 
