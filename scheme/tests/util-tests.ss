@@ -19,3 +19,7 @@
 
 (let ([sexprs '((F8 (F8 'b)) (F8 'b) (F8 'c) (F8 'd))])
   (check (sexp-search rule-application? (lambda (x) (list (first x))) sexprs) => '((F8) (F8) (F8) (F8))))
+
+;;;lambda-apply
+(let* ([args '((2 3) (4 6))])
+  (check (map-apply + args) => '(5 10)))

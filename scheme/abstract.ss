@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction self-matches common-subexprs)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction self-matches common-subexprs unique-commutative-pairs)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -17,7 +17,7 @@
                  (util)
                  (sym)
                  (mem))
-                 
+         
 
          (define (identity x) x)
 
@@ -34,14 +34,21 @@
                      [else (apply + (map size expr))])
                1))
 
+
+         ;;here pairs are lists of two items not scheme pairs
+         (define (commutative-pair-equal pair1 pair2)
+           (or (equal? pair1 pair2)
+               (and (equal? (first pair1) (second pair2)) (equal? (second pair1) (first pair2)))))
+
+         ;; there are ways to speed this up by preprocessing lst
          (define (unique-commutative-pairs lst func)
-           (define (recursion lst1 lst2)
+           (define (pairing-recursion lst1 lst2)
              (if (null? lst2)
                  '()
                  (let ((from1 (first lst1)))
                    (append (map (lambda (from2) (func from1 from2)) lst2)
-                           (recursion (rest lst1) (rest lst2))))))
-           (recursion lst (rest lst)))
+                           (pairing-recursion (rest lst1) (rest lst2))))))
+           (delete-duplicates (pairing-recursion lst (rest lst)) commutative-pair-equal))
 
          ;;language specific functions ;use reg-exps
          ;;temp fix b/c problems access to srfi 13
@@ -134,7 +141,7 @@
            (define (get-defines sexpr)
              (if (list? sexpr)
                  (filter 
-                         sexpr)
+                  sexpr)
                  '()))
            (map define->abstraction (get-defines sexpr)))
 
@@ -354,25 +361,26 @@
          ;;valid abstractions are those without free variables
          (define (possible-abstractions expr)
            (let* ([subexpr-pairs (unique-commutative-pairs (all-subexprs expr))]
-                  [variables-patterns (map (lambda-apply anti-unify) subexpr-pairs)])
-             (map (compose capture-free-variables (lambda-apply make-abstraction)) variables-patterns)))
-           
+                  [variables-patterns (map-apply anti-unify subexpr-pairs)]
+                  [abstractions (map-apply make-abstraction variables-patterns)])
+             (map capture-free-variables abstractions)))
+         
 
-           ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
-           ;; s = (foo (foo a b c) b c)
-           ;; sv = (foo V b c)
-           ;; name = P
-           ;; first pass: (P (foo a b c))
-           ;; second (operand) pass: (P (P a))
-           ;; returns #f if abstraction cannot be applied, otherwise variable assignments
-           ;; ! assumes that each variable occurs only once in sv [2]
-           
-           
+         ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
+         ;; s = (foo (foo a b c) b c)
+         ;; sv = (foo V b c)
+         ;; name = P
+         ;; first pass: (P (foo a b c))
+         ;; second (operand) pass: (P (P a))
+         ;; returns #f if abstraction cannot be applied, otherwise variable assignments
+         ;; ! assumes that each variable occurs only once in sv [2]
+         
+         
 
 
 
-           ;; doesn't deal with partial matches, could use more error checking;
-           
+         ;; doesn't deal with partial matches, could use more error checking;
+         
          
          (define (replace-matches s abstraction)
            (let ([unified-vars (unify s
@@ -456,7 +464,7 @@
              (string->number (string-drop (symbol->string tagged-symbol) (length (string->list (symbol->string tag))))))
            (apply max (map get-index tagged-symbols)))
 
-                  
+         
          ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
          
          (define (compressions program . nofilter)
@@ -640,12 +648,6 @@
                                      (beam-search-compressions beam-size (make-program '() sexpr))))])
              (if (null? top-compressions)
                  (display "not compressible\n")
-                 (first top-compressions))))
+                 (first top-compressions)))))
          
-         
-    
-
-
-
 ;; -potential issue if you try to inline a function that calls itself and it is not in the form (f (f (f (x))))); if you start from programs without abstraction this may never occur since any recursive function should abstract to (f(f(f(x)))) form 
-
