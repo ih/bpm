@@ -1,5 +1,5 @@
 (library (unification)
-         (export anti-unify var-symbol) 
+         (export anti-unify unify var-symbol) 
          (import (rnrs)
                  (_srfi :1)
                  (noisy-number)
@@ -12,6 +12,9 @@
 
 ;;;anti-unification
          ;;it might be nice to memoize this, but right now if the sexprs passed to it have floating point numbers, this causes problems
+         ;;returns a partial match of the expressions passed to it along with the variables used
+         ;;e.g. (+ 2 (+ 3 4)) and (+ (* 3 5) (- 3 5)) => (+ V1 (V2 3 V3)) with variables (V1 V2 V3)
+         ;;the reason for returning the variables is the output of this function is passed to make-abstraction, this also determines the order of the output
          (define anti-unify
            (lambda (expr1 expr2)
              (begin
@@ -33,10 +36,20 @@
                  (list pattern variables)))))
 
          
-
+(define unify '())
          ;;noisy number related
 ;;;unification
          ;;it might be nice to memoize this, but right now if the sexprs passed to it have floating point numbers, this causes problems
+         ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
+         ;; s = (foo (foo a b c) b c)
+         ;; sv = (foo V b c)
+         ;; name = P
+         ;; first pass: (P (foo a b c))
+         ;; second (operand) pass: (P (P a))
+         ;; returns #f if abstraction cannot be applied, otherwise variable assignments
+         ;; ! assumes that each variable occurs only once in sv [2]
+
+
          ;; (define unify
          ;;   (lambda (s sv vars)
          ;;     (begin

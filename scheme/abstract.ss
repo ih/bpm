@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction self-matches common-subexprs unique-commutative-pairs)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction common-subexprs unique-commutative-pairs possible-abstractions)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -300,19 +300,6 @@
 
          ;; data structures & associated functions
 
-         ;; returns #f if exprs cannot be unified,
-         ;; otherwise expr with variable in places where they differ
-         ;; returns for (the enumerated version of) exprs
-         ;; (z (a (x (i (j)) (h (m)))) (c) (d (f) (i)))
-         ;; (z (a (x (k (l)) (h (m)))) (c) (d (h (f)) (i)))
-         ;; this:
-         ;; (z (a (x (* (*)) (h (m)))) (c) (d * (i)))
-         ;; (f (f (f c)))
-         ;; (f (f c))
-         ;; returns:
-         ;; (if (flip) var2 (var1 (rec
-
-
          
 
          ;; replace a few uninteresting abstractions with #f
@@ -343,22 +330,6 @@
              (apply append
                     (map (lambda (st1) (map (lambda (st2) (fau st1 st2)) sts2)) sts1))))
 
-         ;; return abstractions for all subexprs that expr has in
-         ;; common with itself, ignore identity matches
-         (define (self-matches expr)
-           (define (fau st1 st2)
-             (let* ([abstraction (filtered-anti-unify st1 st2 #t)]
-                    [exp1 (unenumerate-expr st1)]
-                    [exp2 (unenumerate-expr st2)])
-               (if abstraction 
-                   (let* ([none (replace-matches exp1 abstraction)]  ;;only used to track instances where an abstraction is used
-                          [none (replace-matches exp2 abstraction)] ;;only used to track instances where an abstraction is used
-                          [reduced-abstractions (list st1 st2 (remove-redundant-variables abstraction))]
-                          [none (set! abstraction-instances (make-hash-table eqv?))])  ;;prevents abstract-instances from growing too big; called here because instances have already been examined for common variables
-                     reduced-abstractions)
-                   (list st1 st2 #f))))
-           (let ([sts (all-subexprs expr)])
-             (unique-commutative-pairs sts fau)))
 
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
@@ -366,25 +337,14 @@
            (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
                   [variables-patterns (map-apply anti-unify subexpr-pairs)]
                   [abstractions (map-apply make-abstraction variables-patterns)])
-             (map capture-free-variables abstractions)))
-         
+             (filter-abstractions  abstractions)))
 
-         ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
-         ;; s = (foo (foo a b c) b c)
-         ;; sv = (foo V b c)
-         ;; name = P
-         ;; first pass: (P (foo a b c))
-         ;; second (operand) pass: (P (P a))
-         ;; returns #f if abstraction cannot be applied, otherwise variable assignments
-         ;; ! assumes that each variable occurs only once in sv [2]
+         ;;;makes sure there are no abstractions with free variables
+         (define (filter-abstractions abstractions)
+           (map capture-free-variables abstractions))
          
-         
-
-
 
          ;; doesn't deal with partial matches, could use more error checking;
-         
-         
          (define (replace-matches s abstraction)
            (let ([unified-vars (unify s
                                       (abstraction->pattern abstraction)
