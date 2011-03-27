@@ -334,14 +334,15 @@
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
          (define (possible-abstractions expr)
-           (let* ([none (set-indices-floor! expr)]
-                  [subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
-                  [abstractions (map-apply anti-unify-abstraction subexpr-pairs)])
+           (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
+                  [abstractions (map-apply (curry anti-unify-abstraction expr) subexpr-pairs)])
              (filter-abstractions  abstractions)))
 
-         (define (anti-unify-abstraction expr1 expr2)
-           (let ([abstraction (apply make-abstraction (anti-unify expr1 expr2))]
-                 [none (reset-symbol-indizes!)])
+         ;;takes expr so that each abstraction can have the indices for function and variables set correctly
+         (define (anti-unify-abstraction expr expr1 expr2)
+           (let* ([none (set-indices-floor! expr)]
+                  [abstraction (apply make-abstraction (anti-unify expr1 expr2))]
+                  [none (reset-symbol-indizes!)])
              abstraction))
          
          (define (set-indices-floor! expr)
@@ -394,9 +395,10 @@
          ;;an alternative approach would be to have nested abstractions
          
          (define (capture-free-variables abstraction)
-           (let* ([free-vars (get-free-vars abstraction)]
+           (let* ([free-vars (get-free-vars abstraction)] 
                   [new-vars (append free-vars (abstraction->vars abstraction))] 
                   [old-pattern (abstraction->pattern abstraction)]
+                  ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
                   [old-name (abstraction->name abstraction)])
              (if (null? free-vars)
                  abstraction
