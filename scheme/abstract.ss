@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction common-subexprs unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor!)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor!)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -321,16 +321,6 @@
                        (make-abstraction pattern variables))))))
 
 
-         ;; anti-unify all combinations of subexprs
-         (define (common-subexprs et1 et2 ignore-id-matches)
-           (define (fau st1 st2)
-             (list st1 st2 (filtered-anti-unify st1 st2 ignore-id-matches)))
-           (let ([sts1 (all-subexprs et1)]
-                 [sts2 (all-subexprs et2)])
-             (apply append
-                    (map (lambda (st1) (map (lambda (st2) (fau st1 st2)) sts2)) sts1))))
-
-
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
          (define (possible-abstractions expr)
@@ -357,7 +347,17 @@
 
          ;;;makes sure there are no abstractions with free variables
          (define (filter-abstractions abstractions)
-           (map capture-free-variables abstractions))
+           (define (remove-isomorphic abstractions)
+             (delete-duplicates abstractions))
+           (define (remove-nonmatches abstractions)
+             (define (match? abstraction)
+               (let* ([body (abstraction->pattern abstraction)])
+                 (not (var? body))))
+             (filter match? abstractions))
+           (let* ([no-free-vars (map capture-free-variables abstractions)]
+                  [no-isomorphisms (remove-isomorphic no-free-vars)]
+                  [no-nonmatches (remove-nonmatches no-isomorphisms)])
+             no-nonmatches))
          
 
          ;; doesn't deal with partial matches, could use more error checking;
@@ -395,14 +395,14 @@
          ;;an alternative approach would be to have nested abstractions
          
          (define (capture-free-variables abstraction)
-           (let* ([free-vars (get-free-vars abstraction)] 
-                  [new-vars (append free-vars (abstraction->vars abstraction))] 
-                  [old-pattern (abstraction->pattern abstraction)]
-                  ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
-                  [old-name (abstraction->name abstraction)])
+           (let* ([free-vars (get-free-vars abstraction)])
              (if (null? free-vars)
                  abstraction
-                 (let ([no-free-abstraction (make-named-abstraction old-name old-pattern new-vars)])
+                 (let* ([new-vars (append free-vars (abstraction->vars abstraction))] 
+                        [old-pattern (abstraction->pattern abstraction)]
+                        ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
+                        [old-name (abstraction->name abstraction)]
+                        [no-free-abstraction (make-named-abstraction old-name old-pattern new-vars)])
                    ;;(hash-table-update! abstraction-instances old-name (lambda (original) (make-abstraction-history new-vars)))
                    no-free-abstraction)
                  )))

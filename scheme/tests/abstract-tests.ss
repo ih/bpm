@@ -65,13 +65,16 @@
        [abstraction2 (make-named-abstraction 'F1 '(V1 V2 V3) '(V3 V2 V1))]
        [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V2 V1))])
   (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
-;; ;;expr has free variables
-(reset-symbol-indizes!)
-(let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
-       [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V2 V3))]
-       [abstraction2 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
-       [abstraction3 (make-named-abstraction 'F1 '(V2 V3 V4) '(V2 V3 V4))])
-  (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
+;;expr has free variables
+
+(let* ([none (reset-symbol-indizes!)]
+       [abstraction1 (make-named-abstraction 'F4 '(+ V2 V3) '(V3 V2))])
+  (check (possible-abstractions '(+ (+ V1 V1) (+ V1 F3))) => (list abstraction1)))
+
+;;non match
+(let* ([none (reset-symbol-indizes!)]
+       [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V3 V2))])
+  (check (possible-abstractions '(+ (+ V1 3) (- 2))) => (list abstraction1)))
 ;; ;;;compressions tests
 ;; (let ([program '() '(+ (+ 2 2) (- 2 5))]
 ;;       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
