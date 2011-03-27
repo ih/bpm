@@ -2,6 +2,12 @@
         (srfi :78)
         (srfi :1)
         (abstraction-grammar))
+;;;primitives test
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (primitives expr) => '(F1 V1 V23 F5 V2)))
+;;;all-subexprs
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (all-subexprs expr) => '((F1 (V1 V23) F5 V2) F1 (V1 V23) F5 V2 V1 V23)))
 ;;;deep-find-all tests
 (let* ([sexpr '(let ()
                  (define F8
@@ -23,3 +29,5 @@
 ;;;lambda-apply
 (let* ([args '((2 3) (4 6))])
   (check (map-apply + args) => '(5 10)))
+
+(check-report)

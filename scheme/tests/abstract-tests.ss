@@ -47,6 +47,16 @@
   (check (unique-commutative-pairs subexprs list) => (list pair1 pair2 pair3 pair4)))
 
 
+;;;find-*-symbols test
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (find-tagged-symbols expr (func-symbol)) => '(F1 F5)))
+
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (find-tagged-symbols expr (var-symbol)) => '(V1 V23 V2)))
+;;;set-indices-floor tests
+(let* ([expr '(F1 (V1 V23) F5 V2)]
+       [none (set-indices-floor! expr)])
+  (check (list (sym 'F) (sym 'V)) => '(F6 V24)))
 ;;;possible-abstractions tests
 ;;basic test
 (let* ([expr '(+ (+ 2 2) (- 2 5))]
@@ -54,13 +64,13 @@
        [abstraction2 (make-named-abstraction 'F2 '(V3 V4 V5) '(V5 V4 V3))]
        [abstraction3 (make-named-abstraction 'F3 '(V6 2 V7) '(V7 V6))])
   (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
-;;expr has free variables
-(reset-symbol-indizes!)
-(let* ([expr '(+ (+ V1 V1) (- V1 5))]
-       [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V2 V3))]
-       [abstraction2 (make-named-abstraction 'F2 '(+ V1 V4) '(V1 V4))]
-       [abstraction3 (make-named-abstraction 'F3 '(V5 V6 V7) '(V5 V6 V7))])
-  (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
+;; ;;expr has free variables
+;; (reset-symbol-indizes!)
+;; (let* ([expr '(+ (+ V1 V1) (- V1 5))]
+;;        [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V2 V3))]
+;;        [abstraction2 (make-named-abstraction 'F2 '(+ V1 V4) '(V1 V4))]
+;;        [abstraction3 (make-named-abstraction 'F3 '(V5 V6 V7) '(V5 V6 V7))])
+;;   (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
 ;; ;;;compressions tests
 ;; (let ([program '() '(+ (+ 2 2) (- 2 5))]
 ;;       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]

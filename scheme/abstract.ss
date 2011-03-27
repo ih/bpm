@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction common-subexprs unique-commutative-pairs possible-abstractions)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction common-subexprs unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor!)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -334,10 +334,25 @@
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
          (define (possible-abstractions expr)
-           (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
-                  [variables-patterns (map-apply anti-unify subexpr-pairs)]
-                  [abstractions (map-apply make-abstraction variables-patterns)])
+           (let* ([none (set-indices-floor! expr)]
+                  [subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
+                  [abstractions (map-apply anti-unify-abstraction subexpr-pairs)])
              (filter-abstractions  abstractions)))
+
+         (define (anti-unify-abstraction expr1 expr2)
+           (let ([abstraction (apply make-abstraction (anti-unify expr1 expr2))]
+                 [none (reset-symbol-indizes!)])
+             abstraction))
+         
+         (define (set-indices-floor! expr)
+           (let ([funcs (find-tagged-symbols expr (func-symbol))]
+                 [vars (find-tagged-symbols expr (var-symbol))])
+             (begin
+               (raise-tagged! (func-symbol) funcs)
+               (raise-tagged! (var-symbol) vars))))
+
+         (define (find-tagged-symbols expr tag)
+           (filter (curry tag-match? tag) (primitives expr)))
 
          ;;;makes sure there are no abstractions with free variables
          (define (filter-abstractions abstractions)
@@ -419,13 +434,7 @@
                    [(null? vars) (raise-tagged! (func-symbol) funcs)]
                    [else (begin (raise-tagged! (var-symbol) vars)
                                 (raise-tagged! (func-symbol) funcs))])))
-         (define (raise-tagged! tag tagged-symbols)
-           (let ([largest-index (max-index tag tagged-symbols)])
-             (set-symbol-index! tag largest-index)))
-         (define (max-index tag tagged-symbols)
-           (define (get-index tagged-symbol)
-             (string->number (string-drop (symbol->string tagged-symbol) (length (string->list (symbol->string tag))))))
-           (apply max (map get-index tagged-symbols)))
+         
 
          
          ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
