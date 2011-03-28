@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor!)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -329,6 +329,7 @@
              (filter-abstractions  abstractions)))
 
          ;;takes expr so that each abstraction can have the indices for function and variables set correctly
+         ;;setting the indices floor only works if all functions in the program appear in expr, this is not the case if there are abstractions in the program that are not applied in the body 
          (define (anti-unify-abstraction expr expr1 expr2)
            (let* ([none (set-indices-floor! expr)]
                   [abstraction (apply make-abstraction (anti-unify expr1 expr2))]
@@ -345,7 +346,7 @@
          (define (find-tagged-symbols expr tag)
            (filter (curry tag-match? tag) (primitives expr)))
 
-         ;;;makes sure there are no abstractions with free variables
+         ;;;remove undesirable abstractions and change any that have free variables
          (define (filter-abstractions abstractions)
            (define (remove-isomorphic abstractions)
              (delete-duplicates abstractions))
@@ -446,7 +447,7 @@
                   [none (raise-func/var-indices! program)] ;;in case program already has function symbols and variable symbols higher than current indices
                   [abstraction-instances (make-hash-table eqv?)]
                   [condensed-program (condense-program program)]
-                  [abstractions (possible-abstractions condense-program)]
+                  [abstractions (possible-abstractions condensed-program)]
                   [compressed-programs (map (curry compress-program program) abstractions)]
                   [program-size (size (program->sexpr program))]
                   [valid-compressed-programs
