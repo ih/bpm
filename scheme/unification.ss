@@ -36,56 +36,38 @@
                  (list pattern variables)))))
 
          
-(define unify '())
-         ;;noisy number related
-;;;unification
-         ;;it might be nice to memoize this, but right now if the sexprs passed to it have floating point numbers, this causes problems
-         ;; takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
-         ;; s = (foo (foo a b c) b c)
-         ;; sv = (foo V b c)
-         ;; name = P
-         ;; first pass: (P (foo a b c))
-         ;; second (operand) pass: (P (P a))
-         ;; returns #f if abstraction cannot be applied, otherwise variable assignments
-         ;; ! assumes that each variable occurs only once in sv [2]
 
+;;          noisy number related
+;; unification
+;;          it might be nice to memoize this, but right now if the sexprs passed to it have floating point numbers, this causes problems
+;;          takes a sexpr (s), a sexpr with variables (sv) and a proc name, e.g.
+;;          s = (foo (foo a b c) b c)
+;;          sv = (foo V b c)
+;;          name = P
+;;          first pass: (P (foo a b c))
+;;          second (operand) pass: (P (P a))
+;;          returns #f if abstraction cannot be applied, otherwise variable assignments
 
-         ;; (define unify
-         ;;   (lambda (s sv vars)
-         ;;     (begin
-         ;;       (define (variable? obj)
-         ;;         (member obj vars))
-         ;;       (define (match-policy?)
-         ;;         (cond [(eq? policy 'original) original-policy]
-         ;;               [(eq? policy 'noisy-number) noisy-number-policy]
-         ;;               [(eq? policy 'no-var) original-policy]
-         ;;               [else (error "no such matching policy for unification!")]))
+         ;;;one way to speed up unification is to stop as soon as a #f is returned
+         (define unify
+           (lambda (s sv vars)
+             (begin
+               (define (variable? obj)
+                 (member obj vars))
 
-         ;;       (define original-policy eq?)
-
-         ;;       (define (noisy-number-policy s sv)
-         ;;         (if (and (number? s) (number? sv))
-         ;;             (if (close? s sv) '() #f)
-         ;;             (eq? s sv)))
+               ;;deals with a variable that occurs multiple times in sv
+               (define (check/remove-repeated unified-vars)
+                 (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])
+                   (if (and (all (map all-equal? repeated-vars)) (not (any false? unified-vars)))
+                       (delete-duplicates unified-vars)
+                       #f)))
                
-         ;;       (cond [(variable? sv) (list (pair sv s))]
-         ;;             [(and (primitive? s) (primitive? sv)) (if ((match-policy?) s sv) '() #f)]
-         ;;             [(or (primitive? s) (primitive? sv)) #f]
-         ;;             [(not (eqv? (length s) (length sv))) #f]
-         ;;             [else
-         ;;              (let ([assignments (map (lambda (si sj) (unify si sj vars)) s sv)])
-         ;;                (if (any false? assignments)
-         ;;                    #f
-         ;;                    (check/remove-repeated (apply append assignments))))]))))
-
-         ;; (define (check/remove-repeated unified-vars)
-         ;;   (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])
-         ;;     (if (and (all (map all-equal? repeated-vars)) (not (any false? unified-vars)))
-         ;;         (delete-duplicates unified-vars)
-         ;;         #f)))
-
-         
-
-
-         
-         )
+               (cond [(variable? sv) (list (pair sv s))]
+                     [(and (primitive? s) (primitive? sv)) (if (eqv? s sv) '() #f)]
+                     [(or (primitive? s) (primitive? sv)) #f]
+                     [(not (eqv? (length s) (length sv))) #f]
+                     [else
+                      (let ([assignments (map (lambda (si sj) (unify si sj vars)) s sv)])
+                        (if (any false? assignments)
+                            #f
+                            (check/remove-repeated (apply append assignments))))])))))

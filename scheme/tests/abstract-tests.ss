@@ -49,43 +49,47 @@
 ;;null subexpression test
 (check (unique-commutative-pairs '(() 3) list) => (list '(() 3)))
 
-;; ;;;find-*-symbols test
-;; (let* ([expr '(F1 (V1 V23) F5 V2)])
-;;   (check (find-tagged-symbols expr (func-symbol)) => '(F1 F5)))
+;;;find-*-symbols test
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (find-tagged-symbols expr (func-symbol)) => '(F1 F5)))
 
-;; (let* ([expr '(F1 (V1 V23) F5 V2)])
-;;   (check (find-tagged-symbols expr (var-symbol)) => '(V1 V23 V2)))
-;; ;;;set-indices-floor tests
-;; (let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
-;;        [none (set-indices-floor! expr)])
-;;   (check (list (sym 'F) (sym 'V)) => '(F4 V2)))
-;; ;;;possible-abstractions tests
-;; ;;basic test
-;; (let* ([none (reset-symbol-indizes!)]
-;;        [expr '(+ (+ 2 2) (- 2 5))]
-;;        [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V2 V1))]
-;;        [abstraction2 (make-named-abstraction 'F1 '(V1 V2 V3) '(V3 V2 V1))]
-;;        [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V2 V1))])
-;;   (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
-;; ;;expr has free variables
-
-;; (let* ([none (reset-symbol-indizes!)]
-;;        [abstraction1 (make-named-abstraction 'F4 '(+ V2 V3) '(V3 V2))])
-;;   (check (possible-abstractions '(+ (+ V1 V1) (+ V1 F3))) => (list abstraction1)))
-
-;; ;;non match
-;; (let* ([none (reset-symbol-indizes!)]
-;;        [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V3 V2))])
-;;   (check (possible-abstractions '(+ (+ V1 3) (- 2))) => (list abstraction1)))
-;;;compressions tests
-(let* ([program (make-program '() '(+ (+ 2 2) (- 2 5)))]
+(let* ([expr '(F1 (V1 V23) F5 V2)])
+  (check (find-tagged-symbols expr (var-symbol)) => '(V1 V23 V2)))
+;;;set-indices-floor tests
+(let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
+       [none (set-indices-floor! expr)])
+  (check (list (sym 'F) (sym 'V)) => '(F4 V2)))
+;;;possible-abstractions tests
+;;basic test
+(let* ([none (reset-symbol-indizes!)]
+       [expr '(+ (+ 2 2) (- 2 5))]
        [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V2 V1))]
        [abstraction2 (make-named-abstraction 'F1 '(V1 V2 V3) '(V3 V2 V1))]
-       [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V2 V1))]
-       [compressed1 (make-program (list abstraction1) '(F1 (F1 2 2) (- 2 5)))]
-       [compressed3 (make-program (list abstraction3) '(+ (F1 + 2) (F1 - 5)))]
-       [compressed2 (make-program (list abstraction2) '(F1 + (F1 + 2 2) (F1 - 2 5)))])
-  (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
+       [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V2 V1))])
+  (check (possible-abstractions expr) => (list abstraction1 abstraction2 abstraction3)))
+;;expr has free variables
+
+(let* ([none (reset-symbol-indizes!)]
+       [abstraction1 (make-named-abstraction 'F4 '(+ V2 V3) '(V3 V2))])
+  (check (possible-abstractions '(+ (+ V1 V1) (+ V1 F3))) => (list abstraction1)))
+
+;;non match
+(let* ([none (reset-symbol-indizes!)]
+       [abstraction1 (make-named-abstraction 'F1 '(+ V2 V3) '(V3 V2))])
+  (check (possible-abstractions '(+ (+ V1 3) (- 2))) => (list abstraction1)))
+
+;;;replace-matches test
+(let* ([abstraction (make-named-abstraction 'F1 '(+ V2 V3) '(V3 V2))])
+  (check (replace-matches '(+ (+ 2 2) (- 2 5)) abstraction) => '(F1 (F1 2 2) (- 2 5))))
+;;;compressions tests
+;; (let* ([program (make-program '() '(+ (+ 2 2) (- 2 5)))]
+;;        [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V2 V1))]
+;;        [abstraction2 (make-named-abstraction 'F1 '(V1 V2 V3) '(V3 V2 V1))]
+;;        [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V2 V1))]
+;;        [compressed1 (make-program (list abstraction1) '(F1 (F1 2 2) (- 2 5)))]
+;;        [compressed3 (make-program (list abstraction3) '(+ (F1 + 2) (F1 - 5)))]
+;;        [compressed2 (make-program (list abstraction2) '(F1 + (F1 + 2 2) (F1 - 2 5)))])
+;;   (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
 ;;;program->abstraction-applications tests
 ;; (let* ([program (sexpr->program '(let ()
 ;;                                    (define F8

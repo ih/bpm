@@ -18,6 +18,11 @@
 (let* ([subexpr1 '(+ (+ 2 2) (- 2 5))]
        [subexpr2 '(- 2 2)])
   (check (anti-unify subexpr1 subexpr2) => '((V1 V2 V3) (V3 V2 V1))))
+
+;;unify tests 
+(check (unify '(+ (+ 2 2) (- 2 5)) '(+ V1 V2) '(V1 V2)) => '((V1 . (+ 2 2)) (V2 . (- 2 5))))
+(check (unify '(- (+ 2 2) (- 2 5)) '(+ V1 V2) '(V1 V2)) => #f)
+(check (unify '(+ 2 2) '(+ V1 V1) '(V1)) => '((V1 . 2)))
 ;;;original policy tests
 ;;anti-unify tests
 ;; (set-policy! 'original)
