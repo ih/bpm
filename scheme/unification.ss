@@ -33,7 +33,7 @@
                                                  expr1 expr2)])
                           unified-expr)]))
                (let ([pattern (build-pattern expr1 expr2)])
-                 (list pattern variables)))))
+                 (list pattern (reverse variables)))))) ;;reversing variables is more for readability/testing, can remove for efficiency
 
          
 
