@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size enumerate-expr program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -197,128 +197,7 @@
          
 
 
-         ;; a history of how each pattern was used, the keys to the hashtable
-         ;; are names of abstractions and the entries are hashtables where the
-         ;; keys are variable names for the abstractions and the values are
-         ;; lists of past instances
-         (define abstraction-instances (make-hash-table (make-hash-table eqv?)))
-         (define (abstraction-instances->get-instances abstraction)
-           (hash-table-ref abstraction-instances (abstraction->name abstraction)))
-         (define (abstraction-instances->add-instance! abstraction unified-vars)
-           (let* ([aname (abstraction->name abstraction)]
-                  [avars (abstraction->vars abstraction)]
-                  [abstraction-history
-                   (hash-table-ref
-                    abstraction-instances
-                    aname
-                    (lambda ()
-                      (let ([new-history (make-abstraction-history avars)])
-                        (hash-table-set! abstraction-instances aname new-history)
-                        new-history)))])
-             (abstraction-history->add! abstraction-history unified-vars)))
-
-         ;; entries into the abstraction-instances table, basically a list of
-         ;; instances for each variable of the abstraction
-         (define (make-abstraction-history abstraction-vars)
-           (let* ([new-history (make-hash-table eqv?)]
-                  [add-var! (lambda (var) (hash-table-set! new-history var '()))])
-             (map add-var! abstraction-vars)
-             new-history))
-
-         (define abstraction-history->var-history hash-table-ref)
-
-         ;; add a new instance to an abstractions history
-         (define (abstraction-history->add! ahist unified-vars)
-           (begin
-             (define (update-var! unified-var)
-               (let ([var (unified-var->var unified-var)]
-                     [new-instance (unified-var->instance unified-var)])
-                 (hash-table-update! ahist var (lambda (old-instances) (pair new-instance old-instances)))))
-             (map update-var! unified-vars)))
-
-         (define unified-var->var first)
-         (define unified-var->instance rest)
-
-         ;; remove redundant variables for an abstraction e.g. (+ 2 2) (+ 3 3)
-         ;; gives pattern (+ x y), but we'd like (+ z z)
-         (define (check/reduce-redundant-pair abstraction var1 var2)
-           (let* ([vars (abstraction->vars abstraction)]
-                  [ahist (abstraction-instances->get-instances abstraction)]
-                  [var1-history (abstraction-history->var-history ahist var1)]
-                  [var2-history (abstraction-history->var-history ahist var2)])
-             (if (equal? var1-history var2-history)
-                 (abstraction->combine-variables abstraction var1 var2)
-                 #f)))
-
-         ;; remove variable2 and replace all instances in the pattern with variable1
-         (define (abstraction->combine-variables abstraction var1 var2)
-           (let* ([old-pattern (abstraction->pattern abstraction)]
-                  [new-pattern (sexp-replace var2 var1 old-pattern)]
-                  [old-variables (abstraction->vars abstraction)]
-                  [new-variables (delete var2 old-variables)]
-                  [old-name (abstraction->name abstraction)])
-             (make-named-abstraction old-name new-pattern new-variables)))
-
-         (define (remove-redundant-variables abstraction)
-           (let ([vars (abstraction->vars abstraction)])
-             (if (or (not (applied? abstraction)) (null? vars))
-                 abstraction
-                 (let* ([var-pairs (unique-commutative-pairs vars list)])
-                   (define (same-abstraction-recursion var-pairs)
-                     (if (null? var-pairs)
-                         abstraction
-                         (let* ([var-pair (first var-pairs)]
-                                [pair-reduced (check/reduce-redundant-pair abstraction (first var-pair) (second var-pair))])
-                           (if pair-reduced
-                               (remove-redundant-variables pair-reduced)
-                               (same-abstraction-recursion (rest var-pairs))))))
-                   (same-abstraction-recursion var-pairs)))))
-
-         (define (applied? abstraction)
-           (hash-table-ref abstraction-instances
-                           (abstraction->name abstraction)
-                           (lambda () #f)))
-
-
-         ;; transforms a expr like
-         ;; (a (b) (c (d)) (e (f)))
-         ;; into an enumerated expr like
-         ;; ($1 a ($2 b) ($3 c ($4 d)) ($5 e ($6 f)))
-         ;;basically assigns a unique identifier to each expression (excluding primitives)
-         ;;used to make sure expressions are not matched with themselves
-         (define (enumerate-expr t)
-           (if (primitive? t)
-               t
-               (pair (sym '$) (map enumerate-expr t))))
-
-
-         ;; is obj a list like '(x)?
-         (define (singleton? obj)
-           (and (pair? obj)
-                (primitive? (first obj))
-                (null? (rest obj))))
-
          ;; data structures & associated functions
-
-         
-
-         ;; replace a few uninteresting abstractions with #f
-         ;; (single variable or singleton list)
-         ;; returns an abstraction or #f
-         (define (filtered-anti-unify et1 et2 ignore-id-matches)
-           (let* ([variables-pattern (anti-unify et1 et2 ignore-id-matches)]
-                  [variables (first variables-pattern)]
-                  [pattern (second variables-pattern)])
-             (begin
-               (define (plain-var-list? pattern)
-                 (all (map (lambda (i) (member i variables)) pattern)))
-               (if (or (member pattern variables)
-                       (singleton? pattern)
-                       (and (list? pattern) (plain-var-list? pattern)))
-                   #f
-                   (if (false? pattern)
-                       #f
-                       (make-abstraction pattern variables))))))
 
 
          ;;return valid abstractions for any matching subexpressions in expr
@@ -402,12 +281,9 @@
                         ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
                         [old-name (abstraction->name abstraction)]
                         [no-free-abstraction (make-named-abstraction old-name old-pattern new-vars)])
-                   ;;(hash-table-update! abstraction-instances old-name (lambda (original) (make-abstraction-history new-vars)))
-                   no-free-abstraction)
-                 )))
+                   no-free-abstraction))))
 
          ;;searches through the body of the abstraction  and returns a list of free variables
-         
          (define (get-free-vars abstraction)
            (let* ([pattern (abstraction->pattern abstraction)]
                   [non-free (abstraction->vars abstraction)]
@@ -425,25 +301,10 @@
              ,(program->body program)))
 
          
-         ;;if the program being compressed has function/variable symbols with higher indices that what is already in sym then functions might be made with the same name as already existing functions (ASSUMES NO FREE VARIABLES/FUNCTION NAMES)
-         
-         (define (raise-func/var-indices! program)
-           (let* ([defs (program->abstractions program)]
-                  [funcs (map abstraction->name defs)]
-                  [vars (apply append (map abstraction->vars defs))])
-             (cond [(null? defs) '()]
-                   [(null? vars) (raise-tagged! (func-symbol) funcs)]
-                   [else (begin (raise-tagged! (var-symbol) vars)
-                                (raise-tagged! (func-symbol) funcs))])))
-         
-
-         
          ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
          
          (define (compressions program . nofilter)
-           (let* ([none (set! abstraction-instances (make-hash-table eqv?))]
-                  [none (raise-func/var-indices! program)] ;;in case program already has function symbols and variable symbols higher than current indices
-                  [abstraction-instances (make-hash-table eqv?)]
+           (let* ([abstraction-instances (make-hash-table eqv?)]
                   [condensed-program (condense-program program)]
                   [abstractions (possible-abstractions condensed-program)]
                   [compressed-programs (map (curry compress-program program) abstractions)]

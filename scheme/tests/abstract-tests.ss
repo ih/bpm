@@ -28,10 +28,7 @@
         (unique-programs
          (compressing-function (make-program '() sexpr))))))
 
-;;;enumerate-expr tests
-(check (enumerate-expr '(n 25.0)) => '($1 n 25.0))
-(reset-symbol-indizes!)
-(check (enumerate-expr '(+ (+ 2 2) (- 2 5))) => '($3 + ($1 + 2 2) ($2 - 2 5)))
+
 ;;;all-subexprs tests
 (let ([expr '((+ (+ 2 2) (- 2 5)))])
   (check (all-subexprs expr) => '(((+ (+ 2 2) (- 2 5))) (+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
