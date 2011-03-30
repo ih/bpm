@@ -304,8 +304,7 @@
          ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
          
          (define (compressions program . nofilter)
-           (let* ([abstraction-instances (make-hash-table eqv?)]
-                  [condensed-program (condense-program program)]
+           (let* ([condensed-program (condense-program program)]
                   [abstractions (possible-abstractions condensed-program)]
                   [compressed-programs (map (curry compress-program program) abstractions)]
                   [program-size (size (program->sexpr program))]
