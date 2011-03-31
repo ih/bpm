@@ -11,8 +11,11 @@ import os
 
 if __name__ == '__main__':
 
+    dirname = sys.argv[1]
+    if not os.path.exists(dirname + '/output'):
+        os.mkdir(dirname + '/output')
 
-    def run_one(fname):
+    def run_one(fname, outname):
         N = 1
 
         im = img.open(fname)
@@ -25,21 +28,20 @@ if __name__ == '__main__':
         x = np.asarray(im)
         y = x 
 
-        size = 5
+        size = 3
 
         for i in range(N):
             y = morph.dilate(y, morph.sedisk(size))
-            y = morph.close(y, morph.sedisk(2 *size))
+            y = morph.close(y, morph.sedisk(size))
 
         jm = img.fromarray(y)
         jm = invert(jm)
 
         jm = jm.resize((400, 400), img.ANTIALIAS)
 
-        jm.save('%s_output.png' % fname.rstrip('.png'))
+        jm.save(outname)
 
-    dirname = sys.argv[1]
     for file in os.listdir(dirname):
         if file.endswith('.png'):
-            run_one(dirname + '/' + file)
+            run_one(dirname + '/' + file, dirname + '/output/' + file)
 
