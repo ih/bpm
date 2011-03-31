@@ -70,7 +70,7 @@ def drawGraph(ns, es, size=1.0, color='black', excluded=[]):
     canvasW, canvasH = maxx-minx, maxy-miny
     unit = max(canvasW, canvasH)
 
-    t = map(lambda n: drawCircle(n.getPos()[0], n.getPos()[1], size, color), ns)
+    t = map(lambda n: drawCircle(n.getPos()[0], n.getPos()[1], n.tile_obj.radius, color), ns)
 
     list_pos = map(lambda ns: map(lambda n: n.getPos(), ns), es)
 

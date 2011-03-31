@@ -27,7 +27,7 @@
                 (node (data (radius size) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))
               (define (part2 size straight)
                 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness straight 0.1)) (part1 size) (part1 size) (part1 size)))
-              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 3 1) (part2 1 0.5) (part2 .1 -0.5) (part2 2 -1)))))))
+              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 0.8 1) (part2 0.5 0.5) (part2 .2 -0.5) (part2 0.6 -1)))))))
 (forward-sample pp)
 ;;recursive
 (define r '(lambda ()
@@ -38,6 +38,6 @@
                  (node (data (radius size) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0.5 0.1)) (part1 size))))
               (define (part2 size straight)
                 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness straight 0.1)) (part1 size)))
-              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 3 1) (part2 1 0.5) (part2 .1 -0.5) (part2 2 -1)))))))
+              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 0.8 1) (part2 0.5 0.5) (part2 .2 -0.5) (part2 0.6 -1)))))))
 (forward-sample r)
 
