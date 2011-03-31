@@ -1,6 +1,9 @@
 from fglib import *
 
 
+class Ghost(Elt):
+    pass
+
 test = ['GN2', ['GN1',
                      ['N3', ['data', ['radius', 1.2], ['blobbiness', -0.2],
 ['Distance', 2, 0.1], ['Straightness', 0, 0.1]],
@@ -44,7 +47,7 @@ def makeFactor(scope, fx):
 def evalFactorTree(ftree, node_stack, result_fg, node_dict):
     nodeName = ftree[0]
     if not node_dict.has_key(nodeName):
-        node_dict[nodeName] = Elt(nodeName)
+        node_dict[nodeName] = Elt(nodeName) if not nodeName.startswith('GN') else Ghost(nodeName)
         node_dict[nodeName].tile_obj = Tile({})
 
     new_node_stack = node_stack + [node_dict[nodeName]]
