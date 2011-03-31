@@ -3,9 +3,11 @@
 ;;single part program
 (define p '(lambda ()
             (let ()
-              (define (part1)
-                (node (data (radius .2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))
-              (G1 (G2 (part1)))
+              (define (mkspiral size dist straight)
+                (if (flip)
+                  (node (data (radius size) (blobbiness -0.2) (Distance dist) (Straightness straight 0.1)))
+                  (node (data (radius size) (blobbiness -0.2) (Distance dist) (Straightness straight 0.1)) (mkspiral (* size 0.7) (* dist 0.8) (* straight 1.1)))))
+              (G1 (G2 (mkspiral 2 5 0.1)))
               )))
 
 (forward-sample p)
@@ -25,7 +27,7 @@
                 (node (data (radius size) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))
               (define (part2 size straight)
                 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness straight 0.1)) (part1 size) (part1 size) (part1 size)))
-              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 3 1) (part2 1 0.5) (part2 .1 -0.5) (part2 2 -1)))))))
+              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 0.8 1) (part2 0.5 0.5) (part2 .2 -0.5) (part2 0.6 -1)))))))
 (forward-sample pp)
 ;;recursive
 (define r '(lambda ()
@@ -36,6 +38,6 @@
                  (node (data (radius size) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0.5 0.1)) (part1 size))))
               (define (part2 size straight)
                 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness straight 0.1)) (part1 size)))
-              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 3 1) (part2 1 0.5) (part2 .1 -0.5) (part2 2 -1)))))))
+              (G1 (G2 (node (data (radius .7) (blobbiness 0) (Distance 2 0.1) (Straightness 0 0.1)) (part2 0.8 1) (part2 0.5 0.5) (part2 .2 -0.5) (part2 0.6 -1)))))))
 (forward-sample r)
 
