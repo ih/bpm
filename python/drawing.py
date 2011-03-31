@@ -63,7 +63,8 @@ def distributeX(x1, y1, x2, y2, xs, figs, y_off, x_off):
     scaled = vec.scale(tuple(xs), (x2 - x1) / (xs[-1]))
     return FM(lambda (sx, f): Fig(f, trans = lambda x, y: (x + x1 + sx + x_off, y + y1 + y_off)) , zip(scaled, figs))
 
-def drawGraph(ns, es, size=1.0, color='black'):
+def drawGraph(ns, es, size=1.0, color='black', excluded=[]):
+
     lx, ly = zip(*(map(lambda n: n.getPos(), ns)))
     minx, maxx, miny, maxy = min(lx), max(lx), min(ly), max(ly)
     canvasW, canvasH = maxx-minx, maxy-miny

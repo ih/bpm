@@ -8,8 +8,11 @@ if __name__ == "__main__":
     args=pickle.load(sys.stdin)
 
 
+    nodes, result_fg = mkFG(args)
+    basename = 'fgfinal_0'
+    intermediate = 'fgintermediate'
+
     for i in range(10):
-        nodes, result_fg = mkFG(args)
         debug = mkDebugChannel('fg2image_debug')
 
         print >>debug, 'begin fg2image ====================='
@@ -19,7 +22,7 @@ if __name__ == "__main__":
         print >>debug, 'nodepos', pformat(map(lambda n: n.tile_obj.pos, nodes))
 
         nodes, score = sampleEltFG(nodes, result_fg, MH(10000))
-        drawFG(nodes, map(lambda f: f.variables, result_fg))
+        drawFG(nodes, map(lambda f: f.variables, result_fg), intermediate + "_%d" % i)
 
         print >>debug, 'after sampling:'
         print >>debug, 'score:', score
@@ -29,5 +32,6 @@ if __name__ == "__main__":
 
         debug.close()
 
+    drawFG(nodes, map(lambda f: f.variables, result_fg), basename)
 
     pickle.dump(args,sys.stdout)

@@ -17,9 +17,17 @@ def getUnusedFileName(basename, ext):
         counter +=1
     return '%s_%d.%s' % (basename, counter, ext)
 
-def drawFG(nodes, edges, basename='fg_drawing'):
-    fname = getUnusedFileName('fg_drawing', 'svg')
-    drawGraph(nodes, edges, 0.2, 'black').SVG().save(fname)
+def drawFG(nodes, edges, basename='fgdrawing'):
+    fname = getUnusedFileName(basename, 'svg')
+
+    exclude = filter(lambda n: type(n) == Ghost, nodes)
+
+    final_nodes = filter(lambda n: n not in exclude, nodes)
+    final_edges = filter(lambda ns: reduce(lambda x, y: x and y, map(lambda n: n not in exclude, ns)), edges)
+
+    drawGraph(final_nodes, final_edges, 0.2, 'black').SVG().save(fname)
+
+    drawBlobSpec(final_nodes, basename)
 
 def mkFG(sexpr):
     nodes = {}
@@ -34,3 +42,15 @@ def mkFG(sexpr):
 def mkDebugChannel(name):
     return open(getUnusedFileName(name, 'txt'), 'w')
 
+
+def drawBlobSpec(nodes, basename, exclude=[]):
+
+    fh = open(getUnusedFileName(basename, 'pos'), 'w')
+    for n in nodes:
+        fh.write("%s: %f %f\n" % (n.name, n.tile_obj.pos[0], n.tile_obj.pos[1]))
+    fh.close()
+
+    fh = open(getUnusedFileName(basename, 'radblob'), 'w')
+    for n in nodes:
+        fh.write("%s: %f %f\n" % (n.name, n.tile_obj.radius, n.tile_obj.blobbiness))
+    fh.close()
