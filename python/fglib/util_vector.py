@@ -109,3 +109,6 @@ def add(coord1, coord2):
 
 def cross((x1, y1, z1), (x2, y2, z2)):
   return (y1*z2 - y2*z1, x1*z2 - x2*z1, x1*y2 - x2*y1)
+
+interp_range = lambda min, max, n: map(lambda i: min + (float(i) / (n - 1)) * float(max - min), range(n))
+
