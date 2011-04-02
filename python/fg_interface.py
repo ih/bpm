@@ -3,6 +3,7 @@ from fglib import *
 from fg_sampling import *
 
 from drawing import *
+from draw_leaf import *
 
 from pprint import pformat
 
@@ -27,7 +28,9 @@ def drawFG(nodes, edges, basename='fgdrawing'):
 
     drawGraph(final_nodes, final_edges, 0.2, 'black').SVG().save(fname)
 
-    drawBlobSpec(final_nodes, basename)
+    #drawBlobSpec(final_nodes, basename)
+
+    drawAll(final_nodes, "shape"+fname, 0.5)
 
 def mkFG(sexpr):
     nodes = {}
@@ -54,3 +57,5 @@ def drawBlobSpec(nodes, basename, exclude=[]):
     for n in nodes:
         fh.write("%s: %f %f\n" % (n.name, n.tile_obj.radius, n.tile_obj.blobbiness))
     fh.close()
+
+
