@@ -30,7 +30,7 @@ cmd_dict = {
         'Straightness': lambda nodeName, val, node_dict, node_stack: makeFactor([node_dict[nodeName], node_stack[-1], node_stack[-2]], 
             lambda x, y, z: make_straightgauss(*val)(x.pos, y.pos, z.pos))
         }
-
+mkParent = lambda nodeName, val, node_dict, node_stack: setEltAttr(nodeName, "parent", node_stack[-1], node_dict)
 
 def setEltAttr(nodeName, name, val, node_dict):
     node_dict[nodeName].makeNewField(name, val)
@@ -58,6 +58,9 @@ def evalFactorTree(ftree, node_stack, result_fg, node_dict):
         data = data[0]
         data = map(lambda n_v: (n_v[0], tuple(n_v[1:]) if len(n_v) > 2 else n_v[1]),  data[1:])
         new_factors = map(lambda (name, val): cmd_dict[name](nodeName, val, node_dict, node_stack), data)
+        if len(node_stack) >= 2:
+            map(lambda (name, val): mkParent(nodeName, val, node_dict, node_stack), data)
+
         new_factors = filter(lambda x: type(x) == Factor, new_factors)
         result_fg += new_factors
 
