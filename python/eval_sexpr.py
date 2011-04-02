@@ -44,6 +44,9 @@ def makeFactor(scope, fx):
 # check if children, recurse for each child
 # else if no children, stop
 # 
+
+isGN = lambda n: n.tile_obj.name.startswith('GN')
+
 def evalFactorTree(ftree, node_stack, result_fg, node_dict):
     nodeName = ftree[0]
     if not node_dict.has_key(nodeName):
@@ -70,6 +73,11 @@ def evalFactorTree(ftree, node_stack, result_fg, node_dict):
         map(lambda child: evalFactorTree(child, new_node_stack, result_fg, node_dict), children)
 
 def finalizeNodes(node_dict):
+
+    for (name, elt) in node_dict.items():
+        if type(elt) != Ghost and type(elt.tile_obj.parent) == Ghost:
+            elt.tile_obj.parent = None
+
     return map(lambda (name, elt): elt.makeNewField('pos', (0,0)), node_dict.items())
 
 #result_factor_graph = [] 
