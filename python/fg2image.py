@@ -19,7 +19,7 @@ if __name__ == "__main__":
         print >>debug, 'input', pformat(args)
         print >>debug, 'factors', pformat(result_fg)
         print >>debug, 'nodes', pformat(nodes)
-        print >>debug, 'nodepos', pformat(map(lambda n: n.tile_obj.pos, nodes))
+        print >>debug, 'nodeasn', pformat(map(lambda n: n.tile_obj, nodes))
 
         nodes, score = sampleEltFG(nodes, result_fg, MH(10000))
         drawFG(nodes, map(lambda f: f.variables, result_fg), intermediate + "_%d" % i)
