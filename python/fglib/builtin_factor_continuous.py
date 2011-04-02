@@ -1,4 +1,5 @@
 import util_vector as vec
+from util_dist import gauss
 from math import *
 
 DIST_MEAN = 6
@@ -108,6 +109,23 @@ def neg_signed_straigtgauss(xy1, xy2, xy3):
 
 def pos_signed_straigtgauss(xy1, xy2, xy3):
     return gaussPDF(signed_straightness(xy1, xy2, xy3), POS_STRAIGHT_MEAN, POS_STRAIGHT_VAR)
+
+def curve_normal(xy1, xy2, xy3=None):
+    if xy3 == None:
+        xy3 = xy2
+        xy2 = vec.scale(vec.add(xy1, xy2), 0.5)
+
+    if vec.colinear(vec.sub(xy2, xy1), vec.sub(xy3, xy2)):
+        xy2 = (xy2[0] + gauss(0, 0.001), xy2[1] + gauss(0, 0.001))
+
+    vec12 = vec.norm((xy2[0] - xy1[0], xy2[1] - xy1[1]))
+    vec32 = vec.norm((xy2[0] - xy3[0], xy2[1] - xy3[1]))
+
+    return vec.norm(vec.add(vec12, vec32))
+
+def signed_curve_normal(xy1, xy2, xy3):
+    fac = 1 if signed_straightness(xy1, xy2, xy3) > 0 else -1
+    return vec.scale(curve_normal(xy1, xy2, xy3), fac)
 
 def straightness(xy1, xy2, xy3):
     vec12 = vec.norm((xy2[0] - xy1[0], xy2[1] - xy1[1]))
