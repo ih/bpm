@@ -87,6 +87,8 @@
        [compressed3 (make-program (list abstraction3) '(+ (F1 + 2) (F1 - 5)))]
        [compressed2 (make-program (list abstraction2) '(F1 + (F1 + 2 2) (F1 - 2 5)))])
   (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
+
+
 ;;;program->abstraction-applications tests
 ;; (let* ([program (sexpr->program '(let ()
 ;;                                    (define F8
