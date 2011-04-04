@@ -51,15 +51,17 @@
          (define (thunkify sexpr) `(lambda () ,sexpr))
 
 
-         ;;rewrite applications of abstraction in program to not have the variable-position'th argument 
-         (define (remove-application-argument program abstraction variable-position)
+         ;;rewrite applications of abstraction in program to not have the variable argument 
+         (define (remove-application-argument program abstraction variable)
            (define (abstraction-application? sexpr)
               (if (non-empty-list? sexpr)
-                  (and (equal? (first sexpr) (abstraction->name abstraction)))))
-           (define (change-application sexpr)
-              (remove-ith-argument variable-position sexpr))
-           (let* ([program-sexpr (program->sexpr program)]
-                  [changed-sexpr (sexp-search abstraction-application? change-application program-sexpr)]
+                  (equal? (first sexpr) (abstraction->name abstraction))
+                  #f))
+           (define (change-application variable-position application)
+              (remove-ith-argument variable-position application))
+           (let* ([variable-position (abstraction->variable-position abstraction variable)]
+                  [program-sexpr (program->sexpr program)]
+                  [changed-sexpr (sexp-search abstraction-application? (curry change-application variable-position) program-sexpr)]
                   [new-program (sexpr->program changed-sexpr)])
              new-program))
 
