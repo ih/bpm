@@ -1,5 +1,5 @@
 (library (internalize-arguments)
-         (export internalize-arguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable remove-ith-argument remove-application-argument internalize-argument)
+         (export internalize-arguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable remove-ith-argument remove-application-argument internalize-argument abstraction-internalizations)
          (import (except (rnrs) string-hash string-ci-hash)
                  (abstract)
                  (_srfi :1)
@@ -8,11 +8,12 @@
          ;;a transformation is performed for each variable of each abstraction 
          (define (internalize-arguments program . nofilter)
            (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))])
-             (append (map (curry abstraction-internalizations program) abstractions-with-variables))))
+             (concatenate (map (curry abstraction-internalizations program) abstractions-with-variables))))
 
          (define (has-arguments? abstraction)
            (not (null? (abstraction->vars abstraction))))
 
+         ;;return a program transformation is returned for each variable in abstraction
          (define (abstraction-internalizations program abstraction)
            (map (curry internalize-argument program abstraction) (abstraction->vars abstraction)))
 

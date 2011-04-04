@@ -37,15 +37,19 @@
          [correct-program (make-program (list correct-abstraction) '(F1))])
     (check (internalize-argument program abstraction 'V1) => correct-program))
 
-  ;; ;;;abstraction-internalizations
-  ;; (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
-  ;;        [abstraction (make-named-abstraction 'F1 '(node V1) '(V1))])
-  ;;  (check (abstraction-internalizations program abstraction) => '((let () (define (F1) (let ([x ((uniform-draw (list (lambda () 1) (lambda () (F1)))))]) (list x)) ) (F1)))))
+;;;abstraction-internalizations
+  (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
+         [abstraction (make-named-abstraction 'F1 '(node V1) '(V1))]
+         [correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+   (check (abstraction-internalizations program abstraction) => (list correct-program)))
 
-  ;; ;;;internalize-arguments
-  ;; (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
-  ;;        =>
-  ;;        '((let () (define (F1) (let ([x ((uniform-draw (list (lambda () 1) (lambda () (F1)))))]) (list x)) ) (F1))))
+;;;internalize-arguments
+  (let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
+          =>
+          (list correct-program)))
 
   (check-report))
 (exit)
