@@ -26,12 +26,16 @@
 ;;;change-applications
 (let* ([new-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))]) (node V1)) '())]
        [program (make-program (list new-abstraction) '(F1 (F1 1)))]
-       [old-abstraction (make-named-abstraction 'F1 '(node V1) '(V1))])
-  (check (remove-application-argument program old-abstraction 'V1) => (sexpr->program '(let () (define F1 (lambda () (let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)))) (F1))))
-  ;; ;;;internalize-argument
-  ;; (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
-  ;;        [abstraction (make-named-abstraction 'F1 '(node V1) '(V1))])
-  ;;   (check (internalize-argument program abstraction 'V1) => (sexpr->program '(let () (define (F1) (let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (list V1)) ) (F1)))))
+       [old-abstraction (make-named-abstraction 'F1 '(node V1) '(V1))]
+       [correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+       [correct-program (make-program (list correct-abstraction) '(F1))])
+  (check (remove-application-argument program old-abstraction 'V1) => correct-program)
+;;;internalize-argument
+  (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
+         [abstraction (make-named-abstraction 'F1 '(node V1) '(V1))]
+         [correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-argument program abstraction 'V1) => correct-program))
 
   ;; ;;;abstraction-internalizations
   ;; (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
