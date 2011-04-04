@@ -1,5 +1,5 @@
 (library (internalize-arguments)
-         (export internalize-arguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable)
+         (export internalize-arguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable remove-ith-argument remove-application-argument)
          (import (except (rnrs) string-hash string-ci-hash)
                  (abstract)
                  (_srfi :1)
@@ -16,9 +16,12 @@
          (define (abstraction-internalizations program abstraction)
            (map (curry internalize-argument program abstraction) (abstraction->vars abstraction)))
 
+         ;;rewrite the abstraction to have the variable in the abstraction be a mixture of the values its taken on in the program
+         ;;rewrite applications of the abstraction function in the program to not have the variable
          (define (internalize-argument program abstraction variable)
            (let* ([new-abstraction (remove-abstraction-variable program abstraction variable)]
-                  [new-program (change-applications program new-abstraction variable)])
+                  [program-with-new-abstraction (program->replace-abstraction program new-abstraction)]
+                  [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
              new-program))
 
          ;;creates a "mixture" distribution over instances of the variable being removed
@@ -39,10 +42,29 @@
          (define (ith-argument i function-application)
            (list-ref function-application (+ i 1)))
 
+         (define (remove-ith-argument i function-application)
+           (append (take function-application (+ i 1)) (drop function-application (+ i 2))))
+
          (define (make-mixture-sexpr mixture-elements)
            `((uniform-draw (list ,@(map thunkify mixture-elements)))))
 
          (define (thunkify sexpr) `(lambda () ,sexpr))
 
-         (define change-applications 1))
+
+         ;;rewrite applications of abstraction in program to not have the variable-position'th argument 
+         (define (remove-application-argument program abstraction variable-position)
+           (define (abstraction-application? sexpr)
+              (if (non-empty-list? sexpr)
+                  (and (equal? (first sexpr) (abstraction->name abstraction)))))
+           (define (change-application sexpr)
+              (remove-ith-argument variable-position sexpr))
+           (let* ([program-sexpr (program->sexpr program)]
+                  [changed-sexpr (sexp-search abstraction-application? change-application program-sexpr)]
+                  [new-program (sexpr->program changed-sexpr)])
+             new-program))
+
+         ;;assumes abstractions and only abstractions have name of the form '[FUNC-SYMBOL][Number]
+         (define (application? sexpr)
+           (if (non-empty-list? sexpr)
+               (func? (first sexpr)))))
 
