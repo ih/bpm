@@ -102,6 +102,22 @@
 (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
        [new-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))]) (node V1)) '())])
   (check (program->replace-abstraction program new-abstraction) => (make-program (list new-abstraction) '(F1 (F1 1)))))
+
+
+;;;internalize-arguments test
+(let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
+          =>
+          (list correct-program)))
+
+(let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-arguments (make-program '() '(node (node 1))))
+          =>
+          '()))
+
+
 (check-report)
 ;; (define (test-unify)
 ;;   (let* ([sexpr '(a b c d)]

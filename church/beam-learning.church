@@ -1,4 +1,4 @@
-(define transform-types '(compressions internalize-arguments))
+(define transform-types (list compressions internalize-arguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data size-weight score-weight)
@@ -35,9 +35,9 @@
 
 ;;depth-iterated-transformations is only for testing purposes to check if my-iterated-transformations is correct
 (define (depth-iterated-transformations cfilter program depth)
-  (let* ([transformed-programs (if (= depth 0) '() (append (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
-    (append transformed-programs
-            (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs)))))
+  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
+    (delete '()  (append transformed-programs
+             (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
 
 (define (best-n n programs data size-weight score-weight)

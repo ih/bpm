@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names func-symbol all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -212,7 +212,7 @@
 
 
          ;; data structures & associated functions
-
+;;;~~~~~~~~~~~~~~~~~~code for compressions~~~~~~~~~~~~~~~~~ (not sure if this is the right starting point)
 
          ;;return valid abstractions for any matching subexpressions in expr
          ;;valid abstractions are those without free variables
@@ -330,9 +330,74 @@
                                compressed-programs))])
              valid-compressed-programs))
 
-         
-         
+;;;~~~~~~~~~~~~end code for compressions~~~~~~~~~~~~~~~~~~~~~         
+;;;=========code for internalize-arguments=============================
+         ;;a transformation is performed for each variable of each abstraction 
+         (define (internalize-arguments program . nofilter)
+           (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))])
+             (concatenate (map (curry abstraction-internalizations program) abstractions-with-variables))))
 
+         (define (has-arguments? abstraction)
+           (not (null? (abstraction->vars abstraction))))
+
+         ;;return a program transformation is returned for each variable in abstraction
+         (define (abstraction-internalizations program abstraction)
+           (map (curry internalize-argument program abstraction) (abstraction->vars abstraction)))
+
+         ;;rewrite the abstraction to have the variable in the abstraction be a mixture of the values its taken on in the program
+         ;;rewrite applications of the abstraction function in the program to not have the variable
+         (define (internalize-argument program abstraction variable)
+           (let* ([new-abstraction (remove-abstraction-variable program abstraction variable)]
+                  [program-with-new-abstraction (program->replace-abstraction program new-abstraction)]
+                  [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
+             new-program))
+
+         ;;creates a "mixture" distribution over instances of the variable being removed
+         (define (remove-abstraction-variable program abstraction variable)
+           (let* ([mixture-elements (find-variable-instances program abstraction variable)]
+                  [mixture-sexpr (make-mixture-sexpr mixture-elements)]
+                  [new-pattern `(let ([,variable ,mixture-sexpr]) ,(abstraction->pattern abstraction))]
+                  [new-variables (delete variable (abstraction->vars abstraction))])
+             (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))
+
+         (define (find-variable-instances program abstraction variable)
+           (let* ([abstraction-applications (program->abstraction-applications program abstraction)]
+                  [variable-position (abstraction->variable-position abstraction variable)]
+                  [variable-instances (map (curry ith-argument variable-position) abstraction-applications)])
+             variable-instances))
+
+         ;;i+1 because the first element is the function name
+         (define (ith-argument i function-application)
+           (list-ref function-application (+ i 1)))
+
+         (define (remove-ith-argument i function-application)
+           (append (take function-application (+ i 1)) (drop function-application (+ i 2))))
+
+         (define (make-mixture-sexpr mixture-elements)
+           `((uniform-draw (list ,@(map thunkify mixture-elements)))))
+
+         (define (thunkify sexpr) `(lambda () ,sexpr))
+
+
+         ;;rewrite applications of abstraction in program to not have the variable argument 
+         (define (remove-application-argument program abstraction variable)
+           (define (abstraction-application? sexpr)
+              (if (non-empty-list? sexpr)
+                  (equal? (first sexpr) (abstraction->name abstraction))
+                  #f))
+           (define (change-application variable-position application)
+              (remove-ith-argument variable-position application))
+           (let* ([variable-position (abstraction->variable-position abstraction variable)]
+                  [program-sexpr (program->sexpr program)]
+                  [changed-sexpr (sexp-search abstraction-application? (curry change-application variable-position) program-sexpr)]
+                  [new-program (sexpr->program changed-sexpr)])
+             new-program))
+
+         ;;assumes abstractions and only abstractions have name of the form '[FUNC-SYMBOL][Number]
+         (define (application? sexpr)
+           (if (non-empty-list? sexpr)
+               (func? (first sexpr))))         
+;;;=========end code for internalize-arguments========================
          (define (true-compressions program)
            (compressions program))
 

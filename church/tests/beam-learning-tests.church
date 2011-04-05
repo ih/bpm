@@ -88,14 +88,14 @@
 
 ;;;church-iterated-compressions test
 ;;recursion test
-(program ((abstraction F2 (V2 V3) (V2 (F1 V3))) (abstraction F1 (V1) (node V1))) (F2 F1 1))
+;;(program ((abstraction F2 (V2 V3) (V2 (F1 V3))) (abstraction F1 (V1) (node V1))) (F2 F1 1))
 
-(define timed-iterated-compressions (time-it depth-iterated-compressions "my-iterated-compressions"))
-(let ([compression-programs (map sexpr->program '((let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))) (let () (define F2 (lambda (V2 V3) (V2 V3))) (define F1 (lambda (V1) (F2 node V1))) (F2 F1 (F2 F1 1))) (let () (define F2 (lambda (V2 V3) (V2 (F1 V3)))) (define F1 (lambda (V1) (node V1))) (F2 F1 1)) (let () (define F2 (lambda (V2) (F1 V2))) (define F1 (lambda (V1) (node V1))) (F2 (F2 1)))))]
-      [argument-internalize-programs (map sexpr->program '((let () (define (F1) (let ([x ((uniform-draw (list (lambda () 1) (lambda () (F1)))))]) (list x)) ) (F1))))])
+(define timed-iterated-compressions (time-it depth-iterated-transformations "my-iterated-compressions"))
+(let* ([compression-programs (map sexpr->program '((let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))) (let () (define F2 (lambda (V2 V3) (V2 V3))) (define F1 (lambda (V1) (F2 node V1))) (F2 F1 (F2 F1 1))) (let () (define F2 (lambda (V2 V3) (V2 (F1 V3)))) (define F1 (lambda (V1) (node V1))) (F2 F1 1)) (let () (define F2 (lambda (V2) (F1 V2))) (define F1 (lambda (V1) (node V1))) (F2 (F2 1)))))]
+       [argument-internalize-programs (map sexpr->program '((let () (define F1 (lambda () (let ([V1 ((uniform-draw (list (lambda () 1) (lambda () (F1)))))]) (node V1))) ) (F1))))])
   (equal?-test "iterated-compressions internalize-argument test"
                (timed-iterated-compressions (lambda (x) x) (make-program '() '(node (node 1))) 2)
-               (append compressible-programs argument-internalize-programs)))
+               (append compression-programs argument-internalize-programs)))
 
 ;; ;;;beam-learn-search-compressions test
 ;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
@@ -130,48 +130,48 @@
 
 ;;;topology scoring test
 ;;in the original policy all numbers treated w/ strict equality
-(set-policy! 'original)
-(let* ([init-py-fg '(GN2 
-                     (GN1
-                      (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                          (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-       [scheme-prog (python-format->scheme-program init-py-fg)])
-  (equal?-test "score-fg-program test with new fg format"
-               (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
-                                                  (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
-               0.0))
-;;for noisy-number the geometry has a threshold for comparison
-(set-policy! 'noisy-number)
-(let* ([init-py-fg '(GN2 
-                     (GN1
-                      (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                          (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-       [scheme-prog (python-format->scheme-program init-py-fg)])
-  (equal?-test "score-fg-program test with new fg format"
-               (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
-                                                  (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
-               1.0))
+;; (set-policy! 'original)
+;; (let* ([init-py-fg '(GN2 
+;;                      (GN1
+;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
+;;        [scheme-prog (python-format->scheme-program init-py-fg)])
+;;   (equal?-test "score-fg-program test with new fg format"
+;;                (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
+;;                                                   (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
+;;                0.0))
+;; ;;for noisy-number the geometry has a threshold for comparison
+;; (set-policy! 'noisy-number)
+;; (let* ([init-py-fg '(GN2 
+;;                      (GN1
+;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
+;;        [scheme-prog (python-format->scheme-program init-py-fg)])
+;;   (equal?-test "score-fg-program test with new fg format"
+;;                (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
+;;                                                   (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
+;;                1.0))
 
-;;for topology-only the geometry has no effect on matching
-(set-policy! 'topology-only)
-(let* ([init-py-fg '(GN2 
-                     (GN1
-                      (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                          (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-       [scheme-prog (python-format->scheme-program init-py-fg)])
-  (equal?-test "score-fg-program test with new fg format"
-               (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
-                                                  (((0) (0) (0 0) (0 0)))))) 10))
-               1.0))
+;; ;;for topology-only the geometry has no effect on matching
+;; (set-policy! 'topology-only)
+;; (let* ([init-py-fg '(GN2 
+;;                      (GN1
+;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
+;;        [scheme-prog (python-format->scheme-program init-py-fg)])
+;;   (equal?-test "score-fg-program test with new fg format"
+;;                (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
+;;                                                   (((0) (0) (0 0) (0 0)))))) 10))
+;;                1.0))
 
-(let* ([init-py-fg '(GN2 
-                     (GN1
-                      (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))]
-       [scheme-prog (python-format->scheme-program init-py-fg)])
-  (equal?-test "score-fg-program test with new fg format"
-               (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
-                                                  (((0) (0) (0 0) (0 0)))))) 10))
-               0.0))
+;; (let* ([init-py-fg '(GN2 
+;;                      (GN1
+;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))]
+;;        [scheme-prog (python-format->scheme-program init-py-fg)])
+;;   (equal?-test "score-fg-program test with new fg format"
+;;                (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
+;;                                                   (((0) (0) (0 0) (0 0)))))) 10))
+;;                0.0))
 
 
 
