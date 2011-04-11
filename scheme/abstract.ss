@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr get-abstractions define->abstraction normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move proposal beam-search-compressions beam-compression normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches internalize-arguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -38,53 +38,6 @@
          (define (list-unique-commutative-pairs lst)
            (unique-commutative-pairs lst list))
 
-
-         (define (make-program abstractions body)
-           (list 'program abstractions body))
-         (define program->abstractions second)
-         (define program->body third)
-
-         ;;it might also be possible to search over program->sexpr, but then we'd need a more complicated predicate to avoid the definition of the target-abstraction
-         (define (program->abstraction-applications program target-abstraction)
-           (define (target-abstraction-application? sexpr)
-             (if (non-empty-list? sexpr)
-                 (if (equal? (first sexpr) (abstraction->name target-abstraction))
-                     #t
-                     #f)
-                 #f))
-           (let* ([abstraction-patterns (map abstraction->pattern (program->abstractions program))]
-                  [possible-locations (pair (program->body program) abstraction-patterns)])
-             (deep-find-all target-abstraction-application? possible-locations)))
-
-         ;;assumes the new-abstraction has the same name as the abstraction it is replacing in program
-         ;;assumes a particular abstraction is only defined once in the program
-         (define (program->replace-abstraction program new-abstraction)
-           (define (replace-abstraction abstractions new-abstraction)
-             (if (null? abstractions)
-                 '()
-                 (let* ([current-abstraction (first abstractions)])
-                   (if (equal? (abstraction->name current-abstraction) (abstraction->name new-abstraction))
-                       (pair new-abstraction (rest abstractions))
-                       (pair current-abstraction (replace-abstraction (rest abstractions) new-abstraction))))))
-           (let* ([abstractions (program->abstractions program)]
-                  [new-abstractions (replace-abstraction abstractions new-abstraction)])
-             (make-program new-abstractions (program->body program))))
-
-         (define (program->sexpr program)
-           `(let ()  
-              ,@(map abstraction->define (program->abstractions program))
-              ,(program->body program)))
-
-         ;;assumes format of (let () definitions body); if format fails to hold then program is an empty set of abstractions and the sexpr as the body
-         (define (sexpr->program sexpr)
-           (define (abstraction-sexpr? x)
-             (if (and (not (null? x)) (list? x))
-                 (equal? (first x) 'define)
-                 #f))
-           (let*-values ([(no-scope-sexpr) (remove-scope sexpr)]
-                         [(abstractions body) (span abstraction-sexpr? no-scope-sexpr)])
-             (make-program (map define->abstraction abstractions) (first body))))
-
          (define (sexpr->signatures sexpr)
            (let* ([program (sexpr->program sexpr)]
                   [defs (program->abstractions program)]
@@ -92,35 +45,6 @@
                   [vars (map abstraction->vars defs)])
              (map pair names vars)))
 
-
-         (define (remove-scope sexpr)
-           (define (scope? x)
-             (or (equal? 'let x) (null? x)))
-           (let*-values ([(scope program) (span scope? sexpr)])
-             program))
-         
-         (define (get-abstractions sexpr)
-           (define (abstraction-sexpr x)
-             (if (and (not (null? x)) (list? x))
-                 (equal? (first x) 'define)
-                 #f))
-           (define (get-defines sexpr)
-             (if (list? sexpr)
-                 (filter 
-                  sexpr)
-                 '()))
-           (map define->abstraction (get-defines sexpr)))
-
-         ;;define is of the form (define name (lambda (vars) body))
-         (define (define->abstraction definition)
-           (let* ([name (second definition)]
-                  [vars (second (third definition))]
-                  [body (third (third definition))])
-             (make-named-abstraction name body vars)))
-
-         ;;assumes program in sexpr form is (let () definitions body)
-         (define (get-body sexpr)
-           #f)
 
          ;; FIXME: assumes that there is only one program for each size
          (define (unique-programs programs)
@@ -500,10 +424,6 @@
 
 
 
-         (define (pretty-print-program program)
-           (let ([sexpr (program->sexpr program)])
-             (pretty-print sexpr)
-             (for-each display (list "size: " (size sexpr) "\n\n"))))
 
 
          (define (beam-compression sexpr beam-size)

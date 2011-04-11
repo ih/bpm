@@ -1,9 +1,10 @@
 (library (program)
-         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position)
+         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
-                 (_srfi :1))
+                 (_srfi :1)
+                 (util))
 
          ;;var-symbol and func-symbol are functions that return symbols so that they can be used in bher
          ;;think about moving these to a constants file since they're now separated due to unification-policies
@@ -55,5 +56,67 @@
 
          (define (abstraction->variable-position abstraction variable)
            (list-index (lambda (x) (equal? variable x)) (abstraction->vars abstraction)))
+;;;data abstraction for programs
+         (define (make-program abstractions body)
+           (list 'program abstractions body))
+         (define program->abstractions second)
+         (define program->body third)
 
-         )
+         ;;it might also be possible to search over program->sexpr, but then we'd need a more complicated predicate to avoid the definition of the target-abstraction
+         (define (program->abstraction-applications program target-abstraction)
+           (define (target-abstraction-application? sexpr)
+             (if (non-empty-list? sexpr)
+                 (if (equal? (first sexpr) (abstraction->name target-abstraction))
+                     #t
+                     #f)
+                 #f))
+           (let* ([abstraction-patterns (map abstraction->pattern (program->abstractions program))]
+                  [possible-locations (pair (program->body program) abstraction-patterns)])
+             (deep-find-all target-abstraction-application? possible-locations)))
+
+         ;;assumes the new-abstraction has the same name as the abstraction it is replacing in program
+         ;;assumes a particular abstraction is only defined once in the program
+         (define (program->replace-abstraction program new-abstraction)
+           (define (replace-abstraction abstractions new-abstraction)
+             (if (null? abstractions)
+                 '()
+                 (let* ([current-abstraction (first abstractions)])
+                   (if (equal? (abstraction->name current-abstraction) (abstraction->name new-abstraction))
+                       (pair new-abstraction (rest abstractions))
+                       (pair current-abstraction (replace-abstraction (rest abstractions) new-abstraction))))))
+           (let* ([abstractions (program->abstractions program)]
+                  [new-abstractions (replace-abstraction abstractions new-abstraction)])
+             (make-program new-abstractions (program->body program))))
+
+         (define (program->sexpr program)
+           `(let ()  
+              ,@(map abstraction->define (program->abstractions program))
+              ,(program->body program)))
+
+         ;;assumes format of (let () definitions body); if format fails to hold then program is an empty set of abstractions and the sexpr as the body
+         (define (sexpr->program sexpr)
+           (define (abstraction-sexpr? x)
+             (if (and (not (null? x)) (list? x))
+                 (equal? (first x) 'define)
+                 #f))
+           (let*-values ([(no-scope-sexpr) (remove-scope sexpr)]
+                         [(abstractions body) (span abstraction-sexpr? no-scope-sexpr)])
+             (make-program (map define->abstraction abstractions) (first body))))
+
+         (define (remove-scope sexpr)
+           (define (scope? x)
+             (or (equal? 'let x) (null? x)))
+           (let*-values ([(scope program) (span scope? sexpr)])
+             program))
+
+         (define (pretty-print-program program)
+           (let ([sexpr (program->sexpr program)])
+             (pretty-print sexpr)
+             (for-each display (list "size: " (size sexpr) "\n\n"))))
+
+         ;;define is of the form (define name (lambda (vars) body))
+         (define (define->abstraction definition)
+           (let* ([name (second definition)]
+                  [vars (second (third definition))]
+                  [body (third (third definition))])
+             (make-named-abstraction name body vars))))
