@@ -1,9 +1,10 @@
 (library (program)
-         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction)
+         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
                  (_srfi :1)
+                 (_srfi :69)
                  (util))
 
          ;;var-symbol and func-symbol are functions that return symbols so that they can be used in bher
@@ -56,6 +57,32 @@
 
          (define (abstraction->variable-position abstraction variable)
            (list-index (lambda (x) (equal? variable x)) (abstraction->vars abstraction)))
+
+                  ;;searches through the body of the abstraction  and returns a list of free variables
+         (define (get-free-vars abstraction)
+           (let* ([pattern (abstraction->pattern abstraction)]
+                  [non-free (abstraction->vars abstraction)]
+                  [free '()]
+                  [free-var? (lambda (x) (and (var? x) (not (member x non-free))))]
+                  [add-to-free! (lambda (x) (set! free (pair x free)))])
+             (sexp-search free-var? add-to-free! pattern)
+             free))
+
+;;free variables can occur when the pattern for an abstraction contains variables that were part of the matched expressions e.g. if the expression was (+ v1 v1 a) (+ v1 v1 b) then the pattern would be (+ v1 v1 v2)
+         ;;we "capture" the variables by adding them to the function definition
+         ;;an alternative approach would be to have nested abstractions
+         
+         (define (capture-free-variables abstraction)
+           (let* ([free-vars (get-free-vars abstraction)])
+             (if (null? free-vars)
+                 abstraction
+                 (let* ([new-vars (append free-vars (abstraction->vars abstraction))] 
+                        [old-pattern (abstraction->pattern abstraction)]
+                        ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
+                        [old-name (abstraction->name abstraction)]
+                        [no-free-abstraction (make-named-abstraction old-name old-pattern new-vars)])
+                   no-free-abstraction))))
+         
 ;;;data abstraction for programs
          (define (make-program abstractions body)
            (list 'program abstractions body))
@@ -119,4 +146,31 @@
            (let* ([name (second definition)]
                   [vars (second (third definition))]
                   [body (third (third definition))])
-             (make-named-abstraction name body vars))))
+             (make-named-abstraction name body vars)))
+
+                  ;;used to ensure all function and variable names are in consecutive order; important for when trying to generate a program from a grammar that matches a compressed program
+         (define (normalize-names expr)
+           (define ht (make-hash-table eqv?))
+           (define (traverse action expr)
+             (if (or (primitive? expr) (null? expr))
+                 (if (or (func? expr) (var? expr))
+                     (action expr)
+                     expr)
+                 (map (curry traverse action) expr)))
+           ;;build table
+           (define (add-to-table expr)
+             (if (func? expr)
+                 (hash-table-set! ht expr (sym (func-symbol)))
+                 (hash-table-set! ht expr (sym (var-symbol)))))
+           (define (relabel expr)
+             (hash-table-ref ht expr))
+           (reset-symbol-indizes!)
+           (let* ([signatures (sexpr->signatures expr)])
+             (traverse add-to-table signatures))
+           (traverse relabel expr))
+         (define (sexpr->signatures sexpr)
+           (let* ([program (sexpr->program sexpr)]
+                  [defs (program->abstractions program)]
+                  [names (map abstraction->name defs)]
+                  [vars (map abstraction->vars defs)])
+             (map pair names vars))))

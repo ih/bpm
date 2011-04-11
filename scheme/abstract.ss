@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move proposal beam-search-compressions beam-compression normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches internalize-arguments)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move proposal beam-search-compressions beam-compression all-iterated-compressions iterated-compressions inline unique-programs sort-by-size possible-abstractions internalize-arguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -14,36 +14,12 @@
                  (only (srfi :13) string-drop)
                  (church readable-scheme)
                  (program)
+                 (inverse-inline)
                  (unification)
                  (util)
                  (sym)
                  (mem))
          
-
-         ;;here pairs are lists of two items not scheme pairs
-         (define (commutative-pair-equal pair1 pair2)
-           (or (equal? pair1 pair2)
-               (and (equal? (first pair1) (second pair2)) (equal? (second pair1) (first pair2)))))
-
-         ;; there are ways to speed this up by preprocessing lst
-         (define (unique-commutative-pairs lst func)
-           (define (pairing-recursion lst1 lst2)
-             (if (null? lst2)
-                 '()
-                 (let ((from1 (first lst1)))
-                   (append (map (lambda (from2) (func from1 from2)) lst2)
-                           (pairing-recursion (rest lst1) (rest lst2))))))
-           (delete-duplicates (pairing-recursion lst (rest lst)) commutative-pair-equal))
-
-         (define (list-unique-commutative-pairs lst)
-           (unique-commutative-pairs lst list))
-
-         (define (sexpr->signatures sexpr)
-           (let* ([program (sexpr->program sexpr)]
-                  [defs (program->abstractions program)]
-                  [names (map abstraction->name defs)]
-                  [vars (map abstraction->vars defs)])
-             (map pair names vars)))
 
 
          ;; FIXME: assumes that there is only one program for each size
@@ -61,147 +37,11 @@
          (define (shortest-n n programs)
            (max-take (sort-by-size programs) n))
 
-         ;;used to ensure all function and variable names are in consecutive order; important for when trying to generate a program from a grammar that matches a compressed program
-         (define (normalize-names expr)
-           (define ht (make-hash-table eqv?))
-           (define (traverse action expr)
-             (if (or (primitive? expr) (null? expr))
-                 (if (or (func? expr) (var? expr))
-                     (action expr)
-                     expr)
-                 (map (curry traverse action) expr)))
-           ;;build table
-           (define (add-to-table expr)
-             (if (func? expr)
-                 (hash-table-set! ht expr (sym (func-symbol)))
-                 (hash-table-set! ht expr (sym (var-symbol)))))
-           (define (relabel expr)
-             (hash-table-ref ht expr))
-           (reset-symbol-indizes!)
-           (let* ([signatures (sexpr->signatures expr)])
-             (traverse add-to-table signatures))
-           (traverse relabel expr))
          
 
 
          ;; data structures & associated functions
 ;;;~~~~~~~~~~~~~~~~~~code for compressions~~~~~~~~~~~~~~~~~ (not sure if this is the right starting point)
-
-         ;;return valid abstractions for any matching subexpressions in expr
-         ;;valid abstractions are those without free variables
-         (define (possible-abstractions expr)
-           (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
-                  [abstractions (map-apply (curry anti-unify-abstraction expr) subexpr-pairs)])
-             (filter-abstractions  abstractions)))
-
-         ;;takes expr so that each abstraction can have the indices for function and variables set correctly
-         ;;setting the indices floor only works if all functions in the program appear in expr, this is not the case if there are abstractions in the program that are not applied in the body 
-         (define (anti-unify-abstraction expr expr1 expr2)
-           (let* ([none (set-indices-floor! expr)]
-                  [abstraction (apply make-abstraction (anti-unify expr1 expr2))]
-                  [none (reset-symbol-indizes!)])
-             abstraction))
-         
-         (define (set-indices-floor! expr)
-           (let ([funcs (find-tagged-symbols expr (func-symbol))]
-                 [vars (find-tagged-symbols expr (var-symbol))])
-             (begin
-               (raise-tagged! (func-symbol) funcs)
-               (raise-tagged! (var-symbol) vars))))
-
-         (define (find-tagged-symbols expr tag)
-           (filter (curry tag-match? tag) (primitives expr)))
-
-         ;;;remove undesirable abstractions and change any that have free variables
-         (define (filter-abstractions abstractions)
-           (define (remove-isomorphic abstractions)
-             (delete-duplicates abstractions))
-           (define (remove-nonmatches abstractions)
-             (define (match? abstraction)
-               (let* ([body (abstraction->pattern abstraction)])
-                 (not (var? body))))
-             (filter match? abstractions))
-           (let* ([no-free-vars (map capture-free-variables abstractions)]
-                  [no-isomorphisms (remove-isomorphic no-free-vars)]
-                  [no-nonmatches (remove-nonmatches no-isomorphisms)])
-             no-nonmatches))
-         
-
-         ;; doesn't deal with partial matches, could use more error checking;
-         (define (replace-matches s abstraction)
-           (let ([unified-vars (unify s
-                                      (abstraction->pattern abstraction)
-                                      (abstraction->vars abstraction))])
-             (if (false? unified-vars)
-                 (if (list? s)
-                     (map (lambda (si) (replace-matches si abstraction)) s)
-                     s)
-                 (pair (abstraction->name abstraction)
-                       (map (lambda (var) (replace-matches (rest (assq var unified-vars)) abstraction))
-                            (abstraction->vars abstraction))))))
-
-         (define (base-case? pattern var)
-           (equal? (second (third pattern)) var))
-
-         ;; throw out any matches that are #f
-         
-         (define (get-valid-abstractions subexpr-matches)
-           (let ([abstractions (map third subexpr-matches)])
-             (filter (lambda (x) x) abstractions)))
-
-         (define (get/make-valid-abstractions subexpr-matches)
-           (let* ([abstractions (map third subexpr-matches)]
-                  [non-false (filter (lambda (x) x) abstractions)]
-                  [no-free-vars (map capture-free-variables non-false)])
-             no-free-vars))
-
-         ;;free variables can occur when the pattern for an abstraction contains variables that were part of the matched expressions e.g. if the expression was (+ v1 v1 a) (+ v1 v1 b) then the pattern would be (+ v1 v1 v2)
-         ;;we "capture" the variables by adding them to the function definition
-         ;;an alternative approach would be to have nested abstractions
-         
-         (define (capture-free-variables abstraction)
-           (let* ([free-vars (get-free-vars abstraction)])
-             (if (null? free-vars)
-                 abstraction
-                 (let* ([new-vars (append free-vars (abstraction->vars abstraction))] 
-                        [old-pattern (abstraction->pattern abstraction)]
-                        ;;add new-pattern with new variable names for captured-vars to prevent isomorphic abstractions
-                        [old-name (abstraction->name abstraction)]
-                        [no-free-abstraction (make-named-abstraction old-name old-pattern new-vars)])
-                   no-free-abstraction))))
-
-         ;;searches through the body of the abstraction  and returns a list of free variables
-         (define (get-free-vars abstraction)
-           (let* ([pattern (abstraction->pattern abstraction)]
-                  [non-free (abstraction->vars abstraction)]
-                  [free '()]
-                  [free-var? (lambda (x) (and (var? x) (not (member x non-free))))]
-                  [add-to-free! (lambda (x) (set! free (pair x free)))])
-             (sexp-search free-var? add-to-free! pattern)
-             free))
-
-
-         ;; joins definitions and program body into one big list
-         
-         (define (condense-program program)
-           `(,@(map abstraction->pattern (program->abstractions program))
-             ,(program->body program)))
-
-         
-         ;; compute a list of compressed programs, nofilter is a flag that determines whether to return all compressions or just ones that shrink the program
-         
-         (define (compressions program . nofilter)
-           (let* ([condensed-program (condense-program program)]
-                  [abstractions (possible-abstractions condensed-program)]
-                  [compressed-programs (map (curry compress-program program) abstractions)]
-                  [program-size (size (program->sexpr program))]
-                  [valid-compressed-programs
-                   (if (not (null? nofilter))
-                       compressed-programs
-                       (filter (lambda (cp) (<= (size (program->sexpr cp))
-                                                (+ program-size 1)))
-                               compressed-programs))])
-             valid-compressed-programs))
 
 ;;;~~~~~~~~~~~~end code for compressions~~~~~~~~~~~~~~~~~~~~~         
 ;;;=========code for internalize-arguments=============================
@@ -281,19 +121,6 @@
          (define (all-compressions program)
            (compressions program 'all))
 
-         ;; both compressee and compressor are abstractions
-         
-         (define (compress-abstraction compressor compressee)
-           (make-named-abstraction (abstraction->name compressee)
-                                   (replace-matches (abstraction->pattern compressee) compressor)
-                                   (abstraction->vars compressee)))
-
-         (define (compress-program program abstraction)
-           (let* ([compressed-abstractions (map (curry compress-abstraction abstraction)
-                                                (program->abstractions program))]
-                  [compressed-body (replace-matches (program->body program) abstraction)])
-             (make-program (pair abstraction compressed-abstractions)
-                           compressed-body)))
 
          ;; iteratively compress program, filter programs using cfilter before recursing
          

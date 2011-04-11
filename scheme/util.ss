@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -122,5 +122,22 @@
                  [(eq? location '*) tree]
                  [else
                   (let ([location-mask (build-mask location (length (rest tree)))])
-                    (pair (first tree) (map (curry tree-apply-proc proc) location-mask (rest tree))))])))
+                    (pair (first tree) (map (curry tree-apply-proc proc) location-mask (rest tree))))]))
+                  ;;here pairs are lists of two items not scheme pairs
+         (define (commutative-pair-equal pair1 pair2)
+           (or (equal? pair1 pair2)
+               (and (equal? (first pair1) (second pair2)) (equal? (second pair1) (first pair2)))))
+
+         ;; there are ways to speed this up by preprocessing lst
+         (define (unique-commutative-pairs lst func)
+           (define (pairing-recursion lst1 lst2)
+             (if (null? lst2)
+                 '()
+                 (let ((from1 (first lst1)))
+                   (append (map (lambda (from2) (func from1 from2)) lst2)
+                           (pairing-recursion (rest lst1) (rest lst2))))))
+           (delete-duplicates (pairing-recursion lst (rest lst)) commutative-pair-equal))
+
+         (define (list-unique-commutative-pairs lst)
+           (unique-commutative-pairs lst list)))
 
