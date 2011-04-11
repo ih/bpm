@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr size get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -19,19 +19,6 @@
                  (sym)
                  (mem))
          
-
-         (define (identity x) x)
-
-         
-
-         ;; compute the size of a program
-         (define (size expr)
-           (if (list? expr)
-               (cond [(tagged-list? expr 'begin) (size (rest expr))] ;; ignore 'begin symbol
-                     [(tagged-list? expr 'define) (size (cddr expr))] ;; ignore 'define symbol + args
-                     [else (apply + (map size expr))])
-               1))
-
 
          ;;here pairs are lists of two items not scheme pairs
          (define (commutative-pair-equal pair1 pair2)
