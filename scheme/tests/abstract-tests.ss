@@ -34,8 +34,6 @@
 ;;;all-subexprs tests
 (let ([expr '((+ (+ 2 2) (- 2 5)))])
   (check (all-subexprs expr) => '(((+ (+ 2 2) (- 2 5))) (+ (+ 2 2) (- 2 5)) (+ 2 2) (- 2 5))))
-;;;make-named-abstraction test
-(check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
 
 ;;;unique-commutative-pairs tests
 (let* ([subexprs '((+ (+ 2 2) (- 2 5)) (+ 2 2) (+ 2 2) (+ 2 2) (- 2 5))]
