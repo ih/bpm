@@ -1,14 +1,15 @@
 (library (unification)
-         (export anti-unify unify var-symbol) 
+         (export anti-unify unify) 
          (import (rnrs)
                  (_srfi :1)
                  (noisy-number)
+                 (program)
                  (church readable-scheme)
                  (mem)
                  (util)
                  (sym))
          
-         (define (var-symbol) 'V)
+         
 
 ;;;anti-unification
          ;;it might be nice to memoize this, but right now if the sexprs passed to it have floating point numbers, this causes problems
