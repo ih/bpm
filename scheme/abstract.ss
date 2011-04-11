@@ -398,6 +398,10 @@
            (if (non-empty-list? sexpr)
                (func? (first sexpr))))         
 ;;;=========end code for internalize-arguments========================
+
+;;;**********begin code for similarity-replacmenet*******************
+         
+;;;**********end code for similarity-replacement******************         
          (define (true-compressions program)
            (compressions program))
 

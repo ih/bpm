@@ -1,4 +1,17 @@
-(define transform-types (list compressions internalize-arguments))
+(define alphabet (alist->hash-table '((a . 1) (b . 2) (c . 3) (d . 4) (e . 5))))
+(define (alphabet-distance c1 c2)
+  (let ([c1 (hash-table-ref alphabet c1)]
+        [c2 (hash-table-ref alphabet c2)])
+    (abs (- c1 c2))))
+(define (threshold c1 c2)
+  (< (alphabet-distance c1 c2) 2))
+(define (alphabet? expr)
+  (member expr (hash-table-keys alphabet)))
+(define (make-replacement c1 c2)
+  (list 'uniform-draw (list 'list c1 c2)))
+(define similarity-replacement (make-similarity-transform alphabet-distance threshold alphabet? make-replacement))
+
+(define transform-types (list compressions internalize-arguments similarity-replacement))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data size-weight score-weight)
@@ -167,6 +180,7 @@
 
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
+
 ;; (define (topology-sampler data prog sample-size)
 ;;   (let* ([none (set-policy! 'topology-only)]
 ;;          [fg-top (imgs->fg_top data)]

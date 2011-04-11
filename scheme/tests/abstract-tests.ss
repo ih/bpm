@@ -117,7 +117,23 @@
           =>
           '()))
 
+;;;similarity-replacement test
+(define alphabet (alist->hash-table '((a . 1) (b . 2) (c . 3) (d . 4) (e . 5))))
+(define (alphabet-distance c1 c2)
+  (let ([c1 (hash-table-ref alphabet c1)]
+        [c2 (hash-table-ref alphabet c2)])
+    (abs (- c1 c2))))
+(define (threshold c1 c2)
+  (< (alphabet-distance c1 c2) 2))
+(define (alphabet? expr)
+  (member expr (hash-table-keys alphabet)))
+(define (make-replacement c1 c2)
+  (list 'uniform-draw (list 'list c1 c2)))
 
+
+(let* ([similarity-replacement (make-similarity-transform alphabet-distance threshold alphabet? make-replacement)]
+       [program (make-program '() '(node a (node b (node c) (node a))))])
+  (check (similarity-replacement node a)))
 (check-report)
 ;; (define (test-unify)
 ;;   (let* ([sexpr '(a b c d)]
