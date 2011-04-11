@@ -47,7 +47,7 @@
 ;;;internalize-arguments
   (let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
          [correct-program (make-program (list correct-abstraction) '(F1))])
-    (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
+    (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))) #t)
           =>
           (list correct-program)))
 

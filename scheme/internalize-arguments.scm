@@ -7,8 +7,16 @@
 
          ;;a transformation is performed for each variable of each abstraction 
          (define (internalize-arguments program . nofilter)
-           (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))])
-             (concatenate (map (curry abstraction-internalizations program) abstractions-with-variables))))
+           (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
+                  [internalized-programs (concatenate (map (curry abstraction-internalizations program) abstractions-with-variables))]
+                  [program-size (size (program->sexpr program))]
+                  [valid-internalized-programs
+                   (if (not (null? nofilter))
+                       internalized-programs
+                       (filter (lambda (ip) (<= (size (program->sexpr ip))
+                                                (+ program-size 1)))
+                               internalized-programs))])
+             valid-internalized-programs))
 
          (define (has-arguments? abstraction)
            (not (null? (abstraction->vars abstraction))))
