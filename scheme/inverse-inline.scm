@@ -23,16 +23,8 @@
                   [none (reset-symbol-indizes!)])
              abstraction))
          
-         (define (set-indices-floor! expr)
-           (let ([funcs (find-tagged-symbols expr (func-symbol))]
-                 [vars (find-tagged-symbols expr (var-symbol))])
-             (begin
-               (raise-tagged! (func-symbol) funcs)
-               (raise-tagged! (var-symbol) vars))))
 
-         (define (find-tagged-symbols expr tag)
-           (filter (curry tag-match? tag) (primitives expr)))
-
+         
          ;;;remove undesirable abstractions and change any that have free variables
          (define (filter-abstractions abstractions)
            (define (remove-isomorphic abstractions)

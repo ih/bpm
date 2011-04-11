@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction)
+         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor!)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -173,4 +173,12 @@
                   [defs (program->abstractions program)]
                   [names (map abstraction->name defs)]
                   [vars (map abstraction->vars defs)])
-             (map pair names vars))))
+             (map pair names vars)))
+
+         ;;increases the current symbol to the highest 
+         (define (set-indices-floor! expr)
+           (let ([funcs (find-tagged-symbols expr (func-symbol))]
+                 [vars (find-tagged-symbols expr (var-symbol))])
+             (begin
+               (raise-tagged! (func-symbol) funcs)
+               (raise-tagged! (var-symbol) vars)))))

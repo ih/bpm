@@ -32,16 +32,6 @@
 
 
 
-;;;find-*-symbols test
-(let* ([expr '(F1 (V1 V23) F5 V2)])
-  (check (find-tagged-symbols expr (func-symbol)) => '(F1 F5)))
-
-(let* ([expr '(F1 (V1 V23) F5 V2)])
-  (check (find-tagged-symbols expr (var-symbol)) => '(V1 V23 V2)))
-;;;set-indices-floor tests
-(let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
-       [none (set-indices-floor! expr)])
-  (check (list (sym 'F) (sym 'V)) => '(F4 V2)))
 
 
 ;;;internalize-arguments test

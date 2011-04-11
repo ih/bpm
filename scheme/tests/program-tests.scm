@@ -1,5 +1,6 @@
 (import (program)
-        (srfi :78))
+        (srfi :78)
+        (sym))
 
 ;;;make-named-abstraction test
 (check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
@@ -17,6 +18,12 @@
 (let* ([program (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1))))]
        [new-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))]) (node V1)) '())])
   (check (program->replace-abstraction program new-abstraction) => (make-program (list new-abstraction) '(F1 (F1 1)))))
+
+;;;set-indices-floor tests
+(let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
+       [none (set-indices-floor! expr)])
+  (check (list (sym 'F) (sym 'V)) => '(F4 V2)))
+
 
 
 (check-report)

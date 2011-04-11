@@ -1,7 +1,7 @@
 ;; unique readable symbols. this is used to enumerate lists and to
 ;; generate readable variable names.
 (library (sym)
-         (export sym reset-symbol-indizes! set-symbol-index! raise-tagged! max-index tag-match?)
+         (export sym reset-symbol-indizes! set-symbol-index! raise-tagged! max-index tag-match? find-tagged-symbols)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -57,5 +57,8 @@
                    (if (< (string-length expr-string) tag-length)
                        #f
                        (equal? (string-take expr-string tag-length) tag-string)))
-                 #f)))
+                 #f))
+
+         (define (find-tagged-symbols expr tag)
+           (filter (curry tag-match? tag) (primitives expr))))
 
