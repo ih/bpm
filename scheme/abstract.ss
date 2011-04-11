@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr get-abstractions make-abstraction abstraction->define define->abstraction var? func? normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move sexpr->program proposal beam-search-compressions beam-compression make-program  pretty-print-program program->sexpr get-abstractions make-abstraction abstraction->define define->abstraction normalize-names all-iterated-compressions iterated-compressions inline unique-programs sort-by-size program->body program->abstraction-applications program->abstractions abstraction->vars abstraction->pattern abstraction->name abstraction->variable-position make-named-abstraction unique-commutative-pairs possible-abstractions find-tagged-symbols set-indices-floor! condense-program replace-matches program->replace-abstraction internalize-arguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -37,24 +37,6 @@
 
          (define (list-unique-commutative-pairs lst)
            (unique-commutative-pairs lst list))
-
-         ;;language specific functions ;use reg-exps
-         ;;temp fix b/c problems access to srfi 13
-         (define (var? expr)
-           (if (symbol? expr)
-               (let* ([var-string (symbol->string (var-symbol))]
-                      [string-expr (symbol->string expr)])
-                 ;; (string-prefix? var-pattern string-expr))))
-                 (equal? (substring string-expr 0 1) var-string))
-               #f))
-
-         (define (func? expr)
-           (if (symbol? expr)
-               (let* ([func-string (symbol->string (func-symbol))]
-                      [string-expr (symbol->string expr)])
-                 ;; (string-prefix? var-pattern string-expr))))
-                 (equal? (substring string-expr 0 1) func-string))
-               #f))
 
          (define (make-abstraction pattern variables)
            (make-named-abstraction (sym (func-symbol)) pattern variables))
