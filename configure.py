@@ -16,14 +16,14 @@ def modifyDesugar():
 
 def modifyHeader():
     replaceAll(bherDir+"church/header.ss", "*lazy* false", "*lazy* true")
-    replaceAll(bherDir+"church/header.ss", "'(rnrs)", "'(rnrs) '(abstract) '(lazy) '(util) '(sym) '(python-fg-lib)")
+    replaceAll(bherDir+"church/header.ss", "'(rnrs)", "'(rnrs) '(abstract) '(program) '(lazy) '(util) '(sym) '(python-fg-lib)")
 
 def modifyCompiler():
     replaceAll(bherDir+"church/compiler.ss", "*lazy* false", "*lazy* true")
     replaceAll(bherDir+"church/compiler.ss", '(load "mcmc-preamble.church")', '(load "mcmc-preamble.church") (load "factor-graph.church") (load "beam-learning.church")')
 
 def modifyHeaderIkarus():
-    replaceAll(bherDir+"scheme-compilers/header-ikarus.sc", "(rnrs eval)", "(rnrs eval) (lazy) (abstract) (util) (sym) (testing) (python-fg-lib)")    
+    replaceAll(bherDir+"scheme-compilers/header-ikarus.sc", "(rnrs eval)", "(rnrs eval) (lazy) (abstract) (program) (util) (sym) (testing) (python-fg-lib)")    
 
 def modifyPythonFgLib():
     replaceAll(fgDir+"scheme/python-fg-lib.ss", "/home/ih/factor-graphics/", fgDir)
