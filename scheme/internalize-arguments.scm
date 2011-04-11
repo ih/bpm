@@ -1,7 +1,7 @@
 (library (internalize-arguments)
          (export internalize-arguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable remove-ith-argument remove-application-argument internalize-argument abstraction-internalizations)
          (import (except (rnrs) string-hash string-ci-hash)
-                 (abstract)
+                 (program)
                  (_srfi :1)
                  (util))
 

@@ -1,6 +1,6 @@
 (import (internalize-arguments)
+        (program)
         (srfi :78)
-        (abstract)
         (church readable-scheme))
 
 ;;;has-arguments?

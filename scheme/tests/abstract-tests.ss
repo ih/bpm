@@ -8,44 +8,33 @@
         (sym)
         (util)
         (unification))
-;;;test definitions
-(define (test-beam-search-compressions sexpr)
-  (for-each display (list "original expr:\n" sexpr "\n"
-                          "size: " (size sexpr)
-                          "\n\n"
-                          "compressed exprs:\n"))
-  (map pretty-print-program
-       (sort-by-size
-        (unique-programs
-         (beam-search-compressions 10 (make-program '() sexpr))))))
-
-(define (test-compressions name compressing-function sexpr)
-  (for-each display (list name
-                          "\noriginal expr:\n" sexpr "\n"
-                          "size: " (size sexpr)
-                          "\n\n"
-                          "compressed exprs:\n"))
-  (map pretty-print-program
-       (sort-by-size
-        (unique-programs
-         (compressing-function (make-program '() sexpr))))))
+;;;program transformation tests
+;;;compressions tests
+(let* ([program (make-program '() '(+ (+ 2 2) (- 2 5)))]
+       [abstraction1 (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2))]
+       [abstraction2 (make-named-abstraction 'F1 '(V1 V2 V3) '(V1 V2 V3))]
+       [abstraction3 (make-named-abstraction 'F1 '(V1 2 V2) '(V1 V2))]
+       [compressed1 (make-program (list abstraction1) '(F1 (F1 2 2) (- 2 5)))]
+       [compressed3 (make-program (list abstraction3) '(+ (F1 + 2) (F1 - 5)))]
+       [compressed2 (make-program (list abstraction2) '(F1 + (F1 + 2 2) (F1 - 2 5)))])
+  (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
 
 
 
 
 
 ;;;internalize-arguments test
-;; (let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
-;;          [correct-program (make-program (list correct-abstraction) '(F1))])
-;;     (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
-;;           =>
-;;           (list correct-program)))
+(let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-arguments (sexpr->program '(let () (define F1 (lambda (V1) (node V1))) (F1 (F1 1)))))
+          =>
+          (list correct-program)))
 
-;; (let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
-;;          [correct-program (make-program (list correct-abstraction) '(F1))])
-;;     (check (internalize-arguments (make-program '() '(node (node 1))))
-;;           =>
-;;           '()))
+(let* ([correct-abstraction (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+         [correct-program (make-program (list correct-abstraction) '(F1))])
+    (check (internalize-arguments (make-program '() '(node (node 1))))
+          =>
+          '()))
 
 ;;;similarity-replacement test
 ;; (define alphabet (alist->hash-table '((a . 1) (b . 2) (c . 3) (d . 4) (e . 5))))
@@ -65,6 +54,29 @@
 ;;        [program (make-program '() '(node a (node b (node c) (node a))))])
 ;;   (check (similarity-replacement node a)))
 (check-report)
+
+
+(define (test-beam-search-compressions sexpr)
+  (for-each display (list "original expr:\n" sexpr "\n"
+                          "size: " (size sexpr)
+                          "\n\n"
+                          "compressed exprs:\n"))
+  (map pretty-print-program
+       (sort-by-size
+        (unique-programs
+         (beam-search-compressions 10 (make-program '() sexpr))))))
+
+;; (define (test-compressions name compressing-function sexpr)
+;;   (for-each display (list name
+;;                           "\noriginal expr:\n" sexpr "\n"
+;;                           "size: " (size sexpr)
+;;                           "\n\n"
+;;                           "compressed exprs:\n"))
+;;   (map pretty-print-program
+;;        (sort-by-size
+;;         (unique-programs
+;;          (compressing-function (make-program '() sexpr))))))
+
 ;; (define (test-unify)
 ;;   (let* ([sexpr '(a b c d)]
 ;;          [pattern '(A b c A)] 
