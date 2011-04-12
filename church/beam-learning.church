@@ -89,15 +89,16 @@
    (lambda (sexpr data popsize)
      (let ([prog (eval sexpr)])
        (let* ([lazified-data (list->lazy-list data)]
-              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 0
+              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 20
                                  (lambda (depth) (lambda () (let ((s (prog)))
                                                               (pair (lazy-equal? s lazified-data depth)
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
               (repeat-symbol (find-repeat-symbol samples))
+              [db (pretty-print (list "before selection" (map mcmc-state->query-value samples)))]
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
-
+              [db (pretty-print (list "after selection" (length samples)))]
               (scores (map mcmc-state->score samples))
               (score (if (null? scores)
                          -inf.0
@@ -167,7 +168,6 @@
 
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
-
 ;; (define (topology-sampler data prog sample-size)
 ;;   (let* ([none (set-policy! 'topology-only)]
 ;;          [fg-top (imgs->fg_top data)]
