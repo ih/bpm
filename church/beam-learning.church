@@ -1,5 +1,6 @@
+(define transform-types (list compressions internalize-arguments))
 
-;;;searches through compressions of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
+;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data size-weight score-weight)
   (let* ([initial-sexpr (make-initial-sexpr data)]
          [learned-sexpr (beam-learn data initial-sexpr 5 size-weight score-weight)]
@@ -15,22 +16,28 @@
 
 ;;;returns an sexpr
 (define (beam-learn data sexpr beam-size size-weight score-weight)
-  (let* ([top-compressions 
+  (let* ([top-transformations 
           (sort-by-score-and-size
            (unique-programs
-            (beam-learn-search-compressions data beam-size (make-program '() sexpr) size-weight score-weight)) data size-weight score-weight)])
-    (if (null? top-compressions)
+            (beam-learn-search-transformations data beam-size (make-program '() sexpr) size-weight score-weight)) data size-weight score-weight)])
+    (if (null? top-transformations)
         sexpr
-        (program->sexpr (first top-compressions)))))
+        (program->sexpr (first top-transformations)))))
 
 
-(define (beam-learn-search-compressions data beam-size program size-weight score-weight)
-  (my-iterated-compressions (lambda (progs) (best-n beam-size (unique-programs progs) data size-weight score-weight)) program))
+(define (beam-learn-search-transformations data beam-size program size-weight score-weight)
+  (my-iterated-transformations (lambda (progs) (best-n beam-size (unique-programs progs) data size-weight score-weight)) program))
 
-(define (my-iterated-compressions cfilter program)
-  (let ([compressed-programs (cfilter (compressions program))])
+(define (my-iterated-transformations cfilter program)
+  (let* ([compressed-programs (cfilter (compressions program))])
     (append compressed-programs
-            (apply append (map (lambda (prog) (my-iterated-compressions cfilter prog)) compressed-programs)))))
+            (apply append (map (lambda (prog) (my-iterated-transformations cfilter prog)) compressed-programs)))))
+
+;;depth-iterated-transformations is only for testing purposes to check if my-iterated-transformations is correct
+(define (depth-iterated-transformations cfilter program depth)
+  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
+    (delete '()  (append transformed-programs
+             (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
 
 (define (best-n n programs data size-weight score-weight)
@@ -160,6 +167,7 @@
 
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
+
 ;; (define (topology-sampler data prog sample-size)
 ;;   (let* ([none (set-policy! 'topology-only)]
 ;;          [fg-top (imgs->fg_top data)]
