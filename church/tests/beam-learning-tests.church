@@ -161,7 +161,7 @@
 ;;                1.0))
 
 ;;for topology-only the geometry has no effect on matching
-(set-policy! 'topology-only)
+
 ;; (let* ([init-py-fg '(GN2 
 ;;                      (GN1
 ;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))

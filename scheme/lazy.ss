@@ -1,7 +1,7 @@
 #!r6rs
 ;;lazy functions
 (library (lazy)
-         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size)
+         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size topology-only-eq?)
          (import (rnrs)
                  (util)
                  (noisy-number)
@@ -17,6 +17,20 @@
 
          (define lazy-list (lambda args (if (pair? args) (lazy-pair (first args) (apply lazy-list (rest args))) args)))
 
+         (define policy 'topology-only)
+         (define (set-policy! new-policy)
+           (set! policy new-policy))
+
+         (define (eq-policy)
+           (cond [(eq? policy 'original) eq?]
+                 [(eq? policy 'noisy-number) noisy-number-eq?]
+                 [(eq? policy 'topology-only) topology-only-eq?]
+                 [else (error "eq-policy not handled in lazy-equal!")]))
+
+         (define (topology-only-eq? a b)
+           (if (and (number? a) (number? b)) ;;just do (number? a) rather than (and (number? a) (number? b))
+               #t
+               (eq? a b)))
 
          ;;returns false if finds missmatch, otherwise returns amount of sexprs matched.
          (define (seq-sexpr-equal? t1 t2 depth eq-policy)

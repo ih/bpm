@@ -91,7 +91,7 @@
        (let* ([lazified-data (list->lazy-list data)]
               (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 20
                                  (lambda (depth) (lambda () (let ((s (prog)))
-                                                              (pair (lazy-equal? s lazified-data depth)
+                                                              (pair (lazy-equal? s lazified-data depth noisy-number-eq?)
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
@@ -159,8 +159,7 @@
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|program)}p(images|fg) where R is the nubmer of samples
 ;;;this is the likelihood 
 (define (scoring-fg-image prog sample-size)
-  (let* ([none (set-policy! 'noisy-number)]
-         [fg-sampler (eval prog)]
+  (let* ([fg-sampler (eval prog)]
          [fg-samples (repeat sample-size (lambda () (lazy-list->all-list (fg-sampler))))]
          [likelihoods (map fg->img-score fg-samples)])
     (/ (apply + likelihoods) sample-size)))  ;;;if likelihoods are probabilities and not log probabilities
