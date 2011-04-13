@@ -16,17 +16,6 @@
      (flip))))
      ;p(lazy-pair (flip) '()))))
 
-;;;basically put 'node at the front of every sub-expr and wrap in a lambda
-(define (python-format->scheme-program py-format)
-  (let* ([body (nodify py-format)]) 
-    (list 'lambda '() body)))
-
-(define (nodify py-sexpr)
-   (if (null? py-sexpr)
-       py-sexpr
-       (if (list? py-sexpr)
-           (pair 'node (map nodify (rest py-sexpr)))
-           py-sexpr)))
 
 (define (scheme-format->python-format scheme-sexpr)
   (let ([non-ghost-nodes (first (first scheme-sexpr))])

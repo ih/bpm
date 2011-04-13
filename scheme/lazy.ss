@@ -1,7 +1,7 @@
 #!r6rs
 ;;lazy functions
 (library (lazy)
-         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size topology-only-eq?)
+         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size set-policy!)
          (import (rnrs)
                  (util)
                  (noisy-number)
@@ -32,45 +32,32 @@
                #t
                (eq? a b)))
 
+         
          ;;returns false if finds missmatch, otherwise returns amount of sexprs matched.
-         (define (seq-sexpr-equal? t1 t2 depth eq-policy)
+         (define (seq-sexpr-equal? t1 t2 depth)
            (if (= depth 0)
                0
                (if (and (lazy-pair? t1) (lazy-pair? t2))
-                   (let ((left (seq-sexpr-equal? (t1 'first) (t2 'first) (- depth 1) eq-policy)))
+                   (let ((left (seq-sexpr-equal? (t1 'first) (t2 'first) (- depth 1))))
                      (if (eq? false left)
                          false
-                         (seq-sexpr-equal? (t1 'rest) (t2 'rest) left eq-policy)))
-                   (if (eq-policy t1 t2)
+                         (seq-sexpr-equal? (t1 'rest) (t2 'rest) left)))
+                   (if ((eq-policy) t1 t2)
                        (- depth 1)
                        false))))
 
-         (define (sexpr-equal? t1 t2 eq-policy)
+         (define (sexpr-equal? t1 t2)
            (if (and (lazy-pair? t1) (lazy-pair? t2))
-               (and (sexpr-equal? (t1 'first) (t2 'first) eq-policy)
-                    (sexpr-equal? (t1 'rest) (t2 'rest) eq-policy))
-               (eq-policy t1 t2)))
+               (and (sexpr-equal? (t1 'first) (t2 'first))
+                    (sexpr-equal? (t1 'rest) (t2 'rest)))
+               ((eq-policy) t1 t2)))
 
          ;;opt-args can be depth/depth equal function/equal function
-         (define (lazy-equal? a b . opt-args)
-           (let ([depth (parse-opt-depth opt-args)]
-                 [eq-policy (parse-opt-equality opt-args)])
-            (if (null? depth)
-                (sexpr-equal? a b eq-policy)
-                (not (eq? false (seq-sexpr-equal? a b depth eq-policy))))))
+         (define (lazy-equal? a b . depth)
+           (if (null? depth)
+               (sexpr-equal? a b)
+               (not (eq? false (seq-sexpr-equal? a b (first depth))))))
 
-         ;;assumes if an equality function was passed in it was the second argument
-         (define (parse-opt-equality opt-args)
-           (cond [(null? opt-args) equal?]
-                 [(and (= (length opt-args) 1) (number? (first opt-args))) equal?]
-                 [(= (length opt-args) 1) (first opt-args)]
-                 [else (second opt-args)]))
-
-         ;;assumes if a depth is passed it is the first argument
-         (define (parse-opt-depth opt-args)
-           (cond [(null? opt-args) opt-args]
-                 [(number? (first opt-args)) (first opt-args)]
-                 [else '()]))
 
 
          (define (lazy-all-equal? lazy-lst1 lazy-lst2)

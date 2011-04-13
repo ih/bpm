@@ -91,7 +91,7 @@
        (let* ([lazified-data (list->lazy-list data)]
               (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 20
                                  (lambda (depth) (lambda () (let ((s (prog)))
-                                                              (pair (lazy-equal? s lazified-data depth noisy-number-eq?)
+                                                              (pair (lazy-equal? s lazified-data depth)
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
