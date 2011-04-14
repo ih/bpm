@@ -1,6 +1,6 @@
 ;;functions related to factor graphs
 (library (factor-graph)
-         (export python-format->scheme-program ghost-node? python-data->scheme python-node->scheme python-ghost-node->scheme)
+         (export python-format->scheme-program ghost-node? python-data->scheme python-node->scheme python-ghost-node->scheme data?)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (_srfi :1))

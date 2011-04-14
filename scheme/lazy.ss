@@ -1,9 +1,10 @@
 #!r6rs
 ;;lazy functions
 (library (lazy)
-         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size set-policy!)
+         (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size set-policy! lazy-topology-equal? lazy-data?)
          (import (rnrs)
                  (util)
+                 (factor-graph)
                  (noisy-number)
                  (church readable-scheme))
          (define lazy-null '())
@@ -28,11 +29,12 @@
                  [else (error "eq-policy not handled in lazy-equal!")]))
 
          (define (topology-only-eq? a b)
-           (if (and (number? a) (number? b)) ;;just do (number? a) rather than (and (number? a) (number? b))
-               #t
-               (eq? a b)))
+           (let ([db (pretty-print (list "topeq" a b))])
+            (if (and (data? a) (data? b)) ;;just do (number? a) rather than (and (number? a) (number? b))
+                #t
+                (equal? a b))))
 
-         
+
          ;;returns false if finds missmatch, otherwise returns amount of sexprs matched.
          (define (seq-sexpr-equal? t1 t2 depth)
            (if (= depth 0)
@@ -46,11 +48,32 @@
                        (- depth 1)
                        false))))
 
+         (define (seq-sexpr-topology-equal? t1 t2 depth)
+           (if (= depth 0)
+               0
+               (if (and (lazy-pair? t1) (lazy-pair? t2))
+                   (if (and (lazy-data? t1) (lazy-data? t2))
+                       (- depth 1)
+                       (let ((left (seq-sexpr-topology-equal? (t1 'first) (t2 'first) (- depth 1))))
+                         (if (eq? false left)
+                             false
+                             (seq-sexpr-topology-equal? (t1 'rest) (t2 'rest) left))))
+                   (if (equal? t1 t2)
+                       (- depth 1)
+                       false))))
+
+         (define (lazy-data? lazy-sexpr)
+           (eq? (lazy-sexpr 'first) 'data))
+
+         (define (lazy-topology-equal? a b depth)
+           (not (eq? false (seq-sexpr-topology-equal? a b depth))))
+
          (define (sexpr-equal? t1 t2)
-           (if (and (lazy-pair? t1) (lazy-pair? t2))
-               (and (sexpr-equal? (t1 'first) (t2 'first))
-                    (sexpr-equal? (t1 'rest) (t2 'rest)))
-               ((eq-policy) t1 t2)))
+           (let ([db (pretty-print (list "sexpr-equal" (lazy-list->all-list t1) (lazy-list->all-list t2)))])
+            (if (and (lazy-pair? t1) (lazy-pair? t2))
+                (and (sexpr-equal? (t1 'first) (t2 'first))
+                     (sexpr-equal? (t1 'rest) (t2 'rest)))
+                ((eq-policy) t1 t2))))
 
          ;;opt-args can be depth/depth equal function/equal function
          (define (lazy-equal? a b . depth)

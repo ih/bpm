@@ -181,21 +181,41 @@
 ;;                                                   (((0) (0) (0 0) (0 0)))))) 10))
 ;;                0.0))
 
-(let* ([single-node-program (python-format->scheme-program '(GN2 
-                                                        (GN1
-                                                         (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))]
-       [double-node-program1 (python-format->scheme-program '(GN2 
-                                                              (GN1
-                                                               (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                                                                   (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
-       [double-node-program2 (python-format->scheme-program '(GN2 
-                                                              (GN1
-                                                               (N2 (data (radius 1) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                                                                   (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
+;;lazy-data check
+
+
+(let* ([single-node-program (python-format->scheme-program '(GN 
+                                                        (GN
+                                                         (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))]
+       [double-node-program1 (python-format->scheme-program '(GN 
+                                                              (GN
+                                                               (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                                                                   (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
+       [double-node-program2 (python-format->scheme-program '(GN 
+                                                              (GN
+                                                               (N (data (radius 1) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                                                                   (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
        [program (list 'lambda '() (list (list 'uniform-draw (list 'list single-node-program double-node-program1 double-node-program2))))])
   (equal?-test "score-fg-program w/ program that can produce different topologies"
-               (exp (score-fg-program program '(((((0) (0) (0 0) (0 0))
-                                                  (((0) (0) (0 0) (0 0)))))) 10))
+               (exp (score-fg-program program '((((data (0) (0) (0 0) (0 0))
+                                                  ((data (0 0) (0) (0 0) (0 0)))))) 10))
                (/ 2.0 3)))
+
+(let* ([single-node-program (python-format->scheme-program '(GN 
+                                                        (GN
+                                                         (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))]
+       [double-node-program1 (python-format->scheme-program '(GN 
+                                                              (GN
+                                                               (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                                                                   (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
+       [double-node-program2 (python-format->scheme-program '(GN 
+                                                              (GN
+                                                               (N (data (radius 1) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+                                                                   (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
+       [program (list 'lambda '() (list (list 'uniform-draw (list 'list single-node-program double-node-program1 double-node-program2))))])
+  (equal?-test "score-fg-program w/ program that can produce different topologies"
+               (exp (score-fg-program program '((((data (0) (0) (0 0) (0 0))
+                                                  ))) 10))
+               (/ 1.0 3)))
 
 (exit)
