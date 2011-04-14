@@ -16,41 +16,41 @@
                          (N1 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
                              (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
                                  (N3 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))))))
-             '(((((1.2) (-0.2) (2 0.1) (0 0.1))
-                 (((0.8) (-0.1) (3 0.1) (0 0.1))
-                  (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
+             '((((data (1.2) (-0.2) (2 0.1) (0 0.1))
+                 ((data (0.8) (-0.1) (3 0.1) (0 0.1))
+                  ((data (0.6) (-0.2) (2 0.1) (0 0.1))))))))
 
-(equal?-test "scheme to python format test: process-data"
-             (process-data '((1.2) (-0.2) (2 0.1) (0 0.1)))
-             '(data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))
+;; (equal?-test "scheme to python format test: process-data"
+;;              (process-data '((1.2) (-0.2) (2 0.1) (0 0.1)))
+;;              '(data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))
 
-(equal?-test "scheme to python format test: process-nodes"
-             (process-nodes '(((1.2) (-0.2) (2 0.1) (0 0.1))
-                              (((0.8) (-0.1) (3 0.1) (0 0.1))
-                               (((0.6) (-0.2) (2 0.1) (0 0.1))))))
-             '(N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                           (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
-                               (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))
-(reset-symbol-indizes!)
-(equal?-test "scheme to python format"
-             (scheme-format->python-format '(((((1.2) (-0.2) (2 0.1) (0 0.1))
-                                               (((0.8) (-0.1) (3 0.1) (0 0.1))
-                                                (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
-             '(GN2 
-                 (GN1
-                  (N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                      (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
-                          (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
+;; (equal?-test "scheme to python format test: process-nodes"
+;;              (process-nodes '(((1.2) (-0.2) (2 0.1) (0 0.1))
+;;                               (((0.8) (-0.1) (3 0.1) (0 0.1))
+;;                                (((0.6) (-0.2) (2 0.1) (0 0.1))))))
+;;              '(N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                            (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+;;                                (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))
+;; (reset-symbol-indizes!)
+;; (equal?-test "scheme to python format"
+;;              (scheme-format->python-format '(((((1.2) (-0.2) (2 0.1) (0 0.1))
+;;                                                (((0.8) (-0.1) (3 0.1) (0 0.1))
+;;                                                 (((0.6) (-0.2) (2 0.1) (0 0.1))))))))
+;;              '(GN2 
+;;                  (GN1
+;;                   (N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                       (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+;;                           (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))))
 
-;;;forward sample test
+;; ;;;forward sample test
 
-(let* ([init-py-fg '(GN2 
-                     (GN1
-                      (N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-                          (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
-                              (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))]
-       [scheme-prog (python-format->scheme-program init-py-fg)])
- (forward-sample scheme-prog))
+;; (let* ([init-py-fg '(GN2 
+;;                      (GN1
+;;                       (N3 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
+;;                           (N2 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))
+;;                               (N1 (data (radius 0.6) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))))]
+;;        [scheme-prog (python-format->scheme-program init-py-fg)])
+;;  (forward-sample scheme-prog))
 
 
 
