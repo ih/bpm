@@ -90,5 +90,7 @@
 (define blobbiness node)
 (define Distance node)
 (define Straightness node)
+(define label node)
+(define N node)
 (define G1 node)
 (define G2 node)

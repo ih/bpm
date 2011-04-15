@@ -1,18 +1,20 @@
 (define transform-types (list compressions internalize-arguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
-(define (learn-model data size-weight score-weight)
+(define (learn-model data depth)
   (let* ([initial-sexpr (make-initial-sexpr data)]
-         [learned-sexpr (beam-learn data initial-sexpr 5 size-weight score-weight)]
+         [learned-sexpr (beam-learn data initial-sexpr depth)]
          [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
          [model (lambda () (lazy-list->all-list ((eval learned-sexpr))))])
     (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
     model))
 
-;;;turns each of the examples into a program then wraps that in a uniform draw
-(define (make-initial-sexpr data)
-  (let* ([literal-sexprs (map graph->program data)])
-    (list 'lambda '() (list 'uniform-draw (pair 'list literal-sexprs)))))
+;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
+;;make-initial-sexpr :: images => scheme-program
+(define (make-initial-sexpr images)
+  (let* ([factor-graphs (map image->factor-graph images)]
+         [literal-sexprs (map python-format->scheme-program factor-graphs)])
+    (list 'lambda '() (list (list 'uniform-draw (pair 'list literal-sexprs))))))
 
 ;;;returns an sexpr
 (define (beam-learn data sexpr beam-size size-weight score-weight)
@@ -85,6 +87,7 @@
 
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
+;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
 (define score-fg-program 
    (lambda (sexpr data popsize)
      (let ([prog (eval sexpr)])
@@ -167,7 +170,10 @@
 
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
-;; (define (topology-sampler data prog sample-size)
+;;assumes all factor-graphs from imags->factor-graphs have the same topology
+;;
+;; (define (likelihood data prog sample-size)
 ;;   (let* ([none (set-policy! 'topology-only)]
-;;          [fg-top (imgs->fg_top data)]
-;;          [fg+score-samples (repeat sample-size (lambda () (score+value-fg-program fgtop prog 10 )))])))
+;;          [fgs+ims_fg-score (imgs->factor-graph-top+score-sum data sample-size)]
+;;          [fg-top_prog-score (score-fg-program (single-factor-graph fgs+scores) 10)])
+;;     (/ (* (score-sum fgs+ims_fg-score) fg-top_prog-score) sample-size)))
