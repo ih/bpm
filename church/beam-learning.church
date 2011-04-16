@@ -19,8 +19,8 @@
 ;;;returns an sexpr
 (define (beam-learn data sexpr beam-size depth)
   (let* ([top-transformations 
-          (sort-by-score-and-size
-           (unique-programs
+          (sort-by-posterior
+           data (unique-programs
             (beam-learn-search-transformations data (make-program '() sexpr) data beam-size depth)))])
     (if (null? top-transformations)
         sexpr
@@ -42,16 +42,20 @@
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
 (define (best-n data programs n)
-  (max-take (sort-by-score-and-size data programs) n))
+  (max-take (sort-by-posterior data programs) n))
 
 
-(define (sort-by-score-and-size programs data size-weight score-weight)
-  (let* ([program-sizes (map (compose size program->sexpr) programs)]
-         [program-scores (map (compose (lambda (prog) (scoring prog data 10)) program->sexpr) programs)]
-         [total-weight (combine-size-score program-sizes program-scores size-weight score-weight)]
-         [programs-with-weights (zip programs total-weight)]
-         [weight< (lambda (a b) (< (second a) (second b)))])
-    (map first (my-list-sort weight< programs-with-weights))))
+(define (sort-by-posterior data programs)
+  (let* ([log-priors (map log-prior programs)]
+         [log-likelihoods (map (compose (lambda (prog) (log-likelihood prog data 10)) program->sexpr) programs)]
+         [posteriors (map + log-priors log-likelihoods)] ;;log-prior and log-likelihood are log-probabilities
+         [programs-with-posteriors (zip programs posteriors)]
+         [posteriors< (lambda (a b) (< (second a) (second b)))])
+    (map first (my-list-sort posteriors< programs-with-posteriors))))
+
+;;how do you find normalized values?
+(define (log-prior program)
+  (- (size (program->sexpr program))))
 
 ;;;list sorting via something like quicksort
 (define (my-list-sort compare lst)
@@ -87,7 +91,7 @@
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
 ;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
-(define score-fg-program 
+(define score-fg-top_program 
    (lambda (sexpr data popsize)
      (let ([prog (eval sexpr)])
        (let* ([lazified-data (list->lazy-list data)]
@@ -170,9 +174,11 @@
 ;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
 ;;assumes all factor-graphs from imags->factor-graphs have the same topology
-;;
-;; (define (likelihood data prog sample-size)
-;;   (let* ([none (set-policy! 'topology-only)]
-;;          [fgs+ims_fg-score (imgs->factor-graph-top+score-sum data sample-size)]
-;;          [fg-top_prog-score (score-fg-program (single-factor-graph fgs+scores) 10)])
-;;     (/ (* (score-sum fgs+ims_fg-score) fg-top_prog-score) sample-size)))
+;; '_' can be read as given e.g. fg-top_prog is fg-top given prog 
+(define (log-likelihood data prog sample-size)
+  (let* ([fg-top (image->factor-graph (first images))]
+         [fg-top_prog-score (score-fg-top_program fg-top sample-size)] ;;number of particles doesn't have to be sample-size
+         [factor-graphs (generate-factor-graphs_top fg-top sample-size)]
+         [true-sample-size (length factor-graphs)]
+         [image_fg-scores (map fg->img-score factor-graphs)])
+    (/ (* (score-sum image_fg-scores) fg-top_prog-score) true-sample-size)))

@@ -158,7 +158,7 @@
 
 
 
-;;;init-images tests
+
 ;;(equal?-test "init-images test" (init-images) )
 
 (define (init-images) (list "fg.png"))
@@ -167,17 +167,28 @@
                  (N (data (label 3) (radius 2) (blobbiness 3.5) (Distance 2 .5) (Straightness 0 0.1))
                     (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))
                     (N (data (label 5) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))))))
+
+(define fg2 '(N (data (label 1) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1))))
 (define images (init-images))
+;;;init-images tests
 (equal?-test "image->factor-graph test"
              (image->factor-graph (first images))
              fg)
+
+;;;global test data
+(define worse-than-initial-sexpr (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg) (list 'lambda '() fg2))))))
+
+(define models-for-comparison (let* ([sexprs (list (make-initial-sexpr images) worse-than-initial-sexpr)]
+                                     [possible-programs (map (lambda (p) (make-program '() p)) sexprs)])
+                                possible-programs))
+
 ;;;make-initial-sexpr test, this is a program that returns lazy factor graphs
 (equal?-test "initial-sexpr test sexpr" (make-initial-sexpr images) (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg))))))
 
 ;;(pretty-print ((eval (make-initial-sexpr images))))
-(equal?-test "initial sexpr evalutes to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr images)))) #t)
+(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr images)))) #t)
 
-(equal?-test "initial sexpr evalutes correctly" (lazy-list->all-list ((eval (make-initial-sexpr images)))) '(((1) (10) (3.5) (5 .5) (0 0.1)) (((2) (5) (3.5) (3 .5) (0 0.1)) (((3) (2) (3.5) (2 .5) (0 0.1)) (((4) (5) (10) (5 .5) (0 0.1)) ) (((5) (5) (10) (5 .5) (0 0.1)))))))
+(equal?-test "initial sexpr evaluates correctly" (lazy-list->all-list ((eval (make-initial-sexpr images)))) '(((1) (10) (3.5) (5 .5) (0 0.1)) (((2) (5) (3.5) (3 .5) (0 0.1)) (((3) (2) (3.5) (2 .5) (0 0.1)) (((4) (5) (10) (5 .5) (0 0.1)) ) (((5) (5) (10) (5 .5) (0 0.1)))))))
 
 
 
@@ -199,27 +210,20 @@
                (timed-iterated-transformations (lambda (x) x) (make-program '() '(node (node 1))) 2)
                (list program1 program2 program3 program4 program5)))
 
+;;;log-prior (how do you normalize these values?)
+(equal?-test "log-prior test" (log-prior (make-program '() '(+ 2 3 4))) -5)
 
-;;;sort-by-score-and-size
-(define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
-(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
-       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-       [simplest-data '(((a 1 2)) ((a 1 2)))])
-  (equal?-test "sort-by-score-and-size size-only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (reverse possible-programs)))
-
-(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
-       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-       [simplest-data '(((a 1 2)) ((a 1 2)))])
-  (equal?-test "sort-by-score-and-size score-only" (timed-sort-by-score-and-size possible-programs simplest-data 0 1) possible-programs))
+;;;log-likelihood
+(equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
+(equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
+;;;sort-by-posterior
+;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) possible-programs)
 
 
-
-;;;best-n tests
-(define timed-best-n (time-it best-n "best-n"))
-(let* ([non-fg-program (list 'lambda '() (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1))))]
-       [sexprs (list (make-initial-sexpr images) (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg) non-fg-program)))))]
-       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)])
-  (equal?-test "best-n by score only" (timed-best-n images possible-programs 1) (make-initial-sexpr images)))
+;; ;;;best-n tests
+;; (define timed-best-n (time-it best-n "best-n"))
+;; (equal?-test "best-n by score only" (timed-best-n images models-for-comparison 1) (make-initial-sexpr images))
 
 
 ;;;beam-learn-search-compressions test
