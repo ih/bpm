@@ -1,9 +1,9 @@
 (define transform-types (list compressions internalize-arguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
-(define (learn-model data depth)
+(define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-initial-sexpr data)]
-         [learned-sexpr (beam-learn data initial-sexpr depth)]
+         [learned-sexpr (beam-learn data initial-sexpr beam-size depth)]
          [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
          [model (lambda () (lazy-list->all-list ((eval learned-sexpr))))])
     (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
@@ -17,18 +17,18 @@
     (list 'lambda '() (list (list 'uniform-draw (pair 'list literal-sexprs))))))
 
 ;;;returns an sexpr
-(define (beam-learn data sexpr beam-size size-weight score-weight)
+(define (beam-learn data sexpr beam-size depth)
   (let* ([top-transformations 
           (sort-by-score-and-size
            (unique-programs
-            (beam-learn-search-transformations data beam-size (make-program '() sexpr) size-weight score-weight)) data size-weight score-weight)])
+            (beam-learn-search-transformations data (make-program '() sexpr) data beam-size depth)))])
     (if (null? top-transformations)
         sexpr
         (program->sexpr (first top-transformations)))))
 
 
-(define (beam-learn-search-transformations data beam-size program size-weight score-weight)
-  (my-iterated-transformations (lambda (progs) (best-n beam-size (unique-programs progs) data size-weight score-weight)) program))
+(define (beam-learn-search-transformations data program beam-size depth)
+  (depth-iterated-transformations (lambda (progs) (best-n data (unique-programs progs) beam-size)) program depth))
 
 (define (my-iterated-transformations cfilter program)
   (let* ([compressed-programs (cfilter (compressions program))])
@@ -41,9 +41,8 @@
     (delete '()  (append transformed-programs
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
-
-(define (best-n n programs data size-weight score-weight)
-  (max-take (sort-by-score-and-size programs data size-weight score-weight) n))
+(define (best-n data programs n)
+  (max-take (sort-by-score-and-size data programs) n))
 
 
 (define (sort-by-score-and-size programs data size-weight score-weight)

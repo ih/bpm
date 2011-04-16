@@ -64,57 +64,11 @@
 ;; (equal?-test "sorting test" (my-list-sort > test-list) (reverse test-list))
 ;; ;;;combine-size-score test
 ;; (equal?-test "combine-size-score test" (map round (combine-size-score '(1 2 3) (list (log 10) (log 20) (log 30)) 1 1))  '(-9. -18. -27.))
-;; ;; ;;;sort-by-score-and-size
-
-;; (define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
-;; (let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
-;;        [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-;;        [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (equal?-test "sort-by-score-and-size size-only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (reverse possible-programs)))
-
-;; (let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
-;;        [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-;;        [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (equal?-test "sort-by-score-and-size score-only" (timed-sort-by-score-and-size possible-programs simplest-data 0 1) possible-programs))
 
 
-
-;; ;;;best-n tests
-;; (define timed-best-n (time-it best-n "best-n"))
-;; (let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2))))) '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(b 1 2))))))]
-;;        [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
-;;        [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (equal?-test "best-n by score only" (timed-best-n 1 possible-programs simplest-data 0 1) (list (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)))))))))
 
 ;;;church-iterated-compressions test
 ;;recursion test
-
-;; (define timed-iterated-compressions (time-it depth-iterated-transformations "my-iterated-compressions"))
-;; (let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
-;;        [program1 (make-program (list abstraction1) '(F1 (F1 1)))]
-;;        [abstraction21 (make-named-abstraction 'F2 '(V2 V3) '(V2 V3))]
-;;        [abstraction22 (make-named-abstraction 'F1 '(F2 node V1) '(V1))]
-;;        [program2 (make-program (list abstraction21 abstraction22) '(F2 F1 (F2 F1 1)))]
-;;        [abstraction3 (make-named-abstraction 'F2 '(V2 (F1 V3)) '(V2 V3))]
-;;        [program3 (make-program (list abstraction3 abstraction1) '(F2 F1 1))]
-;;        [abstraction4 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
-;;        [program4 (make-program (list abstraction4 abstraction1) '(F2 (F2 1)))]
-;;        [abstraction5 (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
-;;        [program5 (make-program (list abstraction5) '(F1))])
-;;   (equal?-test "iterated-compressions internalize-argument test"
-;;                (timed-iterated-compressions (lambda (x) x) (make-program '() '(node (node 1))) 2)
-;;                (list program1 program2 program3 program4 program5)))
-
-;; ;;;beam-learn-search-compressions test
-;; (define timed-beam-learn-search-compressions (time-it beam-learn-search-compressions "beam-learn-search"))
-
-;; (let ([simplest-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2))))))]
-;;       [simplest-data '(((a 1 2)) ((a 1 2)))])
-;;   (equal?-test "beam-learn-search-compressions, simplest program no compression" (timed-beam-learn-search-compressions simplest-data 10 simplest-program 0 1) '()))
-
-;; (let ([compressible-program (make-program '() '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))))]
-;;       [simplest-data '((('a 1 2)) (('a 1 2)))])
-;;   (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-compressions simplest-data 10 compressible-program 0 1)))
 
 
 
@@ -226,15 +180,66 @@
 (equal?-test "initial sexpr evalutes correctly" (lazy-list->all-list ((eval (make-initial-sexpr images)))) '(((1) (10) (3.5) (5 .5) (0 0.1)) (((2) (5) (3.5) (3 .5) (0 0.1)) (((3) (2) (3.5) (2 .5) (0 0.1)) (((4) (5) (10) (5 .5) (0 0.1)) ) (((5) (5) (10) (5 .5) (0 0.1)))))))
 
 
-;;;beam-learn test
-;;beam learn takes a list of factors graphs as data and an sexpr
-(evaluates?-test "beam-learn runs" (beam-learn images (make-initial-sexpr images) 2))
+
+
+;;;depth-iterated-compressions
+(define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
+(let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
+       [program1 (make-program (list abstraction1) '(F1 (F1 1)))]
+       [abstraction21 (make-named-abstraction 'F2 '(V2 V3) '(V2 V3))]
+       [abstraction22 (make-named-abstraction 'F1 '(F2 node V1) '(V1))]
+       [program2 (make-program (list abstraction21 abstraction22) '(F2 F1 (F2 F1 1)))]
+       [abstraction3 (make-named-abstraction 'F2 '(V2 (F1 V3)) '(V2 V3))]
+       [program3 (make-program (list abstraction3 abstraction1) '(F2 F1 1))]
+       [abstraction4 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
+       [program4 (make-program (list abstraction4 abstraction1) '(F2 (F2 1)))]
+       [abstraction5 (make-named-abstraction 'F1 '(let ([V1 ((uniform-draw (list (lambda () (F1)) (lambda () 1))))]) (node V1)) '())]
+       [program5 (make-program (list abstraction5) '(F1))])
+  (equal?-test "depth-iterated-transformations internalize-argument test"
+               (timed-iterated-transformations (lambda (x) x) (make-program '() '(node (node 1))) 2)
+               (list program1 program2 program3 program4 program5)))
+
+
+;;;sort-by-score-and-size
+(define timed-sort-by-score-and-size (time-it sort-by-score-and-size "sort-by-score-and-size"))
+(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
+       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
+       [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (equal?-test "sort-by-score-and-size size-only" (timed-sort-by-score-and-size possible-programs simplest-data 1 0) (reverse possible-programs)))
+
+(let* ([sexprs (list '(lambda () (uniform-draw (list (node '(a 1 2)) (node '(a 1 2))))) '(lambda () (node '(b 1 2))))]
+       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)]
+       [simplest-data '(((a 1 2)) ((a 1 2)))])
+  (equal?-test "sort-by-score-and-size score-only" (timed-sort-by-score-and-size possible-programs simplest-data 0 1) possible-programs))
+
+
+
+;;;best-n tests
+(define timed-best-n (time-it best-n "best-n"))
+(let* ([non-fg-program (list 'lambda '() (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1))))]
+       [sexprs (list (make-initial-sexpr images) (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg) non-fg-program)))))]
+       [possible-programs (map (lambda (p) (make-program '() p)) sexprs)])
+  (equal?-test "best-n by score only" (timed-best-n images possible-programs 1) (make-initial-sexpr images)))
+
+
+;;;beam-learn-search-compressions test
+;; (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
+
+
+;; (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-transformations images (make-initial-sexpr images) 1 2))
+
+
+
+
+;; ;;;beam-learn test
+;; ;;beam learn takes a list of factors graphs as data and an sexpr
+;; (evaluates?-test "beam-learn runs" (beam-learn images (make-initial-sexpr images) 1 2))
 
 
 ;; ;;;learn-model tests
 ;; ;;type check, learn-model should process a list of factor-graphs and return a function that generates factor graphs
 ;; (define timed-learn-model (time-it learn-model))
-;; (evaluates?-test "learned-model" ((timed-learn-model images 2)))
+;; (evaluates?-test "learned-model" ((timed-learn-model images 1 2)))
 
 
 (exit)

@@ -37,7 +37,7 @@
          (define (remove-abstraction-variable program abstraction variable)
            (let* ([mixture-elements (find-variable-instances program abstraction variable)]
                   [mixture-sexpr (make-mixture-sexpr mixture-elements)]
-                  [new-pattern `(let ([,variable ,mixture-sexpr]) ,(abstraction->pattern abstraction))]
+                  [new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,mixture-sexpr)]
                   [new-variables (delete variable (abstraction->vars abstraction))])
              (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))
 
