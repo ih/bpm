@@ -88,16 +88,28 @@
   (lambda (x) (f (g x))))
 
 
+;;;given a topology for a factor graph generate factor graphs with that form
+(define generate-factor-graphs_top
+  (lambda (prog-sexpr topology popsize)
+    (let ([prog (eval (program->sexpr prog-sexpr))])
+      (let* ([lazified-topology (list->lazy-list topology)]
+             (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-topology)))) popsize 20
+                                (lambda (depth) (lambda () (let ((s (prog)))
+                                                             (pair (lazy-topology-equal? s lazified-topology depth)
+                                                                   (lambda () (first (lazy-list->list s depth)))))))))
+             [factor-graphs (map (compose lazy-list->all-list mcmc-state->query-value) samples)])
+        factor-graphs))))
+
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
 ;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
 (define score-fg-top_program 
-   (lambda (prog-sexpr data popsize)
+   (lambda (prog-sexpr topology popsize)
      (let ([prog (eval (program->sexpr prog-sexpr))])
-       (let* ([lazified-data (list->lazy-list data)]
-              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-data)))) popsize 20
+       (let* ([lazified-topology (list->lazy-list topology)]
+              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-topology)))) popsize 20
                                  (lambda (depth) (lambda () (let ((s (prog)))
-                                                              (pair (lazy-topology-equal? s lazified-data depth)
+                                                              (pair (lazy-topology-equal? s lazified-topology depth)
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
@@ -175,9 +187,8 @@
 (define (log-likelihood data prog sample-size)
   (let* ([fg-top (eval (python-format->scheme-program (image->factor-graph (first data))))]
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
-         [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
+         [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)] ;;these might need to be converted into python-format
          [true-sample-size (length factor-graphs)]
          [image_fg-scores (map fg->img-score factor-graphs)])
     (/ (* (apply + image_fg-scores) fg-top_prog-score) true-sample-size)))
 
-(define generate-factor-graphs_top '())

@@ -147,7 +147,11 @@
              (exp (score-fg-top_program (first models-for-comparison) (eval fg) 10))
              1.0)
 ;;;generate-factor-graphs_top
-;; (evaluates?-test "generate-factor-graphs_top" (generate-factor-graphs_top (second models-for-comparison) fg2 2) (list fg2 fg2))
+(let ([graph (eval fg)])
+  (evaluates?-test "generate-factor-graphs_top" (generate-factor-graphs_top (first models-for-comparison) graph 2) (list graph graph)))
+
+(let ([graph (eval fg2)])
+  (evaluates?-test "generate-factor-graphs_top" (generate-factor-graphs_top (second models-for-comparison) graph 2) (list graph graph)))
 ;;;log-likelihood
 ;; (equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
 ;; (equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
