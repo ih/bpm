@@ -85,7 +85,7 @@
     (fg->image python-fg)))
 
 ;;;temporary
-(define data node)
+(define (data . sexpr) (lazy-pair 'data (apply node sexpr)))
 (define radius node)
 (define blobbiness node)
 (define Distance node)

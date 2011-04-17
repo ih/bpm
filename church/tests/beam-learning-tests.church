@@ -75,86 +75,6 @@
 
 
 
-;;;topology scoring test
-;;in the original policy all numbers treated w/ strict equality
-
-;; (let* ([init-py-fg '(GN2 
-;;                      (GN1
-;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-;;        [scheme-prog (python-format->scheme-program init-py-fg)])
-;;   (equal?-test "score-fg-program test with new fg format"
-;;                (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
-;;                                                   (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
-;;                0.0))
-;; ;;for noisy-number the geometry has a threshold for comparison
-;; (let* ([init-py-fg '(GN2 
-;;                      (GN1
-;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-;;        [scheme-prog (python-format->scheme-program init-py-fg)])
-;;   (equal?-test "score-fg-program test with new fg format"
-;;                (exp (score-fg-program scheme-prog '(((((1) (-0.2) (2 0.1) (0 0.1))
-;;                                                   (((0.8) (-0.1) (3 0.1) (0 0.1)))))) 10))
-;;                1.0))
-
-;;for topology-only the geometry has no effect on matching
-
-;; (let* ([init-py-fg '(GN2 
-;;                      (GN1
-;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                           (N1 (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1))))))]
-;;        [scheme-prog (python-format->scheme-program init-py-fg)])
-;;   (equal?-test "score-fg-program test with new fg format"
-;;                (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
-;;                                                   (((0) (0) (0 0) (0 0)))))) 10))
-;;                1.0))
-
-;; (let* ([init-py-fg '(GN2 
-;;                      (GN1
-;;                       (N2 (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1)))))]
-;;        [scheme-prog (python-format->scheme-program init-py-fg)])
-;;   (equal?-test "score-fg-program test with new fg format"
-;;                (exp (score-fg-program scheme-prog '(((((0) (0) (0 0) (0 0))
-;;                                                   (((0) (0) (0 0) (0 0)))))) 10))
-;;                0.0))
-
-;;lazy-data check
-
-
-;; (let* ([single-node-program (python-format->scheme-program '(GN 
-;;                                                         (GN
-;;                                                          (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))]
-;;        [double-node-program1 (python-format->scheme-program '(GN 
-;;                                                               (GN
-;;                                                                (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                                                                    (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
-;;        [double-node-program2 (python-format->scheme-program '(GN 
-;;                                                               (GN
-;;                                                                (N (data (radius 1) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                                                                    (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
-;;        [program (list 'lambda '() (list (list 'uniform-draw (list 'list single-node-program double-node-program1 double-node-program2))))])
-;;   (equal?-test "score-fg-program w/ program that can produce different topologies"
-;;                (exp (score-fg-program program '((((data (0) (0) (0 0) (0 0))
-;;                                                   ((data (0 0) (0) (0 0) (0 0)))))) 10))
-;;                (/ 2.0 3)))
-
-;; (let* ([single-node-program (python-format->scheme-program '(GN 
-;;                                                         (GN
-;;                                                          (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))))))]
-;;        [double-node-program1 (python-format->scheme-program '(GN 
-;;                                                               (GN
-;;                                                                (N (data (radius 1.2) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                                                                    (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
-;;        [double-node-program2 (python-format->scheme-program '(GN 
-;;                                                               (GN
-;;                                                                (N (data (radius 1) (blobbiness -0.2) (Distance 2 0.1) (Straightness 0 0.1))
-;;                                                                    (N (data (radius 0.8) (blobbiness -0.1) (Distance 3 0.1) (Straightness 0 0.1)))))))]
-;;        [program (list 'lambda '() (list (list 'uniform-draw (list 'list single-node-program double-node-program1 double-node-program2))))])
-;;   (equal?-test "score-fg-program w/ program that can produce different topologies"
-;;                (exp (score-fg-program program '((((data (0) (0) (0 0) (0 0))
-;;                                                   ))) 10))
-;;                (/ 1.0 3)))
 
 
 
@@ -213,15 +133,30 @@
 ;;;log-prior (how do you normalize these values?)
 (equal?-test "log-prior test" (log-prior (make-program '() '(+ 2 3 4))) -5)
 
+
+;;;score-fg-top_program scoring test
+(equal?-test "score-fg-top_program w/ program that can produce different topologies"
+             (exp (score-fg-top_program (second models-for-comparison) '((data)) 10))
+             (/ 1.0 2))
+
+(equal?-test "score-fg-top_program w/ program that cannot produce target topologies"
+             (exp (score-fg-top_program (first models-for-comparison) '((data)) 10))
+             0.0)
+
+(equal?-test "score-fg-top_program w/ program that produces exactly target topology"
+             (exp (score-fg-top_program (first models-for-comparison) (eval fg) 10))
+             1.0)
+;;;generate-factor-graphs_top
+;; (evaluates?-test "generate-factor-graphs_top" (generate-factor-graphs_top (second models-for-comparison) fg2 2) (list fg2 fg2))
 ;;;log-likelihood
-(equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
-(equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
+;; (equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
+;; (equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
 ;;;sort-by-posterior
 ;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
 ;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) possible-programs)
 
 
-;; ;;;best-n tests
+;;;best-n tests
 ;; (define timed-best-n (time-it best-n "best-n"))
 ;; (equal?-test "best-n by score only" (timed-best-n images models-for-comparison 1) (make-initial-sexpr images))
 
@@ -235,12 +170,12 @@
 
 
 
-;; ;;;beam-learn test
+;;;beam-learn test
 ;; ;;beam learn takes a list of factors graphs as data and an sexpr
 ;; (evaluates?-test "beam-learn runs" (beam-learn images (make-initial-sexpr images) 1 2))
 
 
-;; ;;;learn-model tests
+;;;learn-model tests
 ;; ;;type check, learn-model should process a list of factor-graphs and return a function that generates factor graphs
 ;; (define timed-learn-model (time-it learn-model))
 ;; (evaluates?-test "learned-model" ((timed-learn-model images 1 2)))
