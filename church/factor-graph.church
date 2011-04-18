@@ -18,20 +18,20 @@
 
 
 (define (scheme-format->python-format scheme-sexpr)
-  (let ([non-ghost-nodes (first (first scheme-sexpr))])
- (list 'GN2 (list 'GN1 (process-nodes non-ghost-nodes)))))
+  (process-nodes scheme-sexpr))
 
 (define (process-nodes scheme-sexpr)
   (if (null? scheme-sexpr)
       '()
-      (append (list (sym 'N) (process-data (first scheme-sexpr))) (map process-nodes (rest scheme-sexpr)))))
+      (append (list 'N (process-data (first scheme-sexpr))) (map process-nodes (rest scheme-sexpr)))))
 
 (define (process-data data-list)
-  (let ([radius (first data-list)]
-        [blobbiness (second data-list)]
-        [distance-info (third data-list)]
-        [straightness (fourth data-list)])
-    (list 'data (pair 'radius radius) (pair 'blobbiness blobbiness) (pair 'Distance distance-info) (pair 'Straightness straightness))))
+  (let ([label (second data-list)]
+        [radius (third data-list)]
+        [blobbiness (fourth data-list)]
+        [distance-info (fifth data-list)]
+        [straightness (sixth data-list)])
+    (list 'data (pair 'label label) (pair 'radius radius) (pair 'blobbiness blobbiness) (pair 'Distance distance-info) (pair 'Straightness straightness))))
 
 (define node
   (lazify 

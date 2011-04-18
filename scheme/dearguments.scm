@@ -12,8 +12,8 @@
            (define (close? a b)
              (< (abs (- a b)) .2))
            (if (all (map number? variable-instances))
-               (let* ([instances-mean (mean variable-instances)]
-                      [instances-variance (variance variable-instances)] 
+               (let* ([instances-mean (my-mean variable-instances)]
+                      [instances-variance (my-variance variable-instances)] 
                       [instance-close-to-mean (map (curry close? instances-mean) variable-instances)])
                  (if (all instance-close-to-mean)
                      `(gaussian ,instances-mean ,instances-variance)

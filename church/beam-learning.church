@@ -1,4 +1,4 @@
-(define transform-types (list compressions internalize-arguments))
+(define transform-types (list compressions))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
@@ -88,7 +88,7 @@
   (lambda (x) (f (g x))))
 
 
-;;;given a topology for a factor graph generate factor graphs with that form
+;;;given a topology for a factor graph generate factor graphs with that form (in python format)
 (define generate-factor-graphs_top
   (lambda (prog-sexpr topology popsize)
     (let ([prog (eval (program->sexpr prog-sexpr))])
@@ -189,6 +189,6 @@
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)] ;;these might need to be converted into python-format
          [true-sample-size (length factor-graphs)]
-         [image_fg-scores (map fg->img-score factor-graphs)])
+         [image_fg-scores (map (compose fg->img-score scheme-format->python-format) factor-graphs)])
     (/ (* (apply + image_fg-scores) fg-top_prog-score) true-sample-size)))
 
