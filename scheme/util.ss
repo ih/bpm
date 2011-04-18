@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs mean variance)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
@@ -146,12 +146,12 @@
          ;; Compute the mean of a list of numbers.
          ;; @param lst The list. 
          ;; @returns number
-         (define (mean lst) (/ (apply + lst) (length lst)))
+         (define (my-mean lst) (/ (apply + lst) (length lst)))
          ;; @desc
          ;; Compute the variance of a list of numbers.
          ;; @param lst The list. 
          ;; @returns number
-         (define (variance lst)
-           (let ((mn (mean lst)))
-             (mean (map (lambda (x) (expt (- x mn) 2)) lst)))))
+         (define (my-variance lst)
+           (let ((mn (my-mean lst)))
+             (my-mean (map (lambda (x) (expt (- x mn) 2)) lst)))))
 
