@@ -15,7 +15,7 @@
                  (church readable-scheme)
                  (program)
                  (inverse-inline)
-                 (internalize-arguments)
+                 (dearguments)
                  (unification)
                  (util)
                  (sym)
