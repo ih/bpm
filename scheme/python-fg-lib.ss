@@ -11,5 +11,7 @@
          (define fg->img-score
            (py-pickle-function (string-append fg-dir "python/scoreImFg.py")))
 
+         (define image->factor-graph
+           (py-pickle-function (string-append fg-dir "python/im2fg.py")))
          )
 

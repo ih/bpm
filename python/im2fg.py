@@ -25,7 +25,6 @@ parses = {
         'children': get_ints
         }
 
-
 def parse_img_line(line):
     split = filter(lambda s: s != '', line.strip().split(' '))
 
