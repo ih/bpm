@@ -1,9 +1,27 @@
 (library (dearguments)
-         (export dearguments has-arguments? find-variable-instances thunkify make-mixture-sexpr remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations)
+         (export make-dearguments-transformation has-arguments? find-variable-instances thunkify remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement deargument)
          (import (except (rnrs) string-hash string-ci-hash)
                  (program)
                  (_srfi :1)
                  (util))
+         ;;replacement functions
+         (define (uniform-replacement variable-instances)
+           `((uniform-draw (list ,@(map thunkify variable-instances)))))
+
+         (define (noisy-number-replacement variable-instances)
+           (define (close? a b)
+             (< (abs (- a b)) .2))
+           (if (all (map number? variable-instances))
+               (let* ([instances-mean (mean variable-instances)]
+                      [instances-variance (variance variable-instances)] 
+                      [instance-close-to-mean (map (curry close? instances-mean) variable-instances)])
+                 (if (all instance-close-to-mean)
+                     `(gaussian ,instances-mean ,instances-variance)
+                     (uniform-replacement variable-instances)))
+               (uniform-replacement variable-instances)))
+
+         (define (thunkify sexpr) `(lambda () ,sexpr))
+         
          ;;creates a program transformation that removes a variable from the abstraction and replaces it with the output of replacement-function
          ;;replacement-function takes in the instances for a particular variable and returns an expression that the variable gets set to 
          (define (make-dearguments-transformation replacement-function)
@@ -39,7 +57,7 @@
          (define (remove-abstraction-variable replacement-function program abstraction variable)
            (let* ([variable-instances (find-variable-instances program abstraction variable)]
                   [variable-definition (replacement-function variable-instances)]
-                  [new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) variable-definition)]
+                  [new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,variable-definition)]
                   [new-variables (delete variable (abstraction->vars abstraction))])
              (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))
 
@@ -56,10 +74,8 @@
          (define (remove-ith-argument i function-application)
            (append (take function-application (+ i 1)) (drop function-application (+ i 2))))
 
-         (define (make-mixture-sexpr mixture-elements)
-           `((uniform-draw (list ,@(map thunkify mixture-elements)))))
 
-         (define (thunkify sexpr) `(lambda () ,sexpr))
+         
 
 
          ;;rewrite applications of abstraction in program to not have the variable argument 
