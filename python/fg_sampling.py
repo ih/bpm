@@ -1,5 +1,6 @@
 from fglib import *
 
+
 def fix_argument(var_free, index_free, index_fixed, value): 
     res = [0]*(len(index_free) + len(index_fixed))
     for i in range(len(index_free)):
@@ -49,4 +50,28 @@ def sampleEltFG(nodes, factors, mcmc, fixed_asn={}):
     updateNodes(sample)
     
     return nodes, score
+
+def runAIS(init_asn,
+        samples,
+        f0,
+        fn,
+        lower_beta, 
+        upper_beta, 
+        trans_iter, 
+        proposal_fx,
+        trans_kernel):
+
+    betas = []
+    betas += map(lambda t: (t)*.05, map(lambda i: i/float(lower_beta), range(lower_beta+1)))
+    betas += map(lambda t:    (1-t**2)*0.05+(t**2)*1.0, map(lambda i: i/float(upper_beta), range(upper_beta+1)))
+
+    fseq = make_distribution_seq_log(f0, fn, betas)
+    Tseq = map(lambda fi: lambda asn: trans_kernel(fi, asn, proposal_fx, trans_iter), fseq)
+
+    sample_scores = []
+    for i in range(samples):
+        sample_score = AIS(fseq, Tseq, init_asn)
+        print sample_score
+        sample_scores += [sample_score]
+    return sample_scores
 
