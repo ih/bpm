@@ -51,6 +51,8 @@ def parse_img_line(line):
 if __name__ == "__main__":
     args=pickle.load(sys.stdin)
 
+    #filename = sys.argv[1]
+
     filename = args
 
     nodes = map(parse_img_line, open(filename).readlines())
@@ -58,7 +60,7 @@ if __name__ == "__main__":
     mklist = lambda *a: list(a)
 
     def mk_sexpr(node):
-        return mklist('N', ['data', ['label', node.label], ['radius', node.radius], ['blobbiness', node.blobbiness], ['Distance', node.Distance], ['Straightness', node.Straightness]], *map(mk_sexpr, map(lambda i: nodes[i], node.children)))
+        return mklist('N', ['data', mklist('label', node.label), ['radius', node.radius], ['blobbiness', node.blobbiness], mklist('Distance', *node.Distance), mklist('Straightness', *node.Straightness)], *map(mk_sexpr, map(lambda i: nodes[i], node.children)))
 
     output = mk_sexpr(nodes[0])
 
