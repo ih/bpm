@@ -8,7 +8,8 @@ if __name__ == "__main__":
 
     imnodes, imfactors = mkFG(args[0])
     nodes, factors = mkFG(args[1])
-    sample, score = sampleEltFG(nodes, result_fg, MH(2000))
+
+    sample, score = scoreImg(imnodes, nodes, factors)
 
     debug = mkDebugChannel('scoreImFg')
     print >>debug, 'score',score
