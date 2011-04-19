@@ -83,8 +83,8 @@
 ;; (let ([graph (lazy-list->all-list (eval fg2))])
 ;;   (equal?-test "generate-factor-graphs_top" (map scheme-format->python-format (generate-factor-graphs_top (second models-for-comparison) graph 2)) (list fg2 fg2)))
 ;;;log-likelihood
-;; (equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
-;; (equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
+(equals?-test (log-likelihood images (first models-for-comparison)) (log 1))
+(equals?-test (log-likelihood images (second models-for-comparison)) (log .5))
 ;;;sort-by-posterior
 ;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
 ;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) possible-programs)

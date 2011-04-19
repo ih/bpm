@@ -184,11 +184,14 @@
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
 ;;assumes all factor-graphs from imags->factor-graphs have the same topology
 ;; '_' can be read as given e.g. fg-top_prog is fg-top given prog 
-(define (log-likelihood data prog sample-size)
-  (let* ([fg-top (eval (python-format->scheme-program (image->factor-graph (first data))))]
+(define (log-likelihood images prog sample-size)
+  (apply + (map (curry single-log-likelihood prog sample-size) images)))
+
+(define (single-log-likelihood prog sample-size image)
+  (let* ([fg-top (eval (python-format->scheme-program (image->factor-graph image)))]
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)] ;;these might need to be converted into python-format
          [true-sample-size (length factor-graphs)]
-         [image_fg-scores (map (compose fg->img-score scheme-format->python-format) factor-graphs)])
-    (/ (* (apply + image_fg-scores) fg-top_prog-score) true-sample-size)))
+         [image_fg-scores (log-sum-exp (map (compose fg->img-score scheme-format->python-format) factor-graphs))])
+    (- (+ image_fg-score fg-top_prog-score) true-sample-size)))
 
