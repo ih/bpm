@@ -74,7 +74,7 @@ def runAIS(init_asn,
     fseq = make_distribution_seq_log(f0, fn, betas)
     Tseq = map(lambda fi: lambda asn: trans_kernel(fi, asn, proposal_fx, trans_iter), fseq)
 
-    sample_score
+    sample_score = ()
     for i in range(samples):
         sample_score = AIS(fseq, Tseq, init_asn)
     return sample_score
@@ -85,18 +85,18 @@ def f0_img(asn):
 def scoreImg(nodes, fg):
     init_asn = constructAssignments(nodes)
 
-    samples = 10000
+    samples = 100
 
     f0 = f0_img # we can try multimodal gaussians as the initial distribution; or some other options
 
     fn = lambda asn: logscore(fg, asn)
 
-    lower_beta = 100
-    upper_beta = 100
+    lower_beta = 20
+    upper_beta = 50
 
     trans_iter = 5
 
     proposal_fx = lambda asn: gaussPerturbProposalByName(asn, 'pos', 0.1, rndSelect(asn.keys()))
-    trans_kernel = MH_n_iter
+    trans_kernel = lambda *args: MH_n_iter(*args)[0]
     
     return runAIS(init_asn, samples, f0, fn, lower_beta, upper_beta, trans_iter, proposal_fx, trans_kernel)

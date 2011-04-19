@@ -4,13 +4,14 @@ from fglib import *
 class Ghost(Elt):
     pass
 
-test = ['N', ['N',
-                     ['N', ['data', ['label', 1], ['radius', 1.2], ['blobbiness', -0.2],
-['Distance', 2, 0.1], ['Straightness', 0, 0.1]],
-                         ['N', ['data',['label', 1],  ['radius', 0.8], ['blobbiness', -0.1],
-['Distance', 3, 0.1], ['Straightness', 0, 0.1]],
-                             ['N', ['data', ['label', 1], ['radius', 0.6], ['blobbiness', -0.2],
-['Distance', 2, 0.1], ['Straightness', 0, 0.1]]]]]]]
+test = ['N', ['data', ['label', 1], ['radius', 10], ['blobbiness', 3.5], ['Distance', 5, 0.5], ['Straightness', 0, 0.10000000000000001]], ['N', ['data', ['label', 2], ['radius', 5], ['blobbiness', 3.5], ['Distance', 3, 0.5], ['Straightness', 0, 0.10000000000000001]], ['N', ['data', ['label', 3], ['radius', 2], ['blobbiness', 3.5], ['Distance', 2, 0.5], ['Straightness', 0, 0.10000000000000001]], ['N', ['data', ['label', 4], ['radius', 5], ['blobbiness', 10], ['Distance', 5, 0.5], ['Straightness', 0, 0.10000000000000001]]], ['N', ['data', ['label', 5], ['radius', 5], ['blobbiness', 10], ['Distance', 5, 0.5], ['Straightness', 0, 0.10000000000000001]]]]]]
+#test = ['N', ['N',
+#                     ['N', ['data', ['label', 1], ['radius', 1.2], ['blobbiness', -0.2],
+#['Distance', 2, 0.1], ['Straightness', 0, 0.1]],
+#                         ['N', ['data',['label', 1],  ['radius', 0.8], ['blobbiness', -0.1],
+#['Distance', 3, 0.1], ['Straightness', 0, 0.1]],
+#                             ['N', ['data', ['label', 1], ['radius', 0.6], ['blobbiness', -0.2],
+#['Distance', 2, 0.1], ['Straightness', 0, 0.1]]]]]]]
 
 
 
@@ -18,7 +19,10 @@ test_simple = ['GN1',
                      ['N1', ['data', ['radius', 1.2], ['Distance', 2, 0.1]],
                          ['N2', ['data', ['radius', 0.8], ['Distance', 3, 0.1]],
 ]]]
-                             
+                            
+
+class Fail():
+    pass
                          
 cmd_dict = {
         'label': lambda latest, val, node_dict, node_stack: setEltAttr(latest, "label", val, node_dict),
@@ -27,9 +31,9 @@ cmd_dict = {
         'blobbiness': lambda latest, val, node_dict, node_stack: setEltAttr(latest, "blobbiness", val, node_dict),
         'Distance': lambda latest, val, node_dict, node_stack: makeFactor(
             [node_dict[latest], node_stack[-1]],
-            lambda x, y: make_distgauss(*val)(x.pos, y.pos)),
+            lambda x, y: make_distgauss(*val)(x.pos, y.pos)) if len(node_stack) >= 1 else Fail(),
         'Straightness': lambda latest, val, node_dict, node_stack: makeFactor([node_dict[latest], node_stack[-1], node_stack[-2]], 
-            lambda x, y, z: make_straightgauss(*val)(x.pos, y.pos, z.pos))
+            lambda x, y, z: make_straightgauss(*val)(x.pos, y.pos, z.pos)) if len(node_stack) >= 2 else Fail()
         }
 mkParent = lambda latest, val, node_dict, node_stack: setEltAttr(latest, "parent", node_stack[-1], node_dict)
 
@@ -84,4 +88,11 @@ def finalizeNodes(node_dict):
             elt.tile_obj.parent = None
 
     return map(lambda (name, elt): elt.makeNewField('pos', (0,0)), node_dict.items())
+
+def t():
+    node_dict = {}
+    factors = []
+    evalFactorTree(test, [], factors, node_dict)
+    print node_dict
+    print finalizeNodes(node_dict)
 
