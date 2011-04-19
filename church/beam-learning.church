@@ -183,13 +183,14 @@
 ;;assumes all factor-graphs from imags->factor-graphs have the same topology
 ;; '_' can be read as given e.g. fg-top_prog is fg-top given prog 
 (define (log-likelihood images prog sample-size)
-  (apply + (map (curry single-log-likelihood prog sample-size) images)))
+  (apply + (map (lambda (image) (single-log-likelihood prog sample-size image)) images)))
 
 (define (single-log-likelihood prog sample-size image)
-  (let* ([fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
+  (let* ([db (pretty-print (list "ss" sample-size))]
+         [fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
          [true-sample-size (length factor-graphs)]
-         [image_fg-sum (log-sum-exp (map (compose fg->img-score scheme-format->python-format) factor-graphs))])
-    (- (+ image_fg-sum fg-top_prog-score) true-sample-size)))
+         [image_fg-avg (- (apply log-sum-exp (map (compose fg->img-score scheme-format->python-format) factor-graphs)) (log true-sample-size))])
+    (+ image_fg-avg fg-top_prog-score)))
 
