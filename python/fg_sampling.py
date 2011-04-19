@@ -51,6 +51,12 @@ def sampleEltFG(nodes, factors, mcmc, fixed_asn={}):
     
     return nodes, score
 
+# Scoring
+
+def load_asn_from_nodes(dst_ns, src_ns):
+    dst_src = zip(dst_ns, src_ns)
+    map(lambda (dn, sn): dn.setPos(sn.getPos()), dst_src)
+
 def runAIS(init_asn,
         samples,
         f0,
@@ -68,10 +74,29 @@ def runAIS(init_asn,
     fseq = make_distribution_seq_log(f0, fn, betas)
     Tseq = map(lambda fi: lambda asn: trans_kernel(fi, asn, proposal_fx, trans_iter), fseq)
 
-    sample_scores = []
+    sample_score
     for i in range(samples):
         sample_score = AIS(fseq, Tseq, init_asn)
-        print sample_score
-        sample_scores += [sample_score]
-    return sample_scores
+    return sample_score
 
+def f0_img(asn):
+    return 1.0
+
+def scoreImg(nodes, fg):
+    init_asn = constructAssignments(nodes)
+
+    samples = 10000
+
+    f0 = f0_img # we can try multimodal gaussians as the initial distribution; or some other options
+
+    fn = lambda asn: logscore(fg, asn)
+
+    lower_beta = 100
+    upper_beta = 100
+
+    trans_iter = 5
+
+    proposal_fx = lambda asn: gaussPerturbProposalByName(asn, 'pos', 0.1, rndSelect(asn.keys()))
+    trans_kernel = MH_n_iter
+    
+    return runAIS(init_asn, samples, f0, fn, lower_beta, upper_beta, trans_iter, proposal_fx, trans_kernel)
