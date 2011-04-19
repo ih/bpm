@@ -4,12 +4,12 @@ from fglib import *
 class Ghost(Elt):
     pass
 
-test = ['GN1', ['GN1',
-                     ['N3', ['data', ['radius', 1.2], ['blobbiness', -0.2],
+test = ['N', ['N',
+                     ['N', ['data', ['label', 1], ['radius', 1.2], ['blobbiness', -0.2],
 ['Distance', 2, 0.1], ['Straightness', 0, 0.1]],
-                         ['N2', ['data', ['radius', 0.8], ['blobbiness', -0.1],
+                         ['N', ['data',['label', 1],  ['radius', 0.8], ['blobbiness', -0.1],
 ['Distance', 3, 0.1], ['Straightness', 0, 0.1]],
-                             ['N1', ['data', ['radius', 0.6], ['blobbiness', -0.2],
+                             ['N', ['data', ['label', 1], ['radius', 0.6], ['blobbiness', -0.2],
 ['Distance', 2, 0.1], ['Straightness', 0, 0.1]]]]]]]
 
 
@@ -80,7 +80,7 @@ def evalFactorTree(ftree, node_stack, result_fg, node_dict):
 def finalizeNodes(node_dict):
 
     for (name, elt) in node_dict.items():
-        if type(elt) != Ghost and type(elt.tile_obj.parent) == Ghost:
+        if hasattr(elt.tile_obj, 'parent') and type(elt.tile_obj.parent) == Ghost:
             elt.tile_obj.parent = None
 
     return map(lambda (name, elt): elt.makeNewField('pos', (0,0)), node_dict.items())
