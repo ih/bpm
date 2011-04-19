@@ -15,7 +15,7 @@
   (begin
     (display "deterministic test: ")(display name)
     (if (not (equal? test-val true-val))
-        (for-each display (list ".. failed! \ntrue value: "  true-val "\n test value: " test-val "\n"))
+        (for-each display (list ".. failed! \nCORRECT value: "  true-val "\n TEST value: " test-val "\n"))
         (display ".. passed!\n"))))
 
 (define timed-equal?-test (time-it equal?-test))

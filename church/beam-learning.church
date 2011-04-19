@@ -47,11 +47,13 @@
 
 (define (sort-by-posterior data programs)
   (let* ([log-priors (map log-prior programs)]
-         [log-likelihoods (map (lambda (prog) (log-likelihood prog data 10)) programs)]
+         [db (for-each display (list "log-priors" log-priors))]
+         [log-likelihoods (map (lambda (prog) (log-likelihood data prog 10)) programs)]
+         [db (for-each display (list "log-likelihoods" log-likelihoods))]
          [posteriors (map + log-priors log-likelihoods)] ;;log-prior and log-likelihood are log-probabilities
          [programs-with-posteriors (zip programs posteriors)]
-         [posteriors< (lambda (a b) (< (second a) (second b)))])
-    (map first (my-list-sort posteriors< programs-with-posteriors))))
+         [posteriors> (lambda (a b) (> (second a) (second b)))])
+    (map first (my-list-sort posteriors> programs-with-posteriors))))
 
 ;;how do you find normalized values?
 (define (log-prior program)
@@ -114,9 +116,7 @@
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
               (repeat-symbol (find-repeat-symbol samples))
-              [db (pretty-print (list "before selection" (map mcmc-state->query-value samples)))]
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
-              [db (pretty-print (list "after selection" (length samples)))]
               (scores (map mcmc-state->score samples))
               (score (if (null? scores)
                          -inf.0
