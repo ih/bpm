@@ -26,5 +26,6 @@
                  (N (data (label 2) (radius 5) (blobbiness 3.5) (Distance 3 .5) (Straightness 0 0.1))
                     (N (data (label 3) (radius 2) (blobbiness 3.5) (Distance 2 .5) (Straightness 0 0.1))
                        (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))
-                       (N (data (label 5) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1))))))))
+                       (N (data (label 5) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))))))
+         )
 
