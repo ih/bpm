@@ -85,10 +85,3 @@ def finalizeNodes(node_dict):
 
     return map(lambda (name, elt): elt.makeNewField('pos', (0,0)), node_dict.items())
 
-result_factor_graph = [] 
-nodes = {}
-evalFactorTree(test, [], result_factor_graph, nodes)
-
-print finalizeNodes(nodes)
-print result_factor_graph
-
