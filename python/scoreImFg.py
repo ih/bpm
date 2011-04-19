@@ -6,7 +6,8 @@ from fg_interface import *
 if __name__ == "__main__":
     args=pickle.load(sys.stdin)
 
-    nodes, factors = mkFG(args)
+    imnodes, imfactors = mkFG(args[0])
+    nodes, factors = mkFG(args[1])
     sample, score = sampleEltFG(nodes, result_fg, MH(2000))
 
     debug = mkDebugChannel('scoreImFg')
