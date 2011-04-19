@@ -82,12 +82,12 @@ def runAIS(init_asn,
 def f0_img(asn):
     return 1.0
 
-def scoreImg(ex_nodes, nodes, fg):
+def scoreImg(nodes, fg):
     init_asn = constructAssignments(nodes)
 
     samples = 10000
 
-    f0 = f0_img
+    f0 = f0_img # we can try multimodal gaussians as the initial distribution; or some other options
 
     fn = lambda asn: logscore(fg, asn)
 
