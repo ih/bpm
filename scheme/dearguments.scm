@@ -1,9 +1,13 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances thunkify remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement deargument)
+         (export make-dearguments-transformation has-arguments? find-variable-instances thunkify remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (program)
                  (_srfi :1)
                  (util))
+
+         ;;program transformations
+         (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
+         (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
          ;;replacement functions
          (define (uniform-replacement variable-instances)
            `((uniform-draw (list ,@(map thunkify variable-instances)))))
@@ -20,8 +24,20 @@
                      (uniform-replacement variable-instances)))
                (uniform-replacement variable-instances)))
 
+         (define (noisy-number-simple-replacement variable-instances)
+           (define (close? a b)
+             (< (abs (- a b)) .2))
+           (if (all (map number? variable-instances))
+               (let* ([instances-mean (my-mean variable-instances)]
+                      [instance-close-to-mean (map (curry close? instances-mean) variable-instances)])
+                 (if (all instance-close-to-mean)
+                     (first variable-instances)
+                     (uniform-replacement variable-instances)))
+               (uniform-replacement variable-instances)))
+
          (define (thunkify sexpr) `(lambda () ,sexpr))
-         
+
+
          ;;creates a program transformation that removes a variable from the abstraction and replaces it with the output of replacement-function
          ;;replacement-function takes in the instances for a particular variable and returns an expression that the variable gets set to 
          (define (make-dearguments-transformation replacement-function)
@@ -29,6 +45,7 @@
            (lambda (program . nofilter)
              (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
                     [deargumented-programs (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables))]
+                    [db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
                     [program-size (size (program->sexpr program))]
                     [valid-deargumented-programs
                      (if (not (null? nofilter))

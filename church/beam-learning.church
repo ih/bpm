@@ -1,4 +1,5 @@
-(define transform-types (list compressions))
+
+(define transform-types (list compressions simple-noisy-number-dearguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
@@ -21,7 +22,7 @@
   (let* ([top-transformations 
           (sort-by-posterior
            data (unique-programs
-            (beam-learn-search-transformations data (make-program '() sexpr) data beam-size depth)))])
+            (beam-learn-search-transformations data (make-program '() sexpr) beam-size depth)))])
     (if (null? top-transformations)
         sexpr
         (program->sexpr (first top-transformations)))))
@@ -32,7 +33,7 @@
 
 
 (define (depth-iterated-transformations cfilter program depth)
-  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
+  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program))) transform-types)))])
     (delete '()  (append transformed-programs
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 

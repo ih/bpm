@@ -99,19 +99,19 @@
 
 
 ;;;beam-learn-search-compressions test
-(define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
-(evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations images (make-program '() (make-initial-sexpr images)) 1 2))
+;; (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
+;; (evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations images (make-program '() (make-initial-sexpr images)) 1 2))
 
 
 ;;;beam-learn test
 ;; ;;beam learn takes a list of factors graphs as data and an sexpr
-;; (evaluates?-test "beam-learn runs" (beam-learn images (make-initial-sexpr images) 1 2))
+;;(evaluates?-test "beam-learn runs" (beam-learn images (make-initial-sexpr images) 1 2))
 
 
 ;;;learn-model tests
 ;; ;;type check, learn-model should process a list of factor-graphs and return a function that generates factor graphs
-;; (define timed-learn-model (time-it learn-model))
-;; (evaluates?-test "learned-model" ((timed-learn-model images 1 2)))
+(define timed-learn-model (time-it learn-model))
+(evaluates?-test "learned-model" ((timed-learn-model images 1 2)))
 
 
 (exit)
