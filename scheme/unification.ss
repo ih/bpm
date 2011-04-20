@@ -63,7 +63,7 @@
                        (delete-duplicates unified-vars)
                        #f)))
                
-               (cond [(variable? sv) (list (pair sv s))]
+               (cond [(variable? sv) (if (eq? s 'lambda) #f (list (pair sv s)))]
                      [(and (primitive? s) (primitive? sv)) (if (eqv? s sv) '() #f)]
                      [(or (primitive? s) (primitive? sv)) #f]
                      [(not (eqv? (length s) (length sv))) #f]

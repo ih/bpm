@@ -88,20 +88,18 @@
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood images (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood images (second models-for-comparison) 10) (log .5))
 ;;;sort-by-posterior
-(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
-(equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
+;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
 
 
 ;;;best-n tests
 ;; (define timed-best-n (time-it best-n "best-n"))
-;; (equal?-test "best-n by score only" (timed-best-n images models-for-comparison 1) (make-initial-sexpr images))
+;;(equal?-test "best-n by score only" (timed-best-n images models-for-comparison 1) (make-program '() (make-initial-sexpr images)))
 
 
 ;;;beam-learn-search-compressions test
-;; (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
-
-
-;; (evaluates?-test "beam-learn-search-compressions simple compressible program" (timed-beam-learn-search-transformations images (make-initial-sexpr images) 1 2))
+(define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
+(evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations images (make-program '() (make-initial-sexpr images)) 1 2))
 
 
 ;;;beam-learn test

@@ -30,12 +30,7 @@
 (define (beam-learn-search-transformations data program beam-size depth)
   (depth-iterated-transformations (lambda (progs) (best-n data (unique-programs progs) beam-size)) program depth))
 
-(define (my-iterated-transformations cfilter program)
-  (let* ([compressed-programs (cfilter (compressions program))])
-    (append compressed-programs
-            (apply append (map (lambda (prog) (my-iterated-transformations cfilter prog)) compressed-programs)))))
 
-;;depth-iterated-transformations is only for testing purposes to check if my-iterated-transformations is correct
 (define (depth-iterated-transformations cfilter program depth)
   (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
     (delete '()  (append transformed-programs
@@ -46,7 +41,8 @@
 
 
 (define (sort-by-posterior data programs)
-  (let* ([log-priors (map log-prior programs)]
+  (let* ([db (for-each display (pair "transformed-programs" programs))]
+         [log-priors (map log-prior programs)]
          [db (for-each display (list "log-priors" log-priors))]
          [log-likelihoods (map (lambda (prog) (log-likelihood data prog 10)) programs)]
          [db (for-each display (list "log-likelihoods" log-likelihoods))]
@@ -186,7 +182,7 @@
   (apply + (map (lambda (image) (single-log-likelihood prog sample-size image)) images)))
 
 (define (single-log-likelihood prog sample-size image)
-  (let* ([db (pretty-print (list "ss" sample-size))]
+  (let* ([db (pretty-print (list "ss" sample-size prog))]
          [fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
