@@ -6,14 +6,18 @@ from fg_interface import *
 if __name__ == "__main__":
     args=pickle.load(sys.stdin)
 
-    imnodes, imfactors = mkFG(args[0])
-    nodes, factors = mkFG(args[1])
+    debug = mkDebugChannel('scoreImFg_debug')
+    print >>debug, args
+
+    #imnodes, imfactors = mkFG(args[0])
+    nodes, factors = mkFG(args)
+    imnodes = nodes
 
     input_image = constructAssignments(imnodes)
     score_of_input = logscore(factors, input_image)
 
-    print >>debug, 'score',score
     sample, score = scoreImg(nodes, factors)
+    print >>debug, 'normalization constant',score
     score_of_input -= score 
 
     debug = mkDebugChannel('scoreImFg')
