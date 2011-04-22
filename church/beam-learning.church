@@ -188,6 +188,9 @@
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
          [true-sample-size (length factor-graphs)]
-         [image_fg-avg (- (apply log-sum-exp (map (compose fg->img-score scheme-format->python-format) factor-graphs)) (log true-sample-size))])
+         [score-image_fg (lambda (fg)
+                           (let* ([python-fg (scheme-format->python-format fg)])
+                             (fg->img-score (list image python-fg))))]
+         [image_fg-avg (- (apply log-sum-exp (map score-image_fg factor-graphs)) (log true-sample-size))])
     (+ image_fg-avg fg-top_prog-score)))
 

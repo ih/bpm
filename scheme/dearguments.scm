@@ -45,7 +45,7 @@
            (lambda (program . nofilter)
              (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
                     [deargumented-programs (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables))]
-                    [db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
+                    ;;[db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
                     [program-size (size (program->sexpr program))]
                     [valid-deargumented-programs
                      (if (not (null? nofilter))
