@@ -32,6 +32,17 @@ def drawFG(nodes, edges, basename='fgdrawing'):
 
     drawAll(final_nodes, "shape"+fname, 0.5)
 
+def mkImgFromFile(filename):
+    sexpr = fg_parse(filename)
+    nodes = {}
+    result_fg = []
+
+    evalFactorTree(sexpr, [], result_fg, nodes)
+
+    nodes = finalizeImage(nodes)
+
+    return nodes, result_fg
+
 def mkFG(sexpr):
     nodes = {}
     result_fg = []

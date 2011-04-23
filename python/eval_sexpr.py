@@ -81,6 +81,13 @@ def evalFactorTree(ftree, node_stack, result_fg, node_dict):
     else:
         map(lambda child: evalFactorTree(child, new_node_stack, result_fg, node_dict), children)
 
+def finalizeImage(node_dict):
+    for (name, elt) in node_dict.items():
+        if hasattr(elt.tile_obj, 'parent') and type(elt.tile_obj.parent) == Ghost:
+            elt.tile_obj.parent = None
+
+    return map(lambda (name, elt): elt, node_dict.items())
+
 def finalizeNodes(node_dict):
 
     for (name, elt) in node_dict.items():
