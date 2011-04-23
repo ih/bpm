@@ -58,4 +58,70 @@ def drawBlobSpec(nodes, basename, exclude=[]):
         fh.write("%s: %f %f\n" % (n.name, n.tile_obj.radius, n.tile_obj.blobbiness))
     fh.close()
 
+from utils import *
 
+def fg_parse(filename):
+
+    fsts = lambda xs: map(lambda (x, y): x, xs)
+
+    Node = Term('Node', ['label', 'pos', 'radius', 'blobbiness', "Distance", 'Straightness', 'children'])
+
+    get_ints = lambda xs: map(int, xs)
+    get_floats = lambda xs: map(float, xs)
+
+    get_one_int = lambda xs: get_ints(xs)[0]
+    get_one_float = lambda xs: get_floats(xs)[0]
+
+    parses = {
+            'label' : get_one_int,
+            'pos' : get_floats,
+            'radius': get_one_float,
+            'blobbiness': get_one_float,
+            'Distance': get_floats,
+            'Straightness': get_floats,
+            'children': get_ints
+            }
+
+    def parse_img_line(line):
+        split = filter(lambda s: s != '', line.strip().split(' '))
+
+        split2 = map(lambda s: parses.has_key(s), split)
+
+        true_index = filter(lambda i: split2[i] == True, range(len(split2)))
+
+        parse_ranges = map(lambda (i, j): (i + 1, j), zip(true_index, true_index[1:] + [len(split2)]))
+
+        assoc_name_range = map(lambda (ti, (j, k)): (split[ti], split[j : k]), zip(true_index, parse_ranges))
+
+        parsed_data = dict(map(lambda (name, data): (name, parses[name](data)), assoc_name_range))
+
+        node = Node(
+                parsed_data['label'],
+                parsed_data.get('pos', (0,0)),
+                parsed_data['radius'],
+                parsed_data['blobbiness'],
+                parsed_data['Distance'],
+                parsed_data['Straightness'],
+                parsed_data.get('children', []))
+
+        return node
+
+    nodes = map(parse_img_line, open(filename).readlines())
+
+    mklist = lambda *a: list(a)
+
+    def mk_sexpr(node):
+        return mklist('N', 
+                ['data', 
+                    mklist('label', node.label), 
+                    mklist('pos', *node.pos), 
+                    ['radius', node.radius], 
+                    ['blobbiness', node.blobbiness], 
+                    mklist('Distance', *node.Distance), 
+                    mklist('Straightness', *node.Straightness)], 
+                *map(mk_sexpr, map(lambda i: filter(lambda n: n.label == i, nodes)[0], node.children)))
+
+    output = mk_sexpr(nodes[0])
+    return output
+
+mkFGFromFile = lambda filename : mkFG(fg_parse(filename))

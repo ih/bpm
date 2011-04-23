@@ -7,7 +7,6 @@ from utils import *
 
 fsts = lambda xs: map(lambda (x, y): x, xs)
 
-
 Node = Term('Node', ['label', 'radius', 'blobbiness', "Distance", 'Straightness', 'children'])
 
 get_ints = lambda xs: map(int, xs)
@@ -56,7 +55,7 @@ if __name__ == "__main__":
     #filename = sys.argv[1]
 
     filename = args
-    print >>debug, filename
+    #print >>debug, filename
     nodes = map(parse_img_line, open(filename).readlines())
 
     mklist = lambda *a: list(a)
@@ -64,8 +63,8 @@ if __name__ == "__main__":
     def mk_sexpr(node):
         return mklist('N', ['data', mklist('label', node.label), ['radius', node.radius], ['blobbiness', node.blobbiness], mklist('Distance', *node.Distance), mklist('Straightness', *node.Straightness)], *map(mk_sexpr, map(lambda i: nodes[i], node.children)))
 
-    #output = mk_sexpr(nodes[0])
-    output = ['N', ['data', ['label', 1], ['radius', 10.0], ['blobbiness', 3.5], ['Distance', 5.0, 0.5], ['Straightness', 0.0, 0.10000000000000001]], ['N', ['data', ['label', 2], ['radius', 5.0], ['blobbiness', 3.5], ['Distance', 3.0, 0.5], ['Straightness', 0.0, 0.10000000000000001]]]]
+    output = mk_sexpr(nodes[0])
+    #output = ['N', ['data', ['label', 1], ['radius', 10.0], ['blobbiness', 3.5], ['Distance', 5.0, 0.5], ['Straightness', 0.0, 0.10000000000000001]], ['N', ['data', ['label', 2], ['radius', 5.0], ['blobbiness', 3.5], ['Distance', 3.0, 0.5], ['Straightness', 0.0, 0.10000000000000001]]]]
    
     print >>debug, output
     pickle.dump(output,sys.stdout)
