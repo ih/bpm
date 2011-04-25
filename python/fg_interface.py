@@ -71,7 +71,7 @@ def drawBlobSpec(nodes, basename, exclude=[]):
 
 from utils import *
 
-def fg_parse(filename):
+def fg_parse(filename, exclude = []):
 
     fsts = lambda xs: map(lambda (x, y): x, xs)
 
@@ -121,15 +121,15 @@ def fg_parse(filename):
 
     mklist = lambda *a: list(a)
 
+    def mkData(node, fields):
+        result = ['data']
+        result += [mklist(field, *node.__dict__[field]) if type(node.__dict__[field]) in (list, tuple) else mklist(field, node.__dict__[field]) for field in fields if field not in exclude]
+        return result
+
+    fields = ['label', 'pos', 'radius', 'blobbiness', 'Distance', 'Straightness']
     def mk_sexpr(node):
         return mklist('N', 
-                ['data', 
-                    mklist('label', node.label), 
-                    mklist('pos', *node.pos), 
-                    ['radius', node.radius], 
-                    ['blobbiness', node.blobbiness], 
-                    mklist('Distance', *node.Distance), 
-                    mklist('Straightness', *node.Straightness)], 
+                mkData(node, fields),
                 *map(mk_sexpr, map(lambda i: filter(lambda n: n.label == i, nodes)[0], node.children)))
 
     output = mk_sexpr(nodes[0])
