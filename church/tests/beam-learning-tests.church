@@ -89,8 +89,8 @@
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood images (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood images (second models-for-comparison) 10) (log .5))
 ;;;sort-by-posterior
-;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
-;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
+(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+(equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
 
 
 ;;;best-n tests

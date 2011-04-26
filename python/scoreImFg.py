@@ -16,12 +16,12 @@ if __name__ == "__main__":
     print >>debug, args
     imnodes, imfactors = mkImgFromFile(args[0])
     fg_nodes1, fg_factors1 = mkFG(args[1])
-    sample1, score1 = scoreImg(nodes1, factors1)
-    score_of_input1 = score_img(nodes1, factors1, imnodes)
+    sample1, score1 = scoreImg(fg_nodes1, fg_factors1)
+    score_of_input1 = score_img(fg_nodes1, fg_factors1, imnodes)
     score_of_input1 -= score1 
 
     print >>debug, score_of_input1
-    pickle.dump(score_of_input, sys.stdout)
+    pickle.dump(score_of_input1, sys.stdout)
     
     ## args = sys.argv
     ## imnodes, imfactors = mkImgFromFile(args[1])
