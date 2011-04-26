@@ -1,5 +1,5 @@
 (library (python-fg-lib)
-         (export fg->image fg->img-score image->factor-graph)
+         (export )
          (import (except (rnrs) string-hash string-ci-hash)
                  (scheme-tools py-pickle)
                  (util)
@@ -7,7 +7,7 @@
                  )
 
 
-         (define fg-dir "python /home/ih/factor-graphics/")
+         (define fg-dir "python /home/ih/bpm/")
 
          (define fg->image
            (py-pickle-function (string-append fg-dir "python/fg2image.py")))

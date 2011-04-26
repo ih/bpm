@@ -4,7 +4,7 @@
          (export lazy-list lazy-pair? lazy-pair lazy-equal? lazy-list->list list->lazy-list lazy-null? lazy-append lazy-null lazy-length compute-depth lazy-list->all-list lazy-remove lazy-repeat lazy-map lazy-first lazy-rest lazy-list-size lazy-topology-equal? lazy-data?)
          (import (rnrs)
                  (util)
-                 (factor-graph)
+                 (tree)
                  (noisy-number)
                  (church readable-scheme))
          (define lazy-null '())

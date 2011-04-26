@@ -12,10 +12,9 @@
 
 ;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
 ;;make-initial-sexpr :: images => scheme-program
-(define (make-initial-sexpr images)
-  (let* ([factor-graphs (map image->factor-graph images)]
-         [literal-sexprs (map python-format->scheme-program factor-graphs)])
-    (list 'lambda '() (list (list 'uniform-draw (pair 'list literal-sexprs))))))
+(define (make-initial-sexpr trees)
+  (let* ([tree-expressions (map tree->expression trees)])
+   (list 'lambda '() (list (list 'uniform-draw (pair 'list tree-expressions))))))
 
 ;;;returns an sexpr
 (define (beam-learn data sexpr beam-size depth)
@@ -166,32 +165,29 @@
               #f
               #t)))
 
-;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|program)}p(images|fg) where R is the nubmer of samples
-;;;this is the likelihood 
-(define (scoring-fg-image prog sample-size)
-  (let* ([fg-sampler (eval prog)]
-         [fg-samples (repeat sample-size (lambda () (lazy-list->all-list (fg-sampler))))]
-         [likelihoods (map fg->img-score fg-samples)])
-    (/ (apply + likelihoods) sample-size)))  ;;;if likelihoods are probabilities and not log probabilities
 
 
-;;;estimates p(images|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(images|fg)p(fg_top|prog) where R is the number of samples
-;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the images
+
+
+;;;estimates p(trees|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(trees|fg)p(fg_top|prog) where R is the number of samples
+;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the trees
 ;;assumes all factor-graphs from imags->factor-graphs have the same topology
 ;; '_' can be read as given e.g. fg-top_prog is fg-top given prog 
-(define (log-likelihood images prog sample-size)
-  (apply + (map (lambda (image) (single-log-likelihood prog sample-size image)) images)))
+(define (log-likelihood trees prog sample-size)
+  (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 
-(define (single-log-likelihood prog sample-size image)
-  (let* ([fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
-         [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
-         [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
-         [true-sample-size (length factor-graphs)])
-    (if (= true-sample-size 0)
-        -inf.0
-        (let* ([score-image_fg (lambda (fg)
-                                 (let* ([python-fg (scheme-format->python-format fg)])
-                                   (fg->img-score (list image python-fg))))]
-               [image_fg-avg (- (apply log-sum-exp (map score-image_fg factor-graphs)) (log true-sample-size))])
-          (+ image_fg-avg fg-top_prog-score)))))
+(define (single-log-likelihood prog sample-size tree)
+  '()
+  ;; (let* ([fg-top ((eval (python-format->scheme-program (tree->factor-graph tree))))]
+  ;;        [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
+  ;;        [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
+  ;;        [true-sample-size (length factor-graphs)])
+  ;;   (if (= true-sample-size 0)
+  ;;       -inf.0
+  ;;       (let* ([score-tree_fg (lambda (fg)
+  ;;                                (let* ([python-fg (scheme-format->python-format fg)])
+  ;;                                  (fg->img-score (list tree python-fg))))]
+  ;;              [tree_fg-avg (- (apply log-sum-exp (map score-tree_fg factor-graphs)) (log true-sample-size))])
+  ;;         (+ tree_fg-avg fg-top_prog-score))))
+  )
 

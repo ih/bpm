@@ -1,5 +1,0 @@
-N label 1 radius 10 blobbiness 3.5 Distance 5 .5 Straightness 0 0.1 children 1
-N label 2 radius 5 blobbiness 3.5 Distance 3 .5 Straightness 0 0.1 children 2
-N label 3 radius 2 blobbiness 3.5 Distance 2 .5 Straightness 0 0.1 children 3 4
-N label 4 radius 5 blobbiness 3.5 Distance 5 .5 Straightness 0 0.1
-N label 5 radius 5 blobbiness 3.5 Distance 5 .5 Straightness 0 0.1
