@@ -1,5 +1,5 @@
 (library (python-fg-lib)
-         (export fg->image fg->img-score)
+         (export fg->image fg->img-score image->factor-graph)
          (import (except (rnrs) string-hash string-ci-hash)
                  (scheme-tools py-pickle)
                  (util)
@@ -17,12 +17,13 @@
 
 
 ;;         not exporting until issues w/ py-pickle have been worked out, see a temporary definition in factor-graph.scm
-         (define image->factor-graph
-           (py-pickle-function (string-append fg-dir "python/im2fg.py"))
-)
+         (define (image->factor-graph image)
+           (let ([image->string-fg (py-pickle-function (string-append fg-dir "python/im2fg.py"))])
+             (strings->symbols (image->string-fg image))))
 
          (define (strings->symbols sexpr)
            (sexp-search string? string->symbol sexpr))
+
 
          ;;just for testing purposes until factor-graph format decided upon
          ;; (define (fg->img-score image+factor-graph)
