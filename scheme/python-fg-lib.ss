@@ -1,10 +1,11 @@
 (library (python-fg-lib)
-         (export fg->image fg->img-score image->factor-graph) 
+         (export fg->image fg->img-score)
          (import (except (rnrs) string-hash string-ci-hash)
                  (scheme-tools py-pickle)
                  (util)
                  ;(church external py-pickle)
                  )
+
 
          (define fg-dir "python /home/ih/factor-graphics/")
 
@@ -13,6 +14,7 @@
 
          (define fg->img-score
            (py-pickle-function (string-append fg-dir "python/scoreImFg.py")))
+
 
 ;;         not exporting until issues w/ py-pickle have been worked out, see a temporary definition in factor-graph.scm
          (define image->factor-graph
@@ -34,4 +36,3 @@
          ;;               (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))
          ;;               (N (data (label 5) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1)))))))
          )
-

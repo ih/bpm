@@ -82,19 +82,21 @@ def runAIS(init_asn,
 def f0_img(asn):
     return 1.0
 
+def default_fg():
+    return make_distgauss()
+
 def scoreImg(nodes, fg):
     init_asn = constructAssignments(nodes)
 
-    samples = 100
+    samples = 1
 
     f0 = f0_img # we can try multimodal gaussians as the initial distribution; or some other options
-
     fn = lambda asn: logscore(fg, asn)
 
-    lower_beta = 20
-    upper_beta = 50
+    lower_beta = 200
+    upper_beta = 100
 
-    trans_iter = 5
+    trans_iter = 20
 
     proposal_fx = lambda asn: gaussPerturbProposalByName(asn, 'pos', 0.1, rndSelect(asn.keys()))
     trans_kernel = lambda *args: MH_n_iter(*args)[0]
