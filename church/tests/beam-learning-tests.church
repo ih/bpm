@@ -23,7 +23,7 @@
              fg)
 
 ;;;global test data
-(define worse-than-initial-sexpr (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg) (list 'lambda '() fg2))))))
+(define worse-than-initial-sexpr (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() fg2) (list 'lambda '() fg2))))))
 
 (define models-for-comparison (let* ([sexprs (list (make-initial-sexpr images) worse-than-initial-sexpr)]
                                      [possible-programs (map (lambda (p) (make-program '() p)) sexprs)])
@@ -81,13 +81,13 @@
 ;;   (equal?-test "generate-factor-graphs_top" (map scheme-format->python-format (generate-factor-graphs_top (second models-for-comparison) graph 2)) (list fg2 fg2)))
 ;;;single-log-likelihood
 (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
-(equal?-test "single-log-likelihood" (timed-single-log-likelihood (first models-for-comparison) 10 (first images)) (log 1.0))
+(equal?-test "single-log-likelihood" (timed-single-log-likelihood (second models-for-comparison) 10 (first images)) (log 1.0))
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood images (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood images (second models-for-comparison) 10) (log .5))
 ;;;sort-by-posterior
-(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
-(equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
+;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior images models-for-comparison) models-for-comparison)
 
 
 ;;;best-n tests
