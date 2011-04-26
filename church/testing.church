@@ -18,6 +18,13 @@
         (for-each display (list ".. failed! \nCORRECT value: "  true-val "\n TEST value: " test-val "\n"))
         (display ".. passed!\n"))))
 
+(define (<?-test name first-val second-val)
+  (begin
+    (display "deterministic test: ")(display name)
+    (if (not (< first-val second-val))
+        (for-each display (list ".. failed! \nfirst value: "  first-val "\n second value: " second-val "\n"))
+        (display ".. passed!\n"))))
+
 (define timed-equal?-test (time-it equal?-test))
 
 (define (member?-test name test-val set-of-true-vals)

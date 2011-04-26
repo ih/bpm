@@ -42,11 +42,11 @@
 
 
 (define (sort-by-posterior data programs)
-  (let* ([db (for-each display (pair "transformed-programs" programs))]
+  (let* ([db (for-each display (pair "transformed-programs: " programs "\n"))]
          [log-priors (map log-prior programs)]
-         [db (for-each display (list "log-priors" log-priors))]
+         [db (for-each display (list "log-priors: " log-priors "\n"))]
          [log-likelihoods (map (lambda (prog) (log-likelihood data prog 10)) programs)]
-         [db (for-each display (list "log-likelihoods" log-likelihoods))]
+         [db (for-each display (list "log-likelihoods: " log-likelihoods "\n"))]
          [posteriors (map + log-priors log-likelihoods)] ;;log-prior and log-likelihood are log-probabilities
          [programs-with-posteriors (zip programs posteriors)]
          [posteriors> (lambda (a b) (> (second a) (second b)))])
@@ -183,8 +183,7 @@
   (apply + (map (lambda (image) (single-log-likelihood prog sample-size image)) images)))
 
 (define (single-log-likelihood prog sample-size image)
-  (let* ([db (pretty-print (list "ss" sample-size prog))]
-         [fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
+  (let* ([fg-top ((eval (python-format->scheme-program (image->factor-graph image))))]
          [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
          [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
          [true-sample-size (length factor-graphs)])
