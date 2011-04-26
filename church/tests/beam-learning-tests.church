@@ -13,10 +13,7 @@
 
 (define (init-images) (list "test.img"))
 (define fg '(N (data (label 1) (radius 10) (blobbiness 3.5) (Distance 3 .5) (Straightness 0 0.1))
-              (N (data (label 2) (radius 5) (blobbiness 3.5) (Distance 5 .5) (Straightness 0 0.1))
-                 (N (data (label 3) (radius 2) (blobbiness 3.5) (Distance 5 .5) (Straightness 0 0.1))
-                    (N (data (label 4) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0.5 0.1)))
-                    (N (data (label 5) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0.5 0.1)))))))
+              (N (data (label 2) (radius 5) (blobbiness 3.5) (Distance 5 .5) (Straightness 0 0.1)))))
 
 (define fg2 '(N (data (label 1) (radius 5) (blobbiness 10) (Distance 5 .5) (Straightness 0 0.1))))
 (define images (init-images))
