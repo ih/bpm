@@ -1,10 +1,10 @@
 (library (python-fg-lib)
-         (export )
+         (export draw-trees)
          (import (except (rnrs) string-hash string-ci-hash)
                  (scheme-tools py-pickle)
                  (util)
                  ;(church external py-pickle)
                  )
-
-
-         )
+         (define py-dir "/home/ih/bpm/python/")
+         (define draw-trees
+           (py-pickle-script (string-append py-dir "treedraw.py"))))

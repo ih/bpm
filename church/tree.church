@@ -1,0 +1,94 @@
+;;;node code
+(define noise-params (pair 0 0))
+;;set-growth/label-noise! won't work as desired until eval uses current-envirnoment instead of loading factor-graph.church each time 
+(define (set-growth-noise! new-val) (set-car! noise-params new-val))  
+(define (set-label-noise! new-val) (set-cdr! noise-params new-val))
+(define growth-noise first)
+(define label-noise rest)
+(define labels '(a b))
+
+(define root '(a))
+
+;;;assumes all node information comes in a list as item0 e.g. (node '(label distance angle) children) where children is a list of nodes
+(define f
+  (lazify
+   (lambda ()
+     (flip))))
+     ;p(lazy-pair (flip) '()))))
+
+
+(define (scheme-format->python-format scheme-sexpr)
+  (process-nodes scheme-sexpr))
+
+(define (process-nodes scheme-sexpr)
+  (if (null? scheme-sexpr)
+      '()
+      (append (list 'N (process-data (first scheme-sexpr))) (map process-nodes (rest scheme-sexpr)))))
+
+(define (process-data data-list)
+  (let ([label (second data-list)]
+        [radius (third data-list)]
+        [blobbiness (fourth data-list)]
+        [distance-info (fifth data-list)]
+        [straightness (sixth data-list)])
+    (list 'data (pair 'label label) (pair 'radius radius) (pair 'blobbiness blobbiness) (pair 'Distance distance-info) (pair 'Straightness straightness))))
+
+(define node
+  (lazify 
+   (lambda (item0 . items)
+     (if (null? items)
+         (lazy-pair (noisy-label item0) '())
+         (lazy-pair (noisy-label item0) (if (flip (- 1 (growth-noise noise-params)))
+                                            (apply node items)
+                                            '()))))))
+
+(define noisy-label
+  (lazify
+   (lambda (x)
+     (if (list? x)
+         (if (symbol? (first x))
+             (if (flip (- 1 (label-noise noise-params)))
+                 (list->lazy-list x)
+                 (if (equal? (first x) 'a)
+                     (list->lazy-list (pair 'b (rest x)))
+                     (list->lazy-list (pair 'a (rest x)))))
+             (list->lazy-list x))
+         x))))
+
+
+;; (define noisy-label
+;;   (lazify
+;;    (lambda (x)
+;;      (if (list? x)
+;;          (if (symbol? (first x))
+;;              (if (flip (- 1 (label-noise noise-params)))
+;;                  (list->lazy-list x)
+;;                  (let ([label (first x)]
+;;                        [geometry (rest x)])
+;;                    (if (equal? label 'a)
+;;                        (list->lazy-list (pair 'b geometry))
+;;                        (list->lazy-list (pair 'a geometry)))))             (list->lazy-list x))
+;;          x))))
+
+
+
+(define (graph->program graph)
+  (if (null? graph)
+      '()
+      (append (list 'node (list 'quote (first graph)))
+              (map graph->program (rest graph)))))
+
+
+;;;temporary
+(define (data . sexpr) (lazy-pair 'data (apply node sexpr)))
+;(define data node)
+(define radius node)
+(define size node)
+(define color node)
+(define blobbiness node)
+(define Distance node)
+(define Straightness node)
+(define label node)
+(define N node)
+(define G1 node)
+(define G2 node)
