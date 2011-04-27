@@ -92,11 +92,11 @@
            (let* ([condensed-program (condense-program program)]
                   [abstractions (possible-abstractions condensed-program)]
                   [compressed-programs (map (curry compress-program program) abstractions)]
-                  [program-size (size (program->sexpr program))]
+                  [prog-size (program-size (program->sexpr program))]
                   [valid-compressed-programs
                    (if (not (null? nofilter))
                        compressed-programs
-                       (filter (lambda (cp) (<= (size (program->sexpr cp))
-                                                (+ program-size 1)))
+                       (filter (lambda (cp) (<= (program-size (program->sexpr cp))
+                                                (+ prog-size 1)))
                                compressed-programs))])
              valid-compressed-programs)))

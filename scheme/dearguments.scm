@@ -1,5 +1,5 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances thunkify remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (program)
                  (_srfi :1)
@@ -35,8 +35,6 @@
                      (uniform-replacement variable-instances)))
                (uniform-replacement variable-instances)))
 
-         (define (thunkify sexpr) `(lambda () ,sexpr))
-
 
          ;;creates a program transformation that removes a variable from the abstraction and replaces it with the output of replacement-function
          ;;replacement-function takes in the instances for a particular variable and returns an expression that the variable gets set to 
@@ -46,12 +44,12 @@
              (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
                     [deargumented-programs (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables))]
                     ;;[db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
-                    [program-size (size (program->sexpr program))]
+                    [prog-size (program-size (program->sexpr program))]
                     [valid-deargumented-programs
                      (if (not (null? nofilter))
                          deargumented-programs
-                         (filter (lambda (ip) (<= (size (program->sexpr ip))
-                                                  (+ program-size 1)))
+                         (filter (lambda (ip) (<= (program-size (program->sexpr ip))
+                                                  (+ prog-size 1)))
                                  deargumented-programs))])
                valid-deargumented-programs)))
 

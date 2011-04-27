@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor!)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor!)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -31,12 +31,14 @@
                #f))
 
          ;;compute the size of a program
-         (define (size expr)
+         (define (program-size expr)
            (if (list? expr)
-               (cond [(tagged-list? expr 'begin) (size (rest expr))] ;; ignore 'begin symbol
-                     [(tagged-list? expr 'define) (size (cddr expr))] ;; ignore 'define symbol + args
-                     [else (apply + (map size expr))])
+               (cond [(tagged-list? expr 'begin) (program-size (rest expr))] ;; ignore 'begin symbol
+                     [(tagged-list? expr 'define) (program-size (cddr expr))] ;; ignore 'define symbol + args
+                     [else (apply + (map program-size expr))])
                1))
+
+
 
 ;;; data abstraction for abstraction 
          (define (make-abstraction pattern variables)
@@ -139,7 +141,7 @@
          (define (pretty-print-program program)
            (let ([sexpr (program->sexpr program)])
              (pretty-print sexpr)
-             (for-each display (list "size: " (size sexpr) "\n\n"))))
+             (for-each display (list "size: " (program-size sexpr) "\n\n"))))
 
          ;;define is of the form (define name (lambda (vars) body))
          (define (define->abstraction definition)

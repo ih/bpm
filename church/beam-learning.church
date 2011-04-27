@@ -14,7 +14,7 @@
 ;;make-initial-sexpr :: images => scheme-program
 (define (make-initial-sexpr trees)
   (let* ([tree-expressions (map tree->expression trees)])
-   (list 'lambda '() (list (list 'uniform-draw (pair 'list tree-expressions))))))
+   (list 'lambda '() (list (list 'uniform-draw (pair 'list (map thunkify tree-expressions)))))))
 
 ;;;returns an sexpr
 (define (beam-learn data sexpr beam-size depth)
@@ -32,7 +32,7 @@
 
 
 (define (depth-iterated-transformations cfilter program depth)
-  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program))) transform-types)))])
+  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
     (delete '()  (append transformed-programs
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
@@ -41,7 +41,7 @@
 
 
 (define (sort-by-posterior data programs)
-  (let* ([db (for-each display (pair "transformed-programs: " programs "\n"))]
+  (let* ([db (for-each display (list "transformed-programs: " programs "\n"))]
          [log-priors (map log-prior programs)]
          [db (for-each display (list "log-priors: " log-priors "\n"))]
          [log-likelihoods (map (lambda (prog) (log-likelihood data prog 10)) programs)]
@@ -53,7 +53,7 @@
 
 ;;how do you find normalized values?
 (define (log-prior program)
-  (- (size (program->sexpr program))))
+  (- (program-size (program->sexpr program))))
 
 ;;;list sorting via something like quicksort
 (define (my-list-sort compare lst)
@@ -87,21 +87,21 @@
 
 
 ;;;given a topology for a factor graph generate factor graphs with that form (in python format)
-(define generate-factor-graphs_top
-  (lambda (prog-sexpr topology popsize)
-    (let ([prog (eval (program->sexpr prog-sexpr))])
-      (let* ([lazified-topology (list->lazy-list topology)]
-             (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-topology)))) popsize 20
-                                (lambda (depth) (lambda () (let ((s (prog)))
-                                                             (pair (lazy-topology-equal? s lazified-topology depth)
-                                                                   (lambda () (first (lazy-list->list s depth)))))))))
-             [factor-graphs (map (compose lazy-list->all-list mcmc-state->query-value) samples)])
-        factor-graphs))))
+;; (define generate-factor-graphs_top
+;;   (lambda (prog-sexpr topology popsize)
+;;     (let ([prog (eval (program->sexpr prog-sexpr))])
+;;       (let* ([lazified-topology (list->lazy-list topology)]
+;;              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-topology)))) popsize 20
+;;                                 (lambda (depth) (lambda () (let ((s (prog)))
+;;                                                              (pair (lazy-topology-equal? s lazified-topology depth)
+;;                                                                    (lambda () (first (lazy-list->list s depth)))))))))
+;;              [factor-graphs (map (compose lazy-list->all-list mcmc-state->query-value) samples)])
+;;         factor-graphs))))
 
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
 ;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
-(define score-fg-top_program 
+(define score-tree-top_program 
    (lambda (prog-sexpr topology popsize)
      (let ([prog (eval (program->sexpr prog-sexpr))])
        (let* ([lazified-topology (list->lazy-list topology)]
@@ -176,18 +176,10 @@
 (define (log-likelihood trees prog sample-size)
   (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 
-(define (single-log-likelihood prog sample-size tree)
-  '()
-  ;; (let* ([fg-top ((eval (python-format->scheme-program (tree->factor-graph tree))))]
-  ;;        [fg-top_prog-score (score-fg-top_program prog fg-top sample-size)] ;;number of particles doesn't have to be sample-size
-  ;;        [factor-graphs (generate-factor-graphs_top prog fg-top sample-size)]
-  ;;        [true-sample-size (length factor-graphs)])
-  ;;   (if (= true-sample-size 0)
-  ;;       -inf.0
-  ;;       (let* ([score-tree_fg (lambda (fg)
-  ;;                                (let* ([python-fg (scheme-format->python-format fg)])
-  ;;                                  (fg->img-score (list tree python-fg))))]
-  ;;              [tree_fg-avg (- (apply log-sum-exp (map score-tree_fg factor-graphs)) (log true-sample-size))])
-  ;;         (+ tree_fg-avg fg-top_prog-score))))
-  )
+(define (single-log-likelihood prog sample-size tree) 
+  (let* ([fg-top_prog-score (score-tree-top_program prog tree sample-size)] ;;number of particles doesn't have to be sample-size
+         [parameter-score (score-parameters prog tree)])
+    (+ fg-top_prog-score parameter-score)))
 
+(define (score-parameters program tree)
+  0)

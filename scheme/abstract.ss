@@ -26,11 +26,11 @@
          ;; FIXME: assumes that there is only one program for each size
          (define (unique-programs programs)
            (define ht (make-hash-table eqv?))
-           (map (lambda (p) (hash-table-set! ht (size (program->sexpr p)) p)) programs)
+           (map (lambda (p) (hash-table-set! ht (program-size (program->sexpr p)) p)) programs)
            (map rest (hash-table->alist ht)))
 
          (define (sort-by-size programs)
-           (let* ([program-sizes (map (compose size program->sexpr) programs)]
+           (let* ([program-sizes (map (compose program-size program->sexpr) programs)]
                   [programs-with-size (zip programs program-sizes)]
                   [size< (lambda (a b) (< (second a) (second b)))])
              (map first (list-sort size< programs-with-size))))
@@ -183,7 +183,7 @@
 
          (define (beam-compression sexpr beam-size)
            (for-each display (list "original expr:\n" sexpr "\n"
-                                   "size: " (size sexpr)
+                                   "size: " (program-size sexpr)
                                    "\n\n"
                                    "compressing...\n"))
            (let ([top-compressions (sort-by-size
