@@ -7,7 +7,8 @@
          [learned-sexpr (beam-learn data initial-sexpr beam-size depth)]
          [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
          [model (lambda () (lazy-list->all-list ((eval learned-sexpr))))])
-    (pretty-print (list "compressed-program:" learned-sexpr "size: " (size learned-sexpr)))    
+    (pretty-print (list "compressed-program:" learned-sexpr "size: " (program-size learned-sexpr)))
+    (draw-trees (pair "./model-output.png" (repeat 5 (lambda () (model)))))
     model))
 
 ;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
