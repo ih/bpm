@@ -1,0 +1,17 @@
+(define (body . branches) (pair (lazy-list->all-list (data (color 100) (size 1))) branches))
+(define (branch length)
+  (if (= 0 length)
+      (lazy-list->all-list (flower))
+      (lazy-list->all-list (N (data (color 0) (size .1)) (branch (- length 1))))))
+
+(define (flower)
+  (lazy-list->all-list
+   (N (data (color 255) (size .3))
+      (N (data (color 255) (size .3)))
+      (N (data (color 255) (size .3)))
+      (N (data (color 255) (size .3))))))
+
+
+(define cactus1 (body (branch 3) (branch 4) (branch 2) (branch 3)))
+(define cactus2 (body (branch 2) (branch 1)))
+(draw-trees (pair "./test.png" (list cactus1 cactus2)))
