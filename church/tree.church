@@ -37,40 +37,8 @@
   (lazify 
    (lambda (item0 . items)
      (if (null? items)
-         (lazy-pair (noisy-label item0) '())
-         (lazy-pair (noisy-label item0) (if (flip (- 1 (growth-noise noise-params)))
-                                            (apply node items)
-                                            '()))))))
-
-(define noisy-label
-  (lazify
-   (lambda (x)
-     (if (list? x)
-         (if (symbol? (first x))
-             (if (flip (- 1 (label-noise noise-params)))
-                 (list->lazy-list x)
-                 (if (equal? (first x) 'a)
-                     (list->lazy-list (pair 'b (rest x)))
-                     (list->lazy-list (pair 'a (rest x)))))
-             (list->lazy-list x))
-         x))))
-
-
-;; (define noisy-label
-;;   (lazify
-;;    (lambda (x)
-;;      (if (list? x)
-;;          (if (symbol? (first x))
-;;              (if (flip (- 1 (label-noise noise-params)))
-;;                  (list->lazy-list x)
-;;                  (let ([label (first x)]
-;;                        [geometry (rest x)])
-;;                    (if (equal? label 'a)
-;;                        (list->lazy-list (pair 'b geometry))
-;;                        (list->lazy-list (pair 'a geometry)))))             (list->lazy-list x))
-;;          x))))
-
-
+         (lazy-pair item0 '())
+         (lazy-pair item0 (apply node items))))))
 
 (define (graph->program graph)
   (if (null? graph)
@@ -84,8 +52,8 @@
 ;(define data node)
 (define radius node)
 (define size node)
-;(define (color x) (node (round (gaussian x 15))))
-(define color node)
+(define (color x) (lazify (node (round (gaussian x 15)))))
+;(define color node)
 (define blobbiness node)
 (define Distance node)
 (define Straightness node)

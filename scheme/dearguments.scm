@@ -1,11 +1,12 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (program)
                  (_srfi :1)
                  (util))
 
          ;;program transformations
+         (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))
          (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
          (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
          ;;replacement functions
@@ -13,16 +14,23 @@
            `((uniform-draw (list ,@(map thunkify variable-instances)))))
 
          (define (noisy-number-replacement variable-instances)
-           (define (close? a b)
-             (< (abs (- a b)) .2))
            (if (all (map number? variable-instances))
-               (let* ([instances-mean (my-mean variable-instances)]
-                      [instances-variance (my-variance variable-instances)] 
-                      [instance-close-to-mean (map (curry close? instances-mean) variable-instances)])
-                 (if (all instance-close-to-mean)
-                     `(gaussian ,instances-mean ,instances-variance)
-                     (uniform-replacement variable-instances)))
+               (let*
+                   ([instances-mean (my-mean variable-instances)])
+                 instances-mean)
                (uniform-replacement variable-instances)))
+         
+         ;; (define (noisy-number-replacement variable-instances)
+         ;;   (define (close? a b)
+         ;;     (< (abs (- a b)) .2))
+         ;;   (if (all (map number? variable-instances))
+         ;;       (let* ([instances-mean (my-mean variable-instances)]
+         ;;              [instances-variance (my-variance variable-instances)] 
+         ;;              [instance-close-to-mean (map (curry close? instances-mean) variable-instances)])
+         ;;         (if (all instance-close-to-mean)
+         ;;             `(gaussian ,instances-mean ,instances-variance)
+         ;;             (uniform-replacement variable-instances)))
+         ;;       (uniform-replacement variable-instances)))
 
          (define (noisy-number-simple-replacement variable-instances)
            (define (close? a b)

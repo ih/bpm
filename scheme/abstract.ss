@@ -6,7 +6,7 @@
 ;; - make a test case for getting anonymous functions when inlining
 ;; - inlining with higher-order functions leads to loss of irreducibility through the creation of anonymous functions? rewrite applied lambdas in the body of a program 
 (library (abstract)
-         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move proposal beam-search-compressions beam-compression all-iterated-compressions iterated-compressions inline unique-programs sort-by-size make-dearguments-transformation simple-noisy-number-dearguments uniform-draw-dearguments possible-abstractions shortest-n)
+         (export true-compressions all-compressions compressions test-abstraction-proposer abstraction-move proposal beam-search-compressions beam-compression all-iterated-compressions iterated-compressions inline unique-programs sort-by-size make-dearguments-transformation simple-noisy-number-dearguments uniform-draw-dearguments possible-abstractions shortest-n noisy-number-dearguments)
          (import (except (rnrs) string-hash string-ci-hash)
                  (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)

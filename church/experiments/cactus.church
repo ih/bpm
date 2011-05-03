@@ -1,4 +1,9 @@
 (load "../testing.church")
+;;assumes program evaluates to a tree
+(define (gen-data program amount)
+  (let* ([sexpr (program->sexpr program)])
+    (delete '() (repeat amount (lambda () (eval sexpr))))))
+
 (define (cactus)
   (let* ([num-branches (uniform-draw '(1 2 3 4))]
          [branches (repeat num-branches branch)])
@@ -47,12 +52,23 @@
                                                            (N (data (color 220) (size 0.3)))
                                                            (N (data (color 224) (size 0.3)))
                                                            (N (data (color 207) (size 0.3)))))))))))))
-(define samples (repeat 10
-                 (eval simple-cacti)))
 
-;;inverse-inline summary
+(define samples (repeat 10
+                        (eval simple-cacti)))
+
+;;;inverse-inline summary
 (define compressed (compressions simple-cacti))
-(pretty-print compressed)
+;(pretty-print compressed)
+
+;;;noisy-number examples
+
+(define flower-program (list-ref compressed 5))
+(pretty-print flower-program)
+(draw-trees (pair "./noisyProgram.png" (gen-data flower-program 10)))
+(define example-deargumented (first (noisy-number-dearguments flower-program)))
+(pretty-print example-deargumented)
+(draw-trees (pair "./deargedProgram.png" (gen-data example-deargumented 10)))
+
 ;(pretty-print (map program->sexpr (shortest-n 5 compressed)))
 
 ;(pretty-print (shortest-n 2 (compressions simple-cacti)))
