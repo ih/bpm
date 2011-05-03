@@ -112,9 +112,12 @@
                                                                     (lambda () (first (lazy-list->list s depth)))))))))
               ;;remove duplicates in order to do selective model averaging:
               ;;find symbol for repeat function and delete (temporary fix)
+              (db (pretty-print (map mcmc-state->query-value samples)) )
               (repeat-symbol (find-repeat-symbol samples))
               (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
+              
               (scores (map mcmc-state->score samples))
+              [db (pretty-print (list "scores: " (map exp scores)))]
               (score (if (null? scores)
                          -inf.0
                          (apply log-sum-exp scores))))
@@ -165,10 +168,6 @@
       (if (null? (rest lst))
               #f
               #t)))
-
-
-
-
 
 ;;;estimates p(trees|program) ~= \frac{1}{R}\sum_{fg_r ~ p(fg|fg_top)}p(trees|fg)p(fg_top|prog) where R is the number of samples
 ;;;this is an importance sampler where the target distribution generates factor graphs based on topology extracted from the trees

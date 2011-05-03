@@ -1,17 +1,71 @@
-(define (body . branches) (pair (lazy-list->all-list (data (color 100) (size 1))) branches))
-(define (branch length)
-  (if (= 0 length)
-      (lazy-list->all-list (flower))
-      (lazy-list->all-list (N (data (color 0) (size .1)) (branch (- length 1))))))
+(load "../testing.church")
+(define (cactus)
+  (let* ([num-branches (uniform-draw '(1 2 3 4))]
+         [branches (repeat num-branches branch)])
+    (body branches)))
+(define (body branches) (pair (lazy-list->all-list (data (color 50) (size 1))) branches))
+(define (branch)
+  (if (flip)
+      (lazy-list->all-list (flower (if (flip) 120 225)))
+      (lazy-list->all-list (N (data (color 30) (size .1)) (branch)))))
 
-(define (flower)
+(define (flower shade)
   (lazy-list->all-list
-   (N (data (color 255) (size .3))
-      (N (data (color 255) (size .3)))
-      (N (data (color 255) (size .3)))
-      (N (data (color 255) (size .3))))))
+   (N (data (color 30) (size .3))
+      (N (data (color shade) (size .3)))
+      (N (data (color shade) (size .3)))
+      (N (data (color shade) (size .3))))))
 
 
-(define cactus1 (body (branch 3) (branch 4) (branch 2) (branch 3)))
-(define cactus2 (body (branch 2) (branch 1)))
-(draw-trees (pair "./test.png" (list cactus1 cactus2)))
+
+(define cactus1 (body (list (branch))))
+(define cactus2 (body (list (branch))))
+(define cacti (list cactus1 cactus2))
+
+;; (define timed-learn-model (time-it learn-model))
+;; (timed-learn-model cacti 1 2)
+
+(define noisy-constructor (lazy-list->all-list (N (data (node 20) (size .5)) (N (data (node 255) (size .5))))))
+(define noisy-constructor1 (lazy-list->all-list (N (data (color 20) (size .5)) (N (data (node 105) (size .5))))))
+
+
+;;make-initial-sexpr figure
+(define init-sexpr (make-initial-sexpr (list cactus1 cactus2)))
+(define simple-cacti '(lambda ()
+                        (lazy-list->all-list ((uniform-draw
+                                               (list
+                                                (lambda ()
+                                                  (N (data (color 70) (size 1))
+                                                     (N (data (color 37) (size 0.3))
+                                                        (N (data (color 213) (size 0.3)))
+                                                        (N (data (color 207) (size 0.3)))
+                                                        (N (data (color 211) (size 0.3))))))
+                                                (lambda ()
+                                                  (N (data (color 43) (size 1))
+                                                     (N (data (color 47) (size 0.1))
+                                                        (N (data (color 33) (size 0.3))
+                                                           (N (data (color 220) (size 0.3)))
+                                                           (N (data (color 224) (size 0.3)))
+                                                           (N (data (color 207) (size 0.3)))))))))))))
+(define samples (repeat 10
+                 (eval simple-cacti)))
+
+;;inverse-inline summary
+(define compressed (compressions simple-cacti))
+(pretty-print compressed)
+;(pretty-print (map program->sexpr (shortest-n 5 compressed)))
+
+;(pretty-print (shortest-n 2 (compressions simple-cacti)))
+
+;;(pretty-print (length (compressions simple-cacti)))
+
+
+;;(pretty-print (list cactus1 cactus2 init-sexpr))
+;;(draw-trees (pair "./test.png" samples))
+
+
+
+
+
+
+

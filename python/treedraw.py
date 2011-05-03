@@ -82,7 +82,7 @@ def add_node(graph, data, ncols=None):
 def add_edge(from_node, to_node, edgewidth):
     edge = from_node >> to_node
     edge.penwidth = edgewidth
-    edge.color = "#ADBBBB"
+    edge.color = "#458B00"
 
 def add_subtrees(node, subtrees, graph, edgewidth=2, ncols=None):
     if not ncols:

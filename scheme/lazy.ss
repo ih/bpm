@@ -43,7 +43,8 @@
                              (seq-sexpr-topology-equal? (t1 'rest) (t2 'rest) left))))
                    (if (equal? t1 t2)
                        (- depth 1)
-                       false))))
+                       (let ([db '()])
+                        false)))))
 
          (define (lazy-data? lazy-sexpr)
            (eq? (lazy-sexpr 'first) 'data))

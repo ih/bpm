@@ -84,6 +84,7 @@
 ;(define data node)
 (define radius node)
 (define size node)
+;(define (color x) (node (round (gaussian x 15))))
 (define color node)
 (define blobbiness node)
 (define Distance node)
