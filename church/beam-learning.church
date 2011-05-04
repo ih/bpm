@@ -29,12 +29,13 @@
 
 (define (beam-learn-search-transformations data program beam-size depth)
   (let ([init-program+ (make-program+ program 0 0 0 #f)])
-    (map progam+->program (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth))))
+    (map program+->program (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth))))
+
 
 (define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([transformed-programs (apply-and-filter-transformations depth cfilter program+)])
-    (delete '()  (append transformed-programs
-             (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
+  (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
+    (delete '()  (append transformed-programs+
+             (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
 
 (define (apply-and-filter-transformations depth cfilter program+)
  (if (= depth 0)
