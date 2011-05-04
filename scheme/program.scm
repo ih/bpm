@@ -1,5 +1,6 @@
 (library (program)
-         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor!)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! t make-program+ ;program+->program program+->posterior program+->log-likelihood program+->semantics-preserved
+                 )
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -183,4 +184,16 @@
                  [vars (find-tagged-symbols expr (var-symbol))])
              (begin
                (raise-tagged! (func-symbol) funcs)
-               (raise-tagged! (var-symbol) vars)))))
+               (raise-tagged! (var-symbol) vars))))
+
+         ;;used in calculation of the posterior
+         (define (make-program+ program posterior log-likelihood log-prior semantics-preserved)
+           (list 'program+ program posterior log-likelihood log-prior semantics-preserved))
+         (define program+->program second)
+         (define program+->posterior third)
+         (define program+->log-likelihood fourth)
+         (define program+->log-prior fifth)
+         (define program+->semantics-preserved sixth)
+         (define (program+->program-transform semantics-preserved program+ new-program)
+           (make-program+ new-program (program+->posterior program+) (program+->log-likelihood program+) (program+->log-prior program+) semantics-preserved))
+         (define (t) 5))

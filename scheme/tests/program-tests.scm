@@ -2,7 +2,7 @@
         (srfi :78)
         (sym))
 ;;;size test
-(check (size '(+ 1 2 3)) => 4)
+(check (program-size '(+ 1 2 3)) => 4)
 
 ;;;make-named-abstraction test
 (check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
@@ -25,8 +25,9 @@
 (let* ([expr '(+ (+ V1 V1) (+ V1 F3))]
        [none (set-indices-floor! expr)])
   (check (list (sym 'F) (sym 'V)) => '(F4 V2)))
-
-
+;;;program+ tests
+(check (make-program+ 'a 0 0 0 #t) => '(program+ a 0 0 0 #t))
+(check (program+->program (make-program+ 'a 0 0 0 #t)) => 'a)
 
 
 

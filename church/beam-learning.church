@@ -1,5 +1,5 @@
 
-(define transform-types (list compressions simple-noisy-number-dearguments))
+(define transform-types (list compressions noisy-number-dearguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
@@ -27,30 +27,42 @@
         sexpr
         (program->sexpr (first top-transformations)))))
 
-
 (define (beam-learn-search-transformations data program beam-size depth)
-  (depth-iterated-transformations (lambda (progs) (best-n data (unique-programs progs) beam-size)) program depth))
+  (let ([init-program+ (make-program+ program 0 0 0 #f)])
+    (map progam+->program (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth))))
 
-
-(define (depth-iterated-transformations cfilter program depth)
-  (let* ([transformed-programs (if (= depth 0) '() (concatenate (map (lambda (transform-type) (cfilter (transform-type program #t))) transform-types)))])
+(define (depth-iterated-transformations cfilter program+ depth)
+  (let* ([transformed-programs (apply-and-filter-transformations depth cfilter program+)])
     (delete '()  (append transformed-programs
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs))))))
 
-(define (best-n data programs n)
-  (max-take (sort-by-posterior data programs) n))
+(define (apply-and-filter-transformations depth cfilter program+)
+ (if (= depth 0)
+     '()
+     (let* ([program (program+->program program+)]
+            [semantics-preserved-programs+ (map (curry program+->program-transform #t program+) (compressions program))]
+            [semantics-changed-programs+ (map (curry program+->program-transform #f program+) (noisy-number-dearguments program))])
+       (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
+
+(define (best-n data programs+ n)
+  (max-take (sort-by-posterior data programs+) n))
 
 
-(define (sort-by-posterior data programs)
-  (let* ([db (for-each display (list "transformed-programs: " programs "\n"))]
+(define (sort-by-posterior data programs+)
+  (let* ([db (for-each display (list "transformed-programs: " programs+ "\n"))]
+         [programs (map program+->program programs+)]
+         [semantics-flags (map program+->semantics-preserved programs+)]
          [log-priors (map log-prior programs)]
          [db (for-each display (list "log-priors: " log-priors "\n"))]
-         [log-likelihoods (map (lambda (prog) (log-likelihood data prog 10)) programs)]
+         [log-likelihoods (map (lambda (prog+ semantics-flag)
+                                 (if semantics-flag
+                                     (program+->log-likelihood prog+)
+                                     (log-likelihood data (program+->program prog+) 10))) programs+ semantics-flags)]
          [db (for-each display (list "log-likelihoods: " log-likelihoods "\n"))]
          [posteriors (map + log-priors log-likelihoods)] ;;log-prior and log-likelihood are log-probabilities
-         [programs-with-posteriors (zip programs posteriors)]
-         [posteriors> (lambda (a b) (> (second a) (second b)))])
-    (map first (my-list-sort posteriors> programs-with-posteriors))))
+         [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
+         [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
+    (my-list-sort posteriors> new-programs+)))
 
 ;;how do you find normalized values?
 (define (log-prior program)

@@ -51,6 +51,9 @@
 ;;                (timed-iterated-transformations (lambda (x) x) (make-program '() '(node (node 1))) 2)
 ;;                (list program1 program2 program3 program4 program5)))
 
+(define timed-depth-iterated-transformations (time-it depth-iterated-transformations "beam-learn-search"))
+(evaluates?-test "depth-iterated-transformations" (timed-depth-iterated-transformations trees (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f) 1 2))
+
 ;;;log-prior (how do you normalize these values?)
 ;; (equal?-test "log-prior test" (log-prior (make-program '() '(+ 2 3 4))) -5)
 
@@ -83,8 +86,16 @@
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood trees (second models-for-comparison) 10) (log .5))
 ;;;sort-by-posterior
-;; (define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
-;; (equal?-test "sort-by-posterior" (timed-sort-by-posterior trees models-for-comparison) models-for-comparison)
+(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+(let* ([first-program+ (make-program+ (first models-for-comparison) 0 0 0 #f)]
+       [second-program+ (make-program+ (second models-for-comparison) 0 0 0 #f)]
+       [models+ (list first-program+ second-program+)])
+  (equal?-test "sort-by-posterior" (timed-sort-by-posterior trees models+) models+))
+
+(let* ([first-program+ (make-program+ (first models-for-comparison) 0 0 0 #f)]
+       [second-program+ (make-program+ (second models-for-comparison) 0 100 0 #t)]
+       [models+ (list first-program+ second-program+)])
+  (equal?-test "sort-by-posterior only compute second likelihood" (timed-sort-by-posterior trees models+) (reverse models+)))
 
 
 ;;;best-n tests
