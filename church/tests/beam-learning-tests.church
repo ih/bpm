@@ -86,16 +86,16 @@
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood trees (second models-for-comparison) 10) (log .5))
 ;;;sort-by-posterior
-(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
+;;(define timed-sort-by-posterior (time-it sort-by-posterior "sort-by-posterior"))
 ;; (let* ([first-program+ (make-program+ (first models-for-comparison) 0 0 0 #f)]
 ;;        [second-program+ (make-program+ (second models-for-comparison) 0 0 0 #f)]
 ;;        [models+ (list first-program+ second-program+)])
 ;;   (equal?-test "sort-by-posterior" (timed-sort-by-posterior trees models+) models+))
 
-(let* ([first-program+ (make-program+ (first models-for-comparison) 0 10 0 #f)]
-       [second-program+ (make-program+ (second models-for-comparison) 0 100 0 #t)]
-       [models+ (list first-program+ second-program+)])
-  (equal?-test "sort-by-posterior only compute second likelihood" (timed-sort-by-posterior trees models+) (reverse models+)))
+;; (let* ([first-program+ (make-program+ (first models-for-comparison) 0 10 0 #f)]
+;;        [second-program+ (make-program+ (second models-for-comparison) 0 100 0 #t)]
+;;        [models+ (list first-program+ second-program+)])
+;;   (equal?-test "sort-by-posterior only compute second likelihood" (timed-sort-by-posterior trees models+) (reverse models+)))
 
 
 ;;;best-n tests
@@ -104,8 +104,8 @@
 
 
 ;;;beam-learn-search-transformations test
-;; (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
-;; (evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (make-initial-sexpr trees)) 1 2))
+(define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
+(evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (make-initial-sexpr trees)) 1 2))
 
 
 ;;;beam-learn test
