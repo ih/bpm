@@ -1,0 +1,4 @@
+(load "../testing.church")
+(equal?-test "replace-color transformation" (replace-color (make-program (list (make-named-abstraction 'F1 '(N (data (color V1) (size 2))) '(V1))) '(N (data (color 3) (size 1)) (F1 10) (F1 10)))) (make-program (list (make-named-abstraction 'F1 '(N (data (list V1 15) (size 2))) '(V1))) '(N (data (list 3 15) (size 1)) (F1 10) (F1 10))))
+
+(equal?-test "evaluation of transformed replace-color" (lazy-list->all-list (eval (program->sexpr (replace-color (make-program (list (make-named-abstraction 'F1  '(N (data (color V1) (size 2))) '(V1))) '(N (data (color 3) (size 1)) (F1 10) (F1 10))))))) '((data (3 15) (1)) ((data (10 15) (2))) ((data (10 15) (2)))))

@@ -117,29 +117,38 @@
 ;;;computes the likelihood of the data given the prog, should never receive '() as a prog
 ;;here we assume prog is a thunk we can apply, should be much faster since we don't have to eval
 ;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
-(define score-tree-top_program 
-   (lambda (prog-sexpr topology popsize)
-     (let ([prog (eval (program->sexpr prog-sexpr))])
-       (let* ([lazified-topology (list->lazy-list topology)]
-              (samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-topology)))) popsize 20
-                                 (lambda (depth) (lambda () (let ((s (prog)))
-                                                              (pair (lazy-topology-equal? s lazified-topology depth)
-                                                                    (lambda () (first (lazy-list->list s depth)))))))))
-              ;;remove duplicates in order to do selective model averaging:
-              ;;find symbol for repeat function and delete (temporary fix)
-              (db (pretty-print (map mcmc-state->query-value samples)) )
-              (repeat-symbol (find-repeat-symbol samples))
-              (samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples))
-              
-              (scores (map mcmc-state->score samples))
-              [db (pretty-print (list "scores: " (map exp scores)))]
-              (score (if (null? scores)
-                         -inf.0
-                         (apply log-sum-exp scores))))
+(define single-log-likelihood 
+   (lambda (program popsize tree)
+     (let* ([new-program (replace-color program)]
+            [model (eval (program->sexpr new-program))]
+            [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
+            [topology-scores (first topology-scores+tree-parameters)]
+            [tree-parameters (second topology-scores+tree-parameters)]
+            [color-scores (map compute-color-score tree-parameters)]
+            [scores (combine-topology+color topology-scores color-scores)]
+            [db (pretty-print (list "scores: " (map exp scores)))]
+            [score (if (null? scores)
+                        -inf.0
+                        (apply log-sum-exp scores))])
                                         ;(- (apply log-sum-exp scores) (log (length scores))))))
-         score))))
+       score)))
 
+(define (combine-topology+color topology-scores color-scores) 0)
+(define (compute-color-score tree-with-parameters) 0)
 
+(define (compute-topology-scores+evaluate model tree popsize)
+  (let* ([lazified-tree (list->lazy-list tree)]
+         [samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-tree)))) popsize 20
+                                (lambda (depth) (lambda () (let ((s (model)))
+                                                             (pair (lazy-topology-equal? s lazified-tree depth)
+                                                                   (lambda () (first (lazy-list->list s depth))))))))]
+         [repeat-symbol (find-repeat-symbol samples)]
+         ;;remove duplicates in order to do selective model averaging:
+         ;;find symbol for repeat function and delete (temporary fix)
+         [samples (fold (lambda (s a) (if (member (mcmc-state->addrval s repeat-symbol) (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a)) a (pair s a))) '() samples)]
+         [topology-scores (map mcmc-state->score samples)]
+         [generated-trees (map mcmc-state->query-value samples)])
+    (list topology-scores generated-trees)))
 ;;temporary fix of addresses for same xrps not being the same; this is due to the way smc-core creates the particles
 ;;the fix works because factor graph programs only contain node expressions and function definition (no uses of repeat)
 ;;a more permanent fix would be to use the rejection-initializer that can be passed an explicit starting address
@@ -191,11 +200,6 @@
 (define (log-likelihood trees prog sample-size)
   (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 
-(define (single-log-likelihood prog sample-size tree) 
-  (let* ([new-program (replace-color prog)] ;;replace the color function calls w/ list so that you can get the parameters
-         [fg-top_prog-score (score-tree-top_program prog tree sample-size)] ;;number of particles doesn't have to be sample-size
-         [parameter-score (score-parameters prog tree)])
-    (+ fg-top_prog-score parameter-score)))
 
 (define (score-parameters program tree)
   0)

@@ -1,0 +1,23 @@
+(load "../testing.church")
+
+(define tree1 '((data (1) (1))
+              ((data (200) (2)))))
+(define ltree1 (list->lazy-list tree1))
+(define tree2 (lazy-list->all-list (eval '(N (data (color 1) (size 5))))))
+(define ltree2 (list->lazy-list tree2))
+(define tree1-gen (eval (make-initial-sexpr (list tree1))))
+(define tree11 (lazy-list->all-list (tree1-gen)))
+(define ltree11 (list->lazy-list tree11))
+(define tree12 (lazy-list->all-list (tree1-gen)))
+(define ltree12 (list->lazy-list tree12))
+(equal?-test "tree1 and tree2" (lazy-topology-equal? ltree1 ltree2 (lazy-list-size ltree1)) #f)
+(equal?-test "tree1 and tree11" (lazy-topology-equal? ltree1 ltree11 (lazy-list-size ltree1)) #t)
+
+(equal?-test "tree12 and tree11" (lazy-topology-equal? ltree12 ltree11 (lazy-list-size ltree1)) #t)
+(equal?-test "tree2 and tree11" (lazy-topology-equal? ltree2 ltree11 (lazy-list-size ltree1)) #f)
+
+;(and #t (/ 1 0))
+(pretty-print  (lazify (and #f (/ 1 0))))
+
+;(node 'a (/ 1 0))
+(pretty-print (list tree1 tree2 tree12 tree11))
