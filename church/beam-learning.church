@@ -192,7 +192,8 @@
   (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 
 (define (single-log-likelihood prog sample-size tree) 
-  (let* ([fg-top_prog-score (score-tree-top_program prog tree sample-size)] ;;number of particles doesn't have to be sample-size
+  (let* ([new-program (replace-color prog)] ;;replace the color function calls w/ list so that you can get the parameters
+         [fg-top_prog-score (score-tree-top_program prog tree sample-size)] ;;number of particles doesn't have to be sample-size
          [parameter-score (score-parameters prog tree)])
     (+ fg-top_prog-score parameter-score)))
 

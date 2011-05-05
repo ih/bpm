@@ -10,14 +10,15 @@
               ((data (200) (2)))))
 
 (define tree-expression '(N (data (color 1) (size 1))
-                            (N (data (color 200) (size 2)))))
+                            (N (data (color 30) (size 2)))))
 ;; (equal?-test "evaluation test" (lazy-list->all-list (eval tree-expression)) tree)
 ;; (equal?-test "tree->expression test" (tree->expression tree) tree-expression)
 
 (define tree2-expression '(N (data (color 1) (size 5))))
 (define tree2 (lazy-list->all-list (eval tree2-expression)))
 (define trees (list tree))
-
+(define single-node-tree '((data (1) (1))))
+(define single-node-program (make-program '() (make-initial-sexpr single-node-tree)))
 
 ;;;global test data
 (define worse-than-initial-sexpr (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() tree-expression) (list 'lambda '() tree2-expression))))))
@@ -79,9 +80,15 @@
 ;; (let ([graph (lazy-list->all-list (eval tree2-expression))])
 ;;   (equal?-test "generate-trees_top" (map scheme-format->python-format (generate-trees_top (second models-for-comparison) graph 2)) (list tree2-expression tree2-expression)))
 ;;;single-log-likelihood
-;; (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
+(define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
 ;; (equal?-test "single-log-likelihood bad model" (timed-single-log-likelihood (second models-for-comparison) 10 (first trees)) (log .5))
 ;; (equal?-test "single-log-likelihood good model" (timed-single-log-likelihood (first models-for-comparison) 10 (first trees)) (log 1.0))
+(let ([single-node-data '((data (2) (1)))])
+  (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 026537))
+
+(let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
+  (equal?-test "likelihood for single node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 .026596 .004104)))
+
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
 ;; (equal?-test "log-likelihood test two possibility program" (log-likelihood trees (second models-for-comparison) 10) (log .5))
