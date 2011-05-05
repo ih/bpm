@@ -32,10 +32,12 @@
 ;;(pretty-print ((eval (make-initial-sexpr trees))))
 ;; (equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr trees)))) #t)
 
-
+;;;apply-and-filter-transformations
+;; (define timed-apply-and-filter-transformations (time-it apply-and-filter-transformations "apply-and-filter-transformations"))
+;; (evaluates?-test "timed-apply-and-filter-transformations" (timed-apply-and-filter-transformations 1 (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f)))
 
 ;;;depth-iterated-compressions
-;; (define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
+(define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
 ;; (let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
 ;;        [program1 (make-program (list abstraction1) '(F1 (F1 1)))]
 ;;        [abstraction21 (make-named-abstraction 'F2 '(V2 V3) '(V2 V3))]
@@ -51,8 +53,8 @@
 ;;                (timed-iterated-transformations (lambda (x) x) (make-program '() '(node (node 1))) 2)
 ;;                (list program1 program2 program3 program4 program5)))
 
-;; (define timed-depth-iterated-transformations (time-it depth-iterated-transformations "beam-learn-search"))
-;; (evaluates?-test "depth-iterated-transformations" (timed-depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f) 1 2))
+
+;; (evaluates?-test "depth-iterated-transformations" (timed-iterated-transformations (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f) 2))
 
 ;;;log-prior (how do you normalize these values?)
 ;; (equal?-test "log-prior test" (log-prior (make-program '() '(+ 2 3 4))) -5)
@@ -70,8 +72,6 @@
 ;; (equal?-test "score-tree-top_program w/ program that produces exactly target topology"
 ;;              (exp (score-tree-top_program (first models-for-comparison) tree 20))
 ;;              1.0)
-(pretty-print worse-than-initial-sexpr)
-(pretty-print (list (lazy-list->all-list ((eval (program->sexpr (second models-for-comparison))))) tree))
 ;;;generate-trees_top
 ;; (let ([graph (lazy-list->all-list (eval tree))])
 ;;   (equal?-test "generate-trees_top" (map scheme-format->python-format (generate-factor-graphs_top (first models-for-comparison) graph 2)) (list tree tree)))
@@ -105,7 +105,7 @@
 
 ;;;beam-learn-search-transformations test
 (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
-(evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (make-initial-sexpr trees)) 1 2))
+(evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (make-initial-sexpr trees)) 2 2))
 
 
 ;;;beam-learn test
