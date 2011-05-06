@@ -2,6 +2,7 @@
         (srfi :78)
         (program)
         (util)
+        (only (srfi :1) remove)
         (church readable-scheme))
 
 ;;;global test variables
@@ -20,13 +21,22 @@
 (check (uniform-replacement (find-variable-instances uniform-program uniform-target-abstraction 'V1)) => '((uniform-draw (list (lambda () (F1 1)) (lambda () 1)))))
 
 ;don't draw over expressions that have variables, since these variables are in the scope of other functions
-;(let ([abstraction2 (make-named-abstraction 'F2 )]))
+(let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
+       [abstraction2 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
+       [program (make-program (list abstraction1 abstraction2) '(list (F1 2) (F2 4)))])
+  (check (uniform-replacement (find-variable-instances program abstraction1 'V1)) => '((uniform-draw (list (lambda () 2))))))
+
+;case when there is no replacment
+(let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
+       [abstraction2 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
+       [program (make-program (list abstraction1 abstraction2) '(list (F2 4)))])
+  (check (uniform-replacement (find-variable-instances program abstraction1 'V1)) => NO-REPLACEMENT))
 ;;;remove-abstraction-variable
 (let ([abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1)) ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))) '())])
  (check (remove-abstraction-variable uniform-replacement uniform-program uniform-target-abstraction 'V1) => abstraction))
 ;;;deargument test
 (check (deargument uniform-replacement uniform-program uniform-target-abstraction 'V1) => uniform-correct-program)
-
+(check (remove even? '(0 7 8 8 43 -4)) => '(7 43))
 (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
 (check (uniform-draw-dearguments uniform-program #t) => (list uniform-correct-program))
 

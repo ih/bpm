@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform has-variable?)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -21,6 +21,9 @@
                  ;; (string-prefix? var-pattern string-expr))))
                  (equal? (substring string-expr 0 1) var-string))
                #f))
+
+         (define (has-variable? sexpr)
+           (if (deep-find var? sexpr) #t #f))
 
          (define (func? expr)
            (if (symbol? expr)

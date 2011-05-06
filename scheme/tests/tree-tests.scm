@@ -1,6 +1,6 @@
 (import (tree)
         (srfi :78)
-        (_srfi :1)
+        (srfi :1)
         (program)
         (church readable-scheme))
 

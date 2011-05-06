@@ -3,12 +3,13 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance thunkify normal-pdf)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance thunkify normal-pdf deep-find display-all)
          (import (except (rnrs) string-hash string-ci-hash)
-                 (only (ikarus) set-car! set-cdr!)
                  (_srfi :1)
                  (_srfi :69)
                  (church readable-scheme))
+         (define (display-all . args)
+           (for-each display args))
          (define (thunkify sexpr) `(lambda () ,sexpr))
          (define (all-equal? lst)
            (all (map (lambda (itm) (equal? (first lst) itm)) (rest lst))))
@@ -46,9 +47,20 @@
                    (map (curry sexp-search pred? func) sexp)
                    sexp)))
 
+         ;;should stop early due to the way or works, not clear what first found instance will be
+         (define (deep-find pred? sexp)
+           (if (pred? sexp)
+               sexp
+               (if (list? sexp)
+                   (list-or (map (curry deep-find pred?) sexp))
+                   (pred? sexp))))
+
+         ;from stack-overflow, takes place of (apply or some-list)
+         (define (list-or args)
+           (if (null? args)
+               #f
+               (or (first args) (list-or (rest args)))))
          
-
-
          (define (deep-find-all pred? sexp)
            (filter pred? (all-subexprs sexp)))
 

@@ -8,6 +8,10 @@
 ;;;all-subexprs
 (let* ([expr '(F1 (V1 V23) F5 V2)])
   (check (all-subexprs expr) => '((F1 (V1 V23) F5 V2) F1 (V1 V23) F5 V2 V1 V23)))
+
+;;;deep-find test
+(check (deep-find number? '(a (a (b c 5)))) => 5)
+(check (deep-find number? '(a (a (b c q)))) => #f)
 ;;;deep-find-all tests
 (let* ([sexpr '(let ()
                  (define F8

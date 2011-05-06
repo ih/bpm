@@ -1,17 +1,24 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments)
-         (import (except (rnrs) string-hash string-ci-hash)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments NO-REPLACEMENT)
+         (import (except (rnrs) string-hash string-ci-hash remove)
                  (program)
-                 (_srfi :1)
-                 (util))
-
+                 (except (_srfi :1) remove)
+                 (only (srfi :1) remove)
+                 (util)
+                 (church readable-scheme))
+         (define NO-REPLACEMENT 'no-replacement)
          ;;program transformations
          (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))
          (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
          (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
          ;;replacement functions
          (define (uniform-replacement variable-instances)
-           `((uniform-draw (list ,@(map thunkify variable-instances)))))
+           (let* ([db (pretty-print (list "before" variable-instances (map has-variable? variable-instances)))]
+                  [valid-variable-instances (remove has-variable? variable-instances)]
+                  [db (pretty-print (list "after" valid-variable-instances))])
+             (if (null? valid-variable-instances)
+                 NO-REPLACEMENT
+                 `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
 
          (define (noisy-number-replacement variable-instances)
            (if (all (map number? variable-instances))

@@ -28,6 +28,9 @@
 ;;;program+ tests
 (check (make-program+ 'a 0 0 0 #t) => '(program+ a 0 0 0 #t))
 (check (program+->program (make-program+ 'a 0 0 0 #t)) => 'a)
+;;;has-variable
+(check (has-variable? '(F1 (+ 2 V1))) => #t)
+(check (has-variable? '(F1 (+ 2 3))) => #f)
 
 
 
