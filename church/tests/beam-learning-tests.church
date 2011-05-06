@@ -7,10 +7,10 @@
   (< (abs (- b a)) error-tolerance))
 
 (define tree '((data (1) (1))
-              ((data (200) (2)))))
+              ((data (20) (2)))))
 
 (define tree-expression '(N (data (color 1) (size 1))
-                            (N (data (color 30) (size 2)))))
+                            (N (data (color 2) (size 2)))))
 ;; (equal?-test "evaluation test" (lazy-list->all-list (eval tree-expression)) tree)
 ;; (equal?-test "tree->expression test" (tree->expression tree) tree-expression)
 
@@ -85,7 +85,7 @@
   (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 0.026537))
 
 (let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
-  (equal?-test "likelihood for single node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 .026596 .004104)))
+  (equal?-test "likelihood for two node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 (normal-pdf 2 1 15) (normal-pdf 2 2 15))))
 
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
