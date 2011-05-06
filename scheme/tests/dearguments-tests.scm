@@ -18,6 +18,9 @@
 
 ;;;uniform-replacement test
 (check (uniform-replacement (find-variable-instances uniform-program uniform-target-abstraction 'V1)) => '((uniform-draw (list (lambda () (F1 1)) (lambda () 1)))))
+
+;don't draw over expressions that have variables, since these variables are in the scope of other functions
+;(let ([abstraction2 (make-named-abstraction 'F2 )]))
 ;;;remove-abstraction-variable
 (let ([abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1)) ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))) '())])
  (check (remove-abstraction-variable uniform-replacement uniform-program uniform-target-abstraction 'V1) => abstraction))

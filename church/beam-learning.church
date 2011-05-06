@@ -21,19 +21,21 @@
 (define (beam-learn data sexpr beam-size depth)
   (let* ([top-transformations 
           (sort-by-posterior
-           data (unique-programs
-            (beam-learn-search-transformations data (make-program '() sexpr) beam-size depth)))])
+           data 
+           (beam-learn-search-transformations data (make-program '() sexpr) beam-size depth))]
+         [db (pretty-print (list "top transformations" top-transformations))])
     (if (null? top-transformations)
         sexpr
-        (program->sexpr (first top-transformations)))))
+        (program->sexpr (program+->program (first top-transformations))))))
 
 (define (beam-learn-search-transformations data program beam-size depth)
   (let ([init-program+ (make-program+ program 0 0 0 #f)])
-    (map program+->program (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth))))
+    (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
 
 
 (define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
+  (let* ([db (for-each display (list "CURRENT DEPTH: " depth))]
+         [transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
     (delete '()  (append transformed-programs+
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
 
@@ -42,7 +44,7 @@
      '()
      (let* ([program (program+->program program+)]
             [semantics-preserved-programs+ (map (lambda (program) (program+->program-transform #t program+ program)) (compressions program #t))]
-            [db (pretty-print semantics-preserved-programs+)]
+            ;[db (pretty-print semantics-preserved-programs+)]
             [semantics-changed-programs+ (map (lambda (program) (program+->program-transform #f program+ program)) (noisy-number-dearguments program #t))]
             [db (pretty-print (list "sem-pre" semantics-changed-programs+))])
        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
@@ -52,7 +54,7 @@
 
 
 (define (sort-by-posterior data programs+)
-  (let* ([db (for-each display (list "transformed-programs: " programs+ "\n"))]
+  (let* (;[db (for-each display (list "transformed-programs: " programs+ "\n"))]
          [programs (map program+->program programs+)]
          [semantics-flags (map program+->semantics-preserved programs+)]
          [log-priors (map log-prior programs)]
@@ -120,6 +122,7 @@
 (define single-log-likelihood 
    (lambda (program popsize tree)
      (let* ([new-program (replace-color program)]
+            [db (pretty-print (list "likelihood for program" new-program))]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
@@ -135,7 +138,8 @@
        score)))
 
 (define (compute-color-score tree tree-with-parameters)
-  (let ([db (pretty-print (list "compute-color" tree tree-with-parameters))])
+  (let ([db '();(pretty-print (list "compute-color" tree tree-with-parameters))
+         ])
    (if (null? tree)
        0
        (+ (single-color-score (node->color tree) (node->color tree-with-parameters)) (apply + (map compute-color-score (node->children tree) (node->children tree-with-parameters)))))))

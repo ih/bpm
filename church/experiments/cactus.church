@@ -25,7 +25,8 @@
 
 (define cactus1 (body (list (branch))))
 (define cactus2 (body (list (branch))))
-(define cacti (list cactus1 cactus2))
+(define cactus3 (body (list (branch))))
+(define cacti (list cactus1 cactus2 cactus3))
 
 ;; (define timed-learn-model (time-it learn-model))
 ;; (timed-learn-model cacti 1 2)
@@ -57,17 +58,24 @@
                         (eval simple-cacti)))
 
 ;;;inverse-inline summary
+
 (define compressed (compressions simple-cacti))
 ;(pretty-print compressed)
 
 ;;;noisy-number examples
 
-(define flower-program (list-ref compressed 5))
-(pretty-print flower-program)
-(draw-trees (pair "./noisyProgram.png" (gen-data flower-program 10)))
-(define example-deargumented (first (noisy-number-dearguments flower-program)))
-(pretty-print example-deargumented)
-(draw-trees (pair "./deargedProgram.png" (gen-data example-deargumented 10)))
+;; (define flower-program (list-ref compressed 5))
+;; (pretty-print flower-program)
+;; (draw-trees (pair "./noisyProgram.png" (gen-data flower-program 10)))
+;; (define example-deargumented (first (noisy-number-dearguments flower-program)))
+;; (pretty-print example-deargumented)
+;; (draw-trees (pair "./deargedProgram.png" (gen-data example-deargumented 10)))
+
+;;;beam-learn
+(draw-trees (pair "./original-cacti.png" cacti))
+(pretty-print (list "original cacti" cacti))
+(define timed-learn-model (time-it learn-model))
+((timed-learn-model cacti 1 5))
 
 ;(pretty-print (map program->sexpr (shortest-n 5 compressed)))
 

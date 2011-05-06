@@ -6,6 +6,8 @@
 (define (almost= a b)
   (< (abs (- b a)) error-tolerance))
 
+
+
 (define tree '((data (1) (1))
               ((data (20) (2)))))
 
@@ -80,12 +82,12 @@
 ;; (let ([graph (lazy-list->all-list (eval tree2-expression))])
 ;;   (equal?-test "generate-trees_top" (map scheme-format->python-format (generate-trees_top (second models-for-comparison) graph 2)) (list tree2-expression tree2-expression)))
 ;;;single-log-likelihood
-(define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
-(let ([single-node-data '((data (2) (1)))])
-  (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 0.026537))
+;; (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
+;; (let ([single-node-data '((data (2) (1)))])
+;;   (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 0.026537))
 
-(let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
-  (equal?-test "likelihood for two node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 (normal-pdf 2 1 15) (normal-pdf 2 2 15))))
+;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
+;;   (equal?-test "likelihood for two node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 (normal-pdf 2 1 15) (normal-pdf 2 2 15))))
 
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
@@ -114,14 +116,14 @@
 
 
 ;;;beam-learn test
-;;beam learn takes a list of factors graphs as data and an sexpr
+;beam learn takes a list of factors graphs as data and an sexpr
 ;;(evaluates?-test "beam-learn runs" (beam-learn trees (make-initial-sexpr trees) 1 2))
 
 
 ;;;learn-model tests
 ;;type check, learn-model should process a list of trees and return a function that generates trees
-;; (define timed-learn-model (time-it learn-model))
-;; (evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
+(define timed-learn-model (time-it learn-model))
+(evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
 
 
 (exit)
