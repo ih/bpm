@@ -40,6 +40,13 @@
          (lazy-pair item0 '())
          (lazy-pair item0 (apply node items))))))
 
+;;returns a list that contains all the color information
+(define node->data first)
+(define (node->color node)
+  (second (node->data node)))
+(define (node->children node)
+  (rest node))
+
 (define (graph->program graph)
   (if (null? graph)
       '()

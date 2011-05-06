@@ -123,9 +123,10 @@
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
-            [tree-parameters (second topology-scores+tree-parameters)]
-            [color-scores (map compute-color-score tree-parameters)]
-            [scores (combine-topology+color topology-scores color-scores)]
+            [trees-with-parameters (second topology-scores+tree-parameters)]
+            [color-scores (map (lambda (tree-with-parameters) (compute-color-score tree tree-with-parameters)) trees-with-parameters)]
+            [db (pretty-print (list "color-scores" color-scores))]
+            [scores (map + topology-scores color-scores)]
             [db (pretty-print (list "scores: " (map exp scores)))]
             [score (if (null? scores)
                         -inf.0
@@ -133,8 +134,14 @@
                                         ;(- (apply log-sum-exp scores) (log (length scores))))))
        score)))
 
-(define (combine-topology+color topology-scores color-scores) 0)
-(define (compute-color-score tree-with-parameters) 0)
+(define (compute-color-score tree tree-with-parameters)
+  (let ([db (pretty-print (list "compute-color" tree tree-with-parameters))])
+   (if (null? tree)
+       0
+       (+ (single-color-score (node->color tree) (node->color tree-with-parameters)) (apply + (map compute-color-score (node->children tree) (node->children tree-with-parameters)))))))
+
+(define (single-color-score x mean+variance)
+  (log (normal-pdf (first x) (first mean+variance) (second mean+variance))))
 
 (define (compute-topology-scores+evaluate model tree popsize)
   (let* ([lazified-tree (list->lazy-list tree)]
