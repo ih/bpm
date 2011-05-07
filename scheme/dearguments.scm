@@ -57,7 +57,7 @@
            ;;a transformation is performed for each variable of each abstraction 
            (lambda (program . nofilter)
              (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
-                    [deargumented-programs (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables))]
+                    [deargumented-programs (delete '() (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables)))] ;;any deargument attempts where the replacement-function couldn't be applied will return '()
                     ;;[db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
                     [prog-size (program-size (program->sexpr program))]
                     [valid-deargumented-programs
@@ -77,19 +77,24 @@
 
          ;;rewrite the abstraction to have the variable in the abstraction be a mixture of the values its taken on in the program
          ;;rewrite applications of the abstraction function in the program to not have the variable
+         ;;returns '() if replacement-function cannot be applied
          (define (deargument replacement-function program abstraction variable)
-           (let* ([new-abstraction (remove-abstraction-variable replacement-function program abstraction variable)]
-                  [program-with-new-abstraction (program->replace-abstraction program new-abstraction)]
-                  [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
-             new-program))
+           (let* ([new-abstraction (remove-abstraction-variable replacement-function program abstraction variable)])
+             (if (null? new-abstraction)
+                 '()
+                 (let* ([program-with-new-abstraction (program->replace-abstraction program new-abstraction)]
+                        [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
+                   new-program))))
 
          ;;creates a "mixture" distribution over instances of the variable being removed
          (define (remove-abstraction-variable replacement-function program abstraction variable)
            (let* ([variable-instances (find-variable-instances program abstraction variable)]
-                  [variable-definition (replacement-function variable-instances)]
-                  [new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,variable-definition)]
-                  [new-variables (delete variable (abstraction->vars abstraction))])
-             (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))
+                  [variable-definition (replacement-function variable-instances)])
+             (if (equal? variable-definition NO-REPLACEMENT)
+                 '()
+                 (let* ([new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,variable-definition)]
+                        [new-variables (delete variable (abstraction->vars abstraction))])
+                   (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))))
 
          (define (find-variable-instances program abstraction variable)
            (let* ([abstraction-applications (program->abstraction-applications program abstraction)]
