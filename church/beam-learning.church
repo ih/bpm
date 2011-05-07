@@ -42,10 +42,9 @@
 (define (apply-and-filter-transformations depth cfilter program+)
  (if (= depth 0)
      '()
-     (let* ([program (program+->program program+)]
-            [semantics-preserved-programs+ (map (lambda (program) (program+->program-transform #t program+ program)) (compressions program #t))]
+     (let* ([semantics-preserved-programs+ (apply-transformations program+ semantic-preserving-transformations #t)]
             ;[db (pretty-print semantics-preserved-programs+)]
-            [semantics-changed-programs+ (map (lambda (program) (program+->program-transform #f program+ program)) (noisy-number-dearguments program #t))]
+            [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)]
             [db (pretty-print (list "sem-pre" semantics-changed-programs+))])
        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
 

@@ -36,10 +36,10 @@
 ;; (equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr trees)))) #t)
 
 ;;;apply-transformations 
-(define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
-(define same-var-test-program (make-program (list same-var-test-abstraction) '(node (F1 1 1 3) (F1 2 2 1))))
+;; (define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
+;; (define same-var-test-program (make-program (list same-var-test-abstraction) '(node (F1 1 1 3) (F1 2 2 1))))
 
-(evaluates?-test "apply-transformations" (apply-transformations (make-program+ same-var-test-program 0 0 0 #f) semantic-changing-transformations #f))
+;; (evaluates?-test "apply-transformations" (apply-transformations (make-program+ same-var-test-program 0 0 0 #f) semantic-changing-transformations #f))
 ;;;apply-and-filter-transformations
 ;; (define timed-apply-and-filter-transformations (time-it apply-and-filter-transformations "apply-and-filter-transformations"))
 ;; (evaluates?-test "timed-apply-and-filter-transformations" (timed-apply-and-filter-transformations 1 (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f)))
@@ -127,8 +127,8 @@
 
 ;;;learn-model tests
 ;;type check, learn-model should process a list of trees and return a function that generates trees
-;; (define timed-learn-model (time-it learn-model))
-;; (evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
+(define timed-learn-model (time-it learn-model))
+(evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
 
 
 (exit)
