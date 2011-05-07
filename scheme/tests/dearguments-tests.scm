@@ -18,19 +18,19 @@
 
 
 ;;;uniform-replacement test
-(check (uniform-replacement (find-variable-instances uniform-program uniform-target-abstraction 'V1)) => '((uniform-draw (list (lambda () (F1 1)) (lambda () 1)))))
+(check (uniform-replacement uniform-program uniform-target-abstraction 'V1 (find-variable-instances uniform-program uniform-target-abstraction 'V1)) => '((uniform-draw (list (lambda () (F1 1)) (lambda () 1)))))
 
 ;don't draw over expressions that have variables, since these variables are in the scope of other functions
 (let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
        [abstraction2 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
        [program (make-program (list abstraction1 abstraction2) '(list (F1 2) (F2 4)))])
-  (check (uniform-replacement (find-variable-instances program abstraction1 'V1)) => '((uniform-draw (list (lambda () 2))))))
+  (check (uniform-replacement uniform-program uniform-target-abstraction 'V1 (find-variable-instances program abstraction1 'V1)) => '((uniform-draw (list (lambda () 2))))))
 
 ;case when there is no replacment
 (let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
        [abstraction2 (make-named-abstraction 'F2 '(F1 V2) '(V2))]
        [program (make-program (list abstraction1 abstraction2) '(list (F2 4)))])
-  (check (uniform-replacement (find-variable-instances program abstraction1 'V1)) => NO-REPLACEMENT))
+  (check (uniform-replacement uniform-program uniform-target-abstraction 'V1 (find-variable-instances program abstraction1 'V1)) => NO-REPLACEMENT))
 ;;;remove-abstraction-variable
 (let ([abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1)) ((uniform-draw (list (lambda () (F1 1)) (lambda () 1))))) '())])
  (check (remove-abstraction-variable uniform-replacement uniform-program uniform-target-abstraction 'V1) => abstraction))
@@ -69,13 +69,20 @@
 
 
 ;;;same-variable test
+(define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
+(define same-var-test-program (make-program (list same-var-test-abstraction) '(node (F1 1 1 3) (F1 2 2 1))))
+(define correct-abstractionV1 (make-named-abstraction 'F1 '((lambda (V1) (node V1 V2 V3)) V2) '(V2 V3)))
+;;;find-matching-variable
+(check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V3) '(V2 V1)) => NO-REPLACEMENT)
+
+(check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V1) '(V2 V3)) => 'V2)
+;;;same-variable-replacement
+(check (same-variable-replacement same-var-test-program same-var-test-abstraction 'V1 (find-variable-instances same-var-test-program same-var-test-abstraction 'V1)) => 'V2)
+;;;deargument test
 (define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
-(let* ([abstraction (make-named-abstraction 'F1 '(node V1 V2) '(V1 V2))]
-       [program (make-program (list abstraction) '(node (F1 1 1) (F1 2 2)))]
-       [correct-abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1 V2) (node V1 V2)) V2) '(V2))]
-       [correct-program (make-program (list correct-abstraction) '(node (F1 1) (F1 2)))]
-       [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2) (node V1 V2)) V1) '(V1))]
-       [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1) (F1 2)))])
-  (check (same-variable-deargument program) => (list correct-program correct-program2)))
+(let* ([correct-program (make-program (list correct-abstractionV1) '(node (F1 1 3) (F1 2 1)))]
+       [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2 V3)) V1) '(V1 V3))]
+       [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1 3) (F1 2 1)))])
+  (check (same-variable-dearguments same-var-test-program) => (list correct-program correct-program2)))
 (check-report)
 (exit)

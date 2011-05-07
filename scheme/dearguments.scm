@@ -1,5 +1,5 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments NO-REPLACEMENT)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement same-variable-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments same-variable-dearguments NO-REPLACEMENT find-matching-variable)
          (import (except (rnrs) string-hash string-ci-hash remove)
                  (program)
                  (except (_srfi :1) remove)
@@ -9,10 +9,11 @@
          (define NO-REPLACEMENT 'no-replacement)
          ;;program transformations
          (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))
-         (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
+         (define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
          (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
+         (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
          ;;replacement functions
-         (define (uniform-replacement variable-instances)
+         (define (uniform-replacement program abstraction variable variable-instances)
            (let* ([db (pretty-print (list "before" variable-instances (map has-variable? variable-instances)))]
                   [valid-variable-instances (remove has-variable? variable-instances)]
                   [db (pretty-print (list "after" valid-variable-instances))])
@@ -20,12 +21,25 @@
                  NO-REPLACEMENT
                  `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
 
-         (define (noisy-number-replacement variable-instances)
+         (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))
                (let*
                    ([instances-mean (my-mean variable-instances)])
                  instances-mean)
                NO-REPLACEMENT))
+
+         (define (same-variable-replacement program abstraction variable variable-instances)
+           (let* ([possible-match-variables (delete variable (abstraction->vars abstraction))])
+             (find-matching-variable program abstraction variable-instances possible-match-variables)))
+
+         (define (find-matching-variable program abstraction variable-instances possible-match-variables)
+           (if (null? possible-match-variables)
+               NO-REPLACEMENT
+               (let* ([hypothesis-variable (first possible-match-variables)]
+                      [hypothesis-instances (find-variable-instances program abstraction hypothesis-variable)])
+                 (if (equal? hypothesis-instances variable-instances)
+                     hypothesis-variable
+                     (find-matching-variable program abstraction variable-instances (rest possible-match-variables))))))
          
          ;; (define (noisy-number-replacement variable-instances)
          ;;   (define (close? a b)
@@ -89,7 +103,7 @@
          ;;creates a "mixture" distribution over instances of the variable being removed
          (define (remove-abstraction-variable replacement-function program abstraction variable)
            (let* ([variable-instances (find-variable-instances program abstraction variable)]
-                  [variable-definition (replacement-function variable-instances)])
+                  [variable-definition (replacement-function program abstraction variable variable-instances)])
              (if (equal? variable-definition NO-REPLACEMENT)
                  '()
                  (let* ([new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,variable-definition)]
