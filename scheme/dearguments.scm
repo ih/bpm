@@ -25,7 +25,7 @@
                (let*
                    ([instances-mean (my-mean variable-instances)])
                  instances-mean)
-               (uniform-replacement variable-instances)))
+               NO-REPLACEMENT))
          
          ;; (define (noisy-number-replacement variable-instances)
          ;;   (define (close? a b)

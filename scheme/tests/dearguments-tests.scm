@@ -68,10 +68,14 @@
 
 
 
-;; ;;;same-variable test
-;; (define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
-;; (let* ([correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) ((lambda (V2) (node V1 V2)) V1)) ,(uniform-replacement '(1 2))) '())]
-;;        [correct-program (make-program (list correct-abstraction) '(node (F1) (F1)))])
-;;   (check (same-variable-deargument same-variable-deargument) => (list correct-program)))
+;;;same-variable test
+(define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
+(let* ([abstraction (make-named-abstraction 'F1 '(node V1 V2) '(V1 V2))]
+       [program (make-program (list abstraction) '(node (F1 1 1) (F1 2 2)))]
+       [correct-abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1 V2) (node V1 V2)) V2) '(V2))]
+       [correct-program (make-program (list correct-abstraction) '(node (F1 1) (F1 2)))]
+       [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2) (node V1 V2)) V1) '(V1))]
+       [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1) (F1 2)))])
+  (check (same-variable-deargument program) => (list correct-program correct-program2)))
 (check-report)
 (exit)
