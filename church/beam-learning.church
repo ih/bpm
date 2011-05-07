@@ -1,5 +1,5 @@
-
-(define transform-types (list compressions noisy-number-dearguments))
+(define semantic-preserving-transformations (list compressions))
+(define semantic-changing-transformations (list noisy-number-dearguments uniform-draw-dearguments same-variable-dearguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
@@ -48,6 +48,13 @@
             [semantics-changed-programs+ (map (lambda (program) (program+->program-transform #f program+ program)) (noisy-number-dearguments program #t))]
             [db (pretty-print (list "sem-pre" semantics-changed-programs+))])
        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
+
+;;each transformation in transformations returns a list of transformed programs
+(define (apply-transformations program+ transformations semantics-preserving)
+  (let* ([program (program+->program program+)]
+         [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program #t)) transformations)))]
+         [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
+    transformed-programs+))
 
 (define (best-n data programs+ n)
   (max-take (sort-by-posterior data programs+) n))
