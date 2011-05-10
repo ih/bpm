@@ -43,11 +43,11 @@
                      (eq? a b)))) 
            (if (null? possible-match-variables)
                NO-REPLACEMENT
-               (let* ([hypothesis-variable (first possible-match-variables)]
+               (let* ([hypothesis-variable (uniform-draw possible-match-variables)]
                       [hypothesis-instances (find-variable-instances program abstraction hypothesis-variable)])
                  (if (my-equal? hypothesis-instances variable-instances)
                      hypothesis-variable
-                     (find-matching-variable program abstraction variable-instances (rest possible-match-variables))))))
+                     (find-matching-variable program abstraction variable-instances (delete hypothesis-variable possible-match-variables))))))
          
          ;; (define (noisy-number-replacement variable-instances)
          ;;   (define (close? a b)
