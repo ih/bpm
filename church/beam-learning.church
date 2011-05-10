@@ -28,7 +28,7 @@
         (program+->program (first top-transformations)))))
 
 (define (beam-learn-search-transformations data program beam-size depth)
-  (let ([init-program+ (make-program+ program 0 0 0 #f)])
+  (let ([init-program+ (make-program+ program 0 (log-likelihood data program 10) (log-prior program) #f)])
     (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
 
 
@@ -138,7 +138,8 @@
             ;[db (pretty-print (list "scores: " (map exp scores)))]
             [score (if (null? scores)
                         -inf.0
-                        (apply log-sum-exp scores))])
+                        (apply log-sum-exp scores))]
+            [da (display-all "likelihood:" score "\n")])
                                         ;(- (apply log-sum-exp scores) (log (length scores))))))
        score)))
 

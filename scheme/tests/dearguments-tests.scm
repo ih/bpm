@@ -90,8 +90,8 @@
 ;;;remove-application-argument test
 (let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
        [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
-       [prog (make-program (list newf1) '(F1 2 (F1 2 3)))])
-  (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 3)))))
+       [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
+  (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
 
 (check-report)
 (exit)
