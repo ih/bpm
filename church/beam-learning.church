@@ -3,12 +3,11 @@
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
-  (let* ([initial-sexpr (make-initial-sexpr data)]
-         [learned-sexpr (beam-learn data initial-sexpr beam-size depth)]
-         [learned-sexpr (if (null? learned-sexpr) initial-sexpr learned-sexpr)]
-         [model (lambda () (lazy-list->all-list ((eval learned-sexpr))))])
-    (pretty-print (list "compressed-program:" learned-sexpr "size: " (program-size learned-sexpr)))
-    (draw-trees (pair "./model-output.png" (repeat 5 (lambda () (model)))))
+  (let* ([initial-sexpr (make-program '() (make-initial-sexpr data))]
+         [learned-program (beam-learn data initial-sexpr beam-size depth)]
+         [model (lambda () (lazy-list->all-list ((eval (program->sexpr learned-program)))))])
+    (pretty-print (list "compressed-program:" learned-program "size: " (program-size learned-program)))
+    (draw-trees (pair "./model-output.png" (repeat 20 (lambda () (model)))))
     model))
 
 ;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
@@ -18,15 +17,15 @@
    (list 'lambda '() (list (list 'uniform-draw (pair 'list (map thunkify tree-expressions)))))))
 
 ;;;returns an sexpr
-(define (beam-learn data sexpr beam-size depth)
+(define (beam-learn data init-program beam-size depth)
   (let* ([top-transformations 
           (sort-by-posterior
            data 
-           (beam-learn-search-transformations data (make-program '() sexpr) beam-size depth))]
+           (beam-learn-search-transformations data init-program beam-size depth))]
          [db (pretty-print (list "top transformations" top-transformations))])
     (if (null? top-transformations)
-        sexpr
-        (program->sexpr (program+->program (first top-transformations))))))
+        init-program
+        (program+->program (first top-transformations)))))
 
 (define (beam-learn-search-transformations data program beam-size depth)
   (let ([init-program+ (make-program+ program 0 0 0 #f)])
@@ -35,7 +34,8 @@
 
 (define (depth-iterated-transformations cfilter program+ depth)
   (let* ([db (for-each display (list "CURRENT DEPTH: " depth))]
-         [transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
+         [transformed-programs+ (apply-and-filter-transformations depth cfilter program+)]
+         [da (display-all "programs at depth " depth " " transformed-programs+)])
     (delete '()  (append transformed-programs+
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
 
@@ -44,8 +44,7 @@
      '()
      (let* ([semantics-preserved-programs+ (apply-transformations program+ semantic-preserving-transformations #t)]
             ;[db (pretty-print semantics-preserved-programs+)]
-            [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)]
-            [db (pretty-print (list "sem-pre" semantics-changed-programs+))])
+            [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)])
        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
 
 ;;each transformation in transformations returns a list of transformed programs
@@ -77,7 +76,7 @@
 
 ;;how do you find normalized values?
 (define (log-prior program)
-  (- (program-size (program->sexpr program))))
+  (- (program-size program)))
 
 ;;;list sorting via something like quicksort
 (define (my-list-sort compare lst)
@@ -134,9 +133,9 @@
             [topology-scores (first topology-scores+tree-parameters)]
             [trees-with-parameters (second topology-scores+tree-parameters)]
             [color-scores (map (lambda (tree-with-parameters) (compute-color-score tree tree-with-parameters)) trees-with-parameters)]
-            [db (pretty-print (list "color-scores" color-scores))]
+            ;[db (pretty-print (list "color-scores" color-scores))]
             [scores (map + topology-scores color-scores)]
-            [db (pretty-print (list "scores: " (map exp scores)))]
+            ;[db (pretty-print (list "scores: " (map exp scores)))]
             [score (if (null? scores)
                         -inf.0
                         (apply log-sum-exp scores))])

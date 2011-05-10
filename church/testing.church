@@ -1,3 +1,7 @@
+(define (gen-data program amount)
+  (let* ([sexpr (program->sexpr program)])
+    (delete '() (repeat amount (lambda () (eval sexpr))))))
+
 (define (time-it proc . name)
   (lambda args
     (let ([start-time (current-time)]

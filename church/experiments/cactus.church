@@ -1,8 +1,6 @@
 (load "../testing.church")
 ;;assumes program evaluates to a tree
-(define (gen-data program amount)
-  (let* ([sexpr (program->sexpr program)])
-    (delete '() (repeat amount (lambda () (eval sexpr))))))
+
 
 (define (cactus)
   (let* ([num-branches (uniform-draw '(1 2 3 4))]
@@ -10,7 +8,7 @@
     (body branches)))
 (define (body branches) (pair (lazy-list->all-list (data (color 50) (size 1))) branches))
 (define (branch)
-  (if (flip)
+  (if (flip .3)
       (lazy-list->all-list (flower (if (flip) 120 225)))
       (lazy-list->all-list (N (data (color 30) (size .1)) (branch)))))
 
@@ -26,10 +24,13 @@
 (define cactus1 (body (list (branch))))
 (define cactus2 (body (list (branch))))
 (define cactus3 (body (list (branch))))
-(define cacti (list cactus1 cactus2 cactus3))
+(define cacti (list (cactus)))
+(draw-trees (pair "./original-cacti.png" cacti))
+(pretty-print (list "original cacti" cacti))
 
-;; (define timed-learn-model (time-it learn-model))
-;; (timed-learn-model cacti 1 2)
+
+(define timed-learn-model (time-it learn-model))
+(timed-learn-model cacti 1 5)
 
 (define noisy-constructor (lazy-list->all-list (N (data (node 20) (size .5)) (N (data (node 255) (size .5))))))
 (define noisy-constructor1 (lazy-list->all-list (N (data (color 20) (size .5)) (N (data (node 105) (size .5))))))
@@ -54,15 +55,111 @@
                                                            (N (data (color 224) (size 0.3)))
                                                            (N (data (color 207) (size 0.3)))))))))))))
 
-(define samples (repeat 10
-                        (eval simple-cacti)))
+;; (define samples (repeat 10
+;;                         (eval simple-cacti)))
 
 ;;;inverse-inline summary
 
-(define compressed (compressions simple-cacti))
+;; (define compressed (compressions simple-cacti))
 ;(pretty-print compressed)
 
 ;;;noisy-number examples
+(define nnexampleprogram
+  '(let ()
+     (define F1
+       (lambda (V1 V2 V3 V4)
+         (node (data (color V1) (size 0.3))
+               (node (data (color V2) (size 0.3)))
+               (node (data (color V3) (size 0.3)))
+               (node (data (color V4) (size 0.3))))))
+     ((uniform-draw
+       (list
+        (lambda ()
+          (F1 200 213 207 211))
+        (lambda ()
+          (F1 33 220 224 207)))))))
+(define nntrans1
+ '(let ()
+   (define flower
+     (lambda (V1 V3 V4)
+       ((lambda (V2)
+          (node (data (color V1) (size 0.3))
+                (node (data (color V2) (size 0.3)))
+                (node (data (color V3) (size 0.3)))
+                (node (data (color V4) (size 0.3)))))
+        216.5)))
+   ((uniform-draw
+     (list
+      (lambda ()
+        (flower 200 207 211))
+      (lambda ()
+        (flower 33 224 207)))))))
+(define nntrans2
+ '(let ()
+   (define flower
+     (lambda (V2 V3 V4)
+       ((lambda (V1)
+          (node (data (color V1) (size 0.3))
+                (node (data (color V2) (size 0.3)))
+                (node (data (color V3) (size 0.3)))
+                (node (data (color V4) (size 0.3)))))
+        116.5)))
+   ((uniform-draw
+     (list
+      (lambda ()
+        (flower 213 207 211))
+      (lambda ()
+        (flower 220 224 207)))))))
+;; (define nnorigtrees (map lazy-list->all-list (repeat 10 (lambda () (eval nnexampleprogram)))))
+;; (draw-trees (pair "./noisyNumberProgram.png" nnorigtrees))
+
+;; (define nntrans1trees (map lazy-list->all-list (repeat 10 (lambda () (eval nntrans1)))))
+;; (draw-trees (pair "./noisyNumberTrans1.png" nntrans1trees))
+
+;; (define nntrans2trees (map lazy-list->all-list (repeat 10 (lambda () (eval nntrans2)))))
+;; (draw-trees (pair "./noisyNumberTrans2.png" nntrans2trees))
+
+;;;same variable examples
+(define same-var-prog
+  '(let ()
+   (define flower
+     (lambda (V1 V3 V4)
+       ((lambda (V2)
+          (node (data (color V1) (size 0.3))
+                (node (data (color V2) (size 0.3)))
+                (node (data (color V3) (size 0.3)))
+                (node (data (color V4) (size 0.3)))))
+        V3)))
+   ((uniform-draw
+     (list
+      (lambda ()
+        (flower 200 207 211))
+      (lambda ()
+        (flower 33 224 207)))))))
+(define same-var-prog2
+ '(let ()
+   (define flower
+     (lambda (V2 V3 V4)
+       ((lambda (V1)
+          (node (data (color V1) (size 0.3))
+                (node (data (color V2) (size 0.3)))
+                (node (data (color V3) (size 0.3)))
+                (node (data (color V4) (size 0.3)))))
+        V2)))
+   ((uniform-draw
+     (list
+      (lambda ()
+        (flower 213 207 211))
+      (lambda ()
+        (flower 220 224 207)))))))
+
+;; (define samevartrees (map lazy-list->all-list (repeat 10 (lambda () (eval same-var-prog)))))
+;; (draw-trees (pair "./sameVarTrans1.png" samevartrees))
+
+;; (define samevartrees2 (map lazy-list->all-list (repeat 10 (lambda () (eval same-var-prog2)))))
+;; (draw-trees (pair "./sameVarTrans2.png" samevartrees2))
+
+;;(draw-trees (pair "./nntest" (gen-data nnexampleprogram 10)))
 
 ;; (define flower-program (list-ref compressed 5))
 ;; (pretty-print flower-program)
@@ -72,10 +169,10 @@
 ;; (draw-trees (pair "./deargedProgram.png" (gen-data example-deargumented 10)))
 
 ;;;beam-learn
-(draw-trees (pair "./original-cacti.png" cacti))
-(pretty-print (list "original cacti" cacti))
-(define timed-learn-model (time-it learn-model))
-((timed-learn-model cacti 1 5))
+;; (draw-trees (pair "./original-cacti.png" cacti))
+;; (pretty-print (list "original cacti" cacti))
+;; (define timed-learn-model (time-it learn-model))
+;; ((timed-learn-model cacti 1 5))
 
 ;(pretty-print (map program->sexpr (shortest-n 5 compressed)))
 

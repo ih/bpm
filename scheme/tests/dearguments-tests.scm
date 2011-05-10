@@ -10,6 +10,8 @@
 
 (define same-variable-program (sexpr->program `(let () (define F1 (lambda (V1) ((lambda (V2) (node V1 V2)) (make-mixture-sexpr '(1 2))))) (node (F1 1) (F1 2)))))
 
+
+
 ;;;uniform-draw variables
 (define uniform-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
 (define uniform-program (make-program (list uniform-target-abstraction) '(F1 (F1 1))))
@@ -84,5 +86,13 @@
        [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2 V3)) V1) '(V1 V3))]
        [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1 3) (F1 2 1)))])
   (check (same-variable-dearguments same-var-test-program) => (list correct-program correct-program2)))
+
+;;;remove-application-argument test
+(let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
+       [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
+       [prog (make-program (list newf1) '(F1 2 (F1 2 3)))])
+  (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 3)))))
+
 (check-report)
 (exit)
+

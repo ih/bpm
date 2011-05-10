@@ -34,12 +34,16 @@
                #f))
 
          ;;compute the size of a program
-         (define (program-size expr)
-           (if (list? expr)
-               (cond [(tagged-list? expr 'begin) (program-size (rest expr))] ;; ignore 'begin symbol
-                     [(tagged-list? expr 'define) (program-size (cddr expr))] ;; ignore 'define symbol + args
-                     [else (apply + (map program-size expr))])
-               1))
+         (define (program-size program)
+           (define (sexpr-size sexpr)
+             (if (list? sexpr)
+                 (apply + (map sexpr-size sexpr))
+                 1))
+           (define (abstraction-size abstraction)
+             (sexpr-size (abstraction->pattern abstraction)))
+           (let* ([abstraction-sizes (apply + (map abstraction-size (program->abstractions program)))]
+                  [body-size (sexpr-size (program->body program))])
+             (+ abstraction-sizes body-size)))
 
 
 

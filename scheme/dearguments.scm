@@ -14,9 +14,10 @@
          (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
          ;;replacement functions
          (define (uniform-replacement program abstraction variable variable-instances)
-           (let* ([db (pretty-print (list "before" variable-instances (map has-variable? variable-instances)))]
+           (let* (;[db (pretty-print (list "before" variable-instances (map has-variable? variable-instances)))]
                   [valid-variable-instances (remove has-variable? variable-instances)]
-                  [db (pretty-print (list "after" valid-variable-instances))])
+                  ;[db (pretty-print (list "after" valid-variable-instances))]
+                  )
              (if (null? valid-variable-instances)
                  NO-REPLACEMENT
                  `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
@@ -33,11 +34,15 @@
              (find-matching-variable program abstraction variable-instances possible-match-variables)))
 
          (define (find-matching-variable program abstraction variable-instances possible-match-variables)
+           (define (my-equal? a b)
+             (if (and (number? a) (number? b))
+                 #t
+                 (equal? a b)))
            (if (null? possible-match-variables)
                NO-REPLACEMENT
                (let* ([hypothesis-variable (first possible-match-variables)]
                       [hypothesis-instances (find-variable-instances program abstraction hypothesis-variable)])
-                 (if (equal? hypothesis-instances variable-instances)
+                 (if (my-equal? hypothesis-instances variable-instances)
                      hypothesis-variable
                      (find-matching-variable program abstraction variable-instances (rest possible-match-variables))))))
          
@@ -73,11 +78,11 @@
              (let* ([abstractions-with-variables (filter has-arguments? (program->abstractions program))]
                     [deargumented-programs (delete '() (concatenate (map (curry abstraction-deargumentations replacement-function program) abstractions-with-variables)))] ;;any deargument attempts where the replacement-function couldn't be applied will return '()
                     ;;[db (for-each display (list "\nstart-program" program "\ndeargumented-programs" deargumented-programs))]
-                    [prog-size (program-size (program->sexpr program))]
+                    [prog-size (program-size program)]
                     [valid-deargumented-programs
                      (if (not (null? nofilter))
                          deargumented-programs
-                         (filter (lambda (ip) (<= (program-size (program->sexpr ip))
+                         (filter (lambda (ip) (<= (program-size ip)
                                                   (+ prog-size 1)))
                                  deargumented-programs))])
                valid-deargumented-programs)))
@@ -100,7 +105,7 @@
                         [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
                    new-program))))
 
-         ;;creates a "mixture" distribution over instances of the variable being removed
+
          (define (remove-abstraction-variable replacement-function program abstraction variable)
            (let* ([variable-instances (find-variable-instances program abstraction variable)]
                   [variable-definition (replacement-function program abstraction variable variable-instances)])
@@ -127,14 +132,20 @@
          
 
 
-         ;;rewrite applications of abstraction in program to not have the variable argument 
+         ;;rewrite applications of abstraction in program to not have the variable argument
+         ;;abstraction is the old abstraction and program contains the new abstraction
          (define (remove-application-argument program abstraction variable)
            (define (abstraction-application? sexpr)
               (if (non-empty-list? sexpr)
                   (equal? (first sexpr) (abstraction->name abstraction))
                   #f))
            (define (change-application variable-position application)
-              (remove-ith-argument variable-position application))
+             (define (change-recursive-arguments argument) ;;in case one of the arguments is an application of the abstraction currently being deargumented
+               (if (abstraction-application? argument)
+                   (change-application variable-position argument)
+                   argument))
+             (let* ([ith-removed (remove-ith-argument variable-position application)])
+               (map change-recursive-arguments ith-removed)))
            (let* ([variable-position (abstraction->variable-position abstraction variable)]
                   [program-sexpr (program->sexpr program)]
                   [changed-sexpr (sexp-search abstraction-application? (curry change-application variable-position) program-sexpr)]

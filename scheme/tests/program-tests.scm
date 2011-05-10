@@ -2,7 +2,13 @@
         (srfi :78)
         (sym))
 ;;;size test
-(check (program-size '(+ 1 2 3)) => 4)
+(let* ([program (sexpr->program '(let ()
+                                   (define F8
+                                     (lambda (V25) (list a (list a (list V25) (list V25)))))
+                                   (define F8
+                                     (lambda (V25) (list a (list a (list V25) (list V25)))))
+                                   (uniform-draw (F8 b) (F8 c) (F8 d))))])
+    (check (program-size program) => 23))
 
 ;;;make-named-abstraction test
 (check (make-named-abstraction 'F1 '(+ V1 V2) '(V1 V2)) => '(abstraction F1 (V1 V2) (+ V1 V2)))
