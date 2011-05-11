@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform has-variable?)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform has-variable? abstraction-application?)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -66,6 +66,13 @@
 
          (define (abstraction->variable-position abstraction variable)
            (list-index (lambda (x) (equal? variable x)) (abstraction->vars abstraction)))
+
+         (define (abstraction-application? abstraction sexpr)
+             (if (non-empty-list? sexpr)
+                 (if (equal? (first sexpr) (abstraction->name abstraction))
+                     #t
+                     #f)
+                 #f))
 
                   ;;searches through the body of the abstraction  and returns a list of free variables
          (define (get-free-vars abstraction)

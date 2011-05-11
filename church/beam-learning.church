@@ -1,5 +1,5 @@
 (define semantic-preserving-transformations (list compressions))
-(define semantic-changing-transformations (list noisy-number-dearguments uniform-draw-dearguments same-variable-dearguments))
+(define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
 
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
@@ -127,7 +127,7 @@
 (define single-log-likelihood 
    (lambda (program popsize tree)
      (let* ([new-program (replace-color program)]
-            [db (pretty-print (list "likelihood for program" new-program))]
+            [db (display-all  "likelihood for program:" (program->sexpr new-program) "\n" "prior:" (log-prior new-program)  " ")]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
@@ -155,6 +155,7 @@
 
 (define (compute-topology-scores+evaluate model tree popsize)
   (let* ([lazified-tree (list->lazy-list tree)]
+         ;[da (display-all "lazy tree" (lazy-list->all-list lazified-tree))]
          [samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-tree)))) popsize 20
                                 (lambda (depth) (lambda () (let ((s (model)))
                                                              (pair (lazy-topology-equal? s lazified-tree depth)

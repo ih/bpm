@@ -87,12 +87,27 @@
 ;; (let ([graph (lazy-list->all-list (eval tree2-expression))])
 ;;   (equal?-test "generate-trees_top" (map scheme-format->python-format (generate-trees_top (second models-for-comparison) graph 2)) (list tree2-expression tree2-expression)))
 ;;;single-log-likelihood
-;; (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
+(define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
 ;; (let ([single-node-data '((data (2) (1)))])
 ;;   (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 0.026537))
 
 ;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
 ;;   (equal?-test "likelihood for two node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 (normal-pdf 2 1 15) (normal-pdf 2 2 15))))
+
+(let* ([recursive-abstraction
+        (make-named-abstraction
+         'F1
+         '((lambda (V1)
+             (N (data (color 4) (size 1)) V1))
+           ((uniform-draw (list (lambda () (F1)) (lambda () (N (data (color 5) (size 1))))))))
+         '())]
+       [abstraction (make-named-abstraction 'F1 '(N (data (color 4) (size 1))) '())]
+       [prog (make-program (list recursive-abstraction) '(lambda () ((uniform-draw (list (lambda () (F1)))))))]
+       [test-data '(((data (12.0) (1)) ((data (0.0) (1)) ((data (34.0) (1)) ((data (11.0) (1)))))))]
+       [test-data2 '(((data (12.0) (1))))]
+       [tdata '(((data (4) (1))))])
+                                        ;(evaluates?-test "recursive program test" (exp (single-log-likelihood prog 10 (first data))))
+  (evaluates?-test "recursive program test" (exp (log-likelihood test-data2 prog 10))))
 
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
@@ -127,8 +142,8 @@
 
 ;;;learn-model tests
 ;;type check, learn-model should process a list of trees and return a function that generates trees
-(define timed-learn-model (time-it learn-model))
-(evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
+;; (define timed-learn-model (time-it learn-model))
+;; (evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
 
 
 (exit)

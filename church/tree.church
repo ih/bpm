@@ -68,3 +68,4 @@
 (define N node)
 (define G1 node)
 (define G2 node)
+(define recursive-draw uniform-draw)

@@ -24,13 +24,13 @@
 (define cactus1 (body (list (branch))))
 (define cactus2 (body (list (branch))))
 (define cactus3 (body (list (branch))))
-(define cacti (list (cactus)))
+(define cacti (repeat 10 (lambda () (flower (if (flip) 120 225)))))
 (draw-trees (pair "./original-cacti.png" cacti))
 (pretty-print (list "original cacti" cacti))
 
 
 (define timed-learn-model (time-it learn-model))
-(timed-learn-model cacti 1 5)
+(timed-learn-model cacti 1 30)
 
 (define noisy-constructor (lazy-list->all-list (N (data (node 20) (size .5)) (N (data (node 255) (size .5))))))
 (define noisy-constructor1 (lazy-list->all-list (N (data (color 20) (size .5)) (N (data (node 105) (size .5))))))

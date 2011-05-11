@@ -1,5 +1,5 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement same-variable-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments same-variable-dearguments NO-REPLACEMENT find-matching-variable)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement same-variable-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments same-variable-dearguments NO-REPLACEMENT find-matching-variable recursion-dearguments)
          (import (except (rnrs) string-hash string-ci-hash remove)
                  (program)
                  (except (_srfi :1) remove)
@@ -10,6 +10,7 @@
          ;;program transformations
          (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))
          (define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
+         (define recursion-dearguments (make-dearguments-transformation recursion-replacement))
          (define uniform-draw-dearguments (make-dearguments-transformation uniform-replacement))
          (define simple-noisy-number-dearguments (make-dearguments-transformation noisy-number-simple-replacement))
          ;;replacement functions
@@ -21,6 +22,13 @@
              (if (null? valid-variable-instances)
                  NO-REPLACEMENT
                  `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
+
+         (define (recursion-replacement program abstraction variable variable-instances)
+           (let* ([valid-variable-instances (remove has-variable? variable-instances)]
+                  [has-recursive-call (any (lambda (x) x) (map (curry abstraction-application? abstraction) variable-instances))])
+             (if (or (null? valid-variable-instances) (not has-recursive-call))
+                 NO-REPLACEMENT
+                 `((recursive-draw (list ,@(map thunkify valid-variable-instances)))))))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))

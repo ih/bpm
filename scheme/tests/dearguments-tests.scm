@@ -54,6 +54,7 @@
                                               (list (F2))))])
   (check (uniform-draw-dearguments program #t) => (list correct-program)))
 
+
 ;;;noisy-number variables
 ;; (define noisy-number-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1 V2)))
 ;; (define noisy-number-program (make-program (list noisy-number-target-abstraction) '(node (F1 1 2) (F1 1.1 2))))
@@ -92,7 +93,15 @@
        [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
        [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
   (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
+;;;recursion dearguments test
+(define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
+(define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 1))))
+(define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
+(define recursive-correct-abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1)) ((recursive-draw (list (lambda () (F1)) (lambda () 1))))) '()))
+(define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
 
+(check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))
+(check (recursion-dearguments non-recursive-program #t) => '())
 (check-report)
 (exit)
 
