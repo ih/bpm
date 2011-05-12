@@ -95,9 +95,9 @@
   (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
 ;;;recursion dearguments test
 (define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
-(define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 1))))
+(define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 (F1 1)))))
 (define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
-(define recursive-correct-abstraction (make-named-abstraction 'F1 '((lambda (V1) (node V1)) ((recursive-draw (list (lambda () (F1)) (lambda () 1))))) '()))
+(define recursive-correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) (node V1)) ((multinomial (list (lambda () (F1)) (lambda () 1)) (list ,(/ 2 3) ,(/ 1 3))))) '()))
 (define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
 
 (check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))

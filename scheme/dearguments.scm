@@ -22,13 +22,18 @@
              (if (null? valid-variable-instances)
                  NO-REPLACEMENT
                  `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
-
+         ;;make stronger check for whether a variable-instance is a recursive call (e.g. a different function that only calls the current function)
          (define (recursion-replacement program abstraction variable variable-instances)
            (let* ([valid-variable-instances (remove has-variable? variable-instances)]
-                  [has-recursive-call (any (lambda (x) x) (map (curry abstraction-application? abstraction) variable-instances))])
-             (if (or (null? valid-variable-instances) (not has-recursive-call))
+                  [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]) 
+             (if (or (null? valid-variable-instances) (null? recursive-calls))
                  NO-REPLACEMENT
-                 `((recursive-draw (list ,@(map thunkify valid-variable-instances)))))))
+                 (let* ([non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
+                        [da (display-all "div 0?" recursive-calls valid-variable-instances)]
+                        [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))]
+                        [multinomial-params (pair  prob-of-recursion (make-list (length non-recursive-calls) (- 1 prob-of-recursion)))]
+                        [choices (pair (uniform-draw recursive-calls) non-recursive-calls)])
+                     `((multinomial (list ,@(map thunkify choices)) (list ,@multinomial-params)))))))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))
