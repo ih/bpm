@@ -30,10 +30,13 @@
                                 possible-programs))
 
 ;;;make-initial-sexpr test, this is a program that returns lazy trees
-;; (equal?-test "initial-sexpr test sexpr" (lazy-list->all-list ((eval (make-initial-sexpr trees)))) tree)
+(display-all single-node-program)
 
-;;(pretty-print ((eval (make-initial-sexpr trees))))
-;; (equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr trees)))) #t)
+
+(display-all (lazy-list->all-list ((eval (make-initial-sexpr trees)))) tree)
+
+;; (pretty-print ((eval (make-initial-sexpr trees))))
+(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr trees)))) #t)
 
 ;;;apply-transformations 
 ;; (define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
@@ -45,7 +48,7 @@
 ;; (evaluates?-test "timed-apply-and-filter-transformations" (timed-apply-and-filter-transformations 1 (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f)))
 
 ;;;depth-iterated-compressions
-(define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
+;;(define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
 ;; (let* ([abstraction1 (make-named-abstraction 'F1 '(node V1) '(V1))]
 ;;        [program1 (make-program (list abstraction1) '(F1 (F1 1)))]
 ;;        [abstraction21 (make-named-abstraction 'F2 '(V2 V3) '(V2 V3))]
@@ -86,28 +89,40 @@
 
 ;; (let ([graph (lazy-list->all-list (eval tree2-expression))])
 ;;   (equal?-test "generate-trees_top" (map scheme-format->python-format (generate-trees_top (second models-for-comparison) graph 2)) (list tree2-expression tree2-expression)))
+
+;;;single-data-score
+;;(equal?-test "single-data-score" (single-data-score '(data (1) (2)) '(data (gaussian-parameters 2 2) (2))) (log (normal-pdf 1 2 2)))
+
 ;;;single-log-likelihood
-(define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
+;; (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
 ;; (let ([single-node-data '((data (2) (1)))])
-;;   (equal?-test "likelihood for single node" (exp (single-log-likelihood single-node-program 10 single-node-data)) 0.026537))
+;;   (equal?-test "likelihood for single node noiseless program" (exp (single-log-likelihood single-node-program 10 single-node-data))  (normal-pdf 2 1 25)))
 
-;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))])
-;;   (equal?-test "likelihood for two node" (exp (single-log-likelihood (second models-for-comparison) 10 two-node-data))  (* .5 (normal-pdf 2 1 15) (normal-pdf 2 2 15))))
+;; (equal?-test "likelihood for single node noiseless program" (exp (single-log-likelihood single-node-program 10 single-node-tree))  (normal-pdf 1 1 25))
+;; (let ([noisy-program (make-program '() '(lambda () (node (data (color (gaussian 2 25)) (size 1)))))])
+;;  (equal?-test "likelihood for single node program with noise" (exp (single-log-likelihood noisy-program 10 single-node-tree)) (normal-pdf 1 2 25)))
+;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))]
+;;       [noisy-program (make-program '() '(lambda () ((uniform-draw (list (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)))))))))])
+;;   (equal?-test "likelihood for two node" (exp (single-log-likelihood noisy-program 10 two-node-data))  (* .5 (normal-pdf 2 2 25) 1)))
+;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))]
+;;       [noisy-program (make-program '() '(lambda () ((uniform-draw (list (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)))))))))])
+;;   (equal?-test "likelihood for two node two same program" (exp (single-log-likelihood noisy-program 10 two-node-data))  (* (/ 2 3) (normal-pdf 2 2 25) 1)))
 
-(let* ([recursive-abstraction
-        (make-named-abstraction
-         'F1
-         '((lambda (V1)
-             (N (data (color 4) (size 1)) V1))
-           ((uniform-draw (list (lambda () (F1)) (lambda () (N (data (color 5) (size 1))))))))
-         '())]
-       [abstraction (make-named-abstraction 'F1 '(N (data (color 4) (size 1))) '())]
-       [prog (make-program (list recursive-abstraction) '(lambda () ((uniform-draw (list (lambda () (F1)))))))]
-       [test-data '(((data (12.0) (1)) ((data (0.0) (1)) ((data (34.0) (1)) ((data (11.0) (1)))))))]
-       [test-data2 '(((data (12.0) (1))))]
-       [tdata '(((data (4) (1))))])
-                                        ;(evaluates?-test "recursive program test" (exp (single-log-likelihood prog 10 (first data))))
-  (evaluates?-test "recursive program test" (exp (log-likelihood test-data2 prog 10))))
+
+;; (let* ([recursive-abstraction
+;;         (make-named-abstraction
+;;          'F1
+;;          '((lambda (V1)
+;;              (N (data (color 4) (size 1)) V1))
+;;            ((uniform-draw (list (lambda () (F1)) (lambda () (N (data (color 5) (size 1))))))))
+;;          '())]
+;;        [abstraction (make-named-abstraction 'F1 '(N (data (color 4) (size 1))) '())]
+;;        [prog (make-program (list recursive-abstraction) '(lambda () ((uniform-draw (list (lambda () (F1)))))))]
+;;        [test-data '(((data (12.0) (1)) ((data (0.0) (1)) ((data (34.0) (1)) ((data (11.0) (1)))))))]
+;;        [test-data2 '(((data (12.0) (1))))]
+;;        [tdata '(((data (4) (1))))])
+;;                                         ;(evaluates?-test "recursive program test" (exp (single-log-likelihood prog 10 (first data))))
+;;   (evaluates?-test "recursive program test" (exp (log-likelihood test-data2 prog 10))))
 
 ;;;log-likelihood
 ;; (equal?-test "log-likelihood test single possibility program" (log-likelihood trees (first models-for-comparison) 10) (log 1.0))
@@ -142,8 +157,8 @@
 
 ;;;learn-model tests
 ;;type check, learn-model should process a list of trees and return a function that generates trees
-;; (define timed-learn-model (time-it learn-model))
-;; (evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
+(define timed-learn-model (time-it learn-model))
+(evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
 
 
 (exit)

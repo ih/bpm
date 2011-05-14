@@ -62,11 +62,20 @@ node_colors = {
 for (node, col) in zip(["a", "b", "c", "d", "e" ,"f"], colors):
     node_colors[node] = col
 def parseNodeData(data):
-    print >>debug,data
-    redness = data[1][0]
-    hexColor = rgb_to_hex((redness,0,0))
+    #print >>debug,data
+    redness = setInBound(data[1][0])
+    
+    hexColor = rgb_to_hex((redness,0,255-redness))
     size = data[2][0]
     return hexColor, size
+
+def setInBound(color):
+    if color > 255:
+        color = 255
+    if color < 0:
+        color = 0
+    return color
+        
 def add_node(graph, data, ncols=None):
     color,size = parseNodeData(data)
     node = graph.add_node()
@@ -110,7 +119,7 @@ def tree_graph(tree, filename="tree.png", ncols=None):
     graph.nodesep = 0.2
     graph.ranksep = 0.3
     root_data, subtrees = tree[0], tree[1:]
-    print >>debug,tree
+    #print >>debug,tree
     root_node = add_node(graph, root_data, ncols)
     depth = treedepth(tree)
     add_subtrees(root_node, subtrees, graph, depth+6, ncols)
@@ -190,7 +199,7 @@ if __name__ == "__main__":
     
     # trees = [["a", ["b", ["c"]], ["c", ["b"]]]]
     # show_forest(trees)
-    debug = mkDebugChannel('drawtreedebug')
+    #debug = mkDebugChannel('drawtreedebug')
     data = pickle.load(sys.stdin)
     if type(data[0]) == type(""):
         fn = data[0]

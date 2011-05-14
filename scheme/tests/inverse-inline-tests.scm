@@ -35,5 +35,18 @@
        [compressed2 (make-program (list abstraction2) '(F1 + (F1 + 2 2) (F1 - 2 5)))])
   (check (compressions program #t) => (list compressed1 compressed2 compressed3)))
 
+(let ([program (make-program '() '(lambda ()
+                                    ((uniform-draw (list
+                                                    (lambda () (node (data (color (gaussian -36.0 . (25))) (size 0.3)) (node (data (color (gaussian 102.0 . (25))) (size 0.3))) (node (data (color (gaussian 1e2 . (25))) (size 0.3))) (node (data (color (gaussian 39.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian 1.0 . (25))) (size 0.3)) (node (data (color (gaussian 7e1 . (25))) (size 0.3))) (node (data (color (gaussian 138.0 . (25))) (size 0.3))) (node (data (color (gaussian 75.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -42.0 . (25))) (size 0.3)) (node (data (color (gaussian 76.0 . (25))) (size 0.3))) (node (data (color (gaussian 126.0 . (25))) (size 0.3))) (node (data (color (gaussian 93.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -7.0 . (25))) (size 0.3)) (node (data (color (gaussian 240.0 . (25))) (size 0.3))) (node (data (color (gaussian 229.0 . (25))) (size 0.3))) (node (data (color (gaussian 186.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian 12.0 . (25))) (size 0.3)) (node (data (color (gaussian 207.0 . (25))) (size 0.3))) (node (data (color (gaussian 215.0 . (25))) (size 0.3))) (node (data (color (gaussian 265.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -19.0 . (25))) (size 0.3)) (node (data (color (gaussian 105.0 . (25))) (size 0.3))) (node (data (color (gaussian 74.0 . (25))) (size 0.3))) (node (data (color (gaussian 110.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -19.0 . (25))) (size 0.3)) (node (data (color (gaussian 105.0 . (25))) (size 0.3))) (node (data (color (gaussian 74.0 . (25))) (size 0.3))) (node (data (color (gaussian 110.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -19.0 . (25))) (size 0.3)) (node (data (color (gaussian 105.0 . (25))) (size 0.3))) (node (data (color (gaussian 74.0 . (25))) (size 0.3))) (node (data (color (gaussian 110.0 . (25))) (size 0.3)))))
+                                                    (lambda () (node (data (color (gaussian -19.0 . (25))) (size 0.3)) (node (data (color (gaussian 105.0 . (25))) (size 0.3))) (node (data (color (gaussian 74.0 . (25))) (size 0.3))) (node (data (color (gaussian 110.0 . (25))) (size 0.3)))))
+                                                    )))))])
+  (pretty-print (length (compressions program #t))))
 (check-report)
 (exit)

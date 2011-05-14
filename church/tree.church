@@ -42,11 +42,13 @@
 
 ;;returns a list that contains all the color information
 (define node->data first)
+
 (define (node->color node)
   (second (node->data node)))
 (define (node->children node)
   (rest node))
-
+(define data->color second)
+(define data->size third)
 (define (graph->program graph)
   (if (null? graph)
       '()
@@ -59,8 +61,11 @@
 ;(define data node)
 (define radius node)
 (define size node)
-(define (color x) (lazify (node (round (gaussian x 15)))))
-;(define color node)
+;(define (color x) (lazify (node (round (gaussian x 25)))))
+(define (color x)
+  (if (number? x)  ;;might not be a number if the program is converted to using replace gaussians (should also do this for size)
+      (node (round x)) 
+      x))
 (define blobbiness node)
 (define Distance node)
 (define Straightness node)

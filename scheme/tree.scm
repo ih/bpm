@@ -1,6 +1,6 @@
 ;;functions related to factor graphs
 (library (tree)
-         (export tree->expression node-data->expression replace-color)
+         (export tree->expression node-data->expression replace-gaussian gaussian->mean gaussian->variance)
          (import (except (rnrs) string-hash string-ci-hash)
                  (program)
                  (util)
@@ -14,20 +14,23 @@
          (define (tree->expression tree)
              (if (null? tree)
                  '()
-                 (pair 'N (pair (node-data->expression (first tree)) (map tree->expression (rest tree))))))
+                 (pair 'node (pair (node-data->expression (first tree)) (map tree->expression (rest tree))))))
 
          (define (node-data->expression lst)
-           `(data ,(pair 'color (second lst)) ,(pair 'size (third lst))))
+           `(data (color (gaussian ,(first (second lst)) 25)) (size ,(first (third lst)))))
 
          ;;used in scoring (computing the likelihood for a program that generates trees)
          ;;replace-color::program->program
-         (define (replace-color program)
-           (define (color? sexpr)
-             (tagged-list? sexpr 'color))
+         (define (replace-gaussian program)
+           (define (gaussian? sexpr)
+             (tagged-list? sexpr 'gaussian))
            (define (return-parameters sexpr)
-             `(list ,(second sexpr) 15))
+             `(list 'gaussian-parameters ,(second sexpr) ,(third sexpr)))
            (define (replace-in-abstraction abstraction)
-             (make-named-abstraction (abstraction->name abstraction) (sexp-search color? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
+             (make-named-abstraction (abstraction->name abstraction) (sexp-search gaussian? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
            (let* ([converted-abstractions (map replace-in-abstraction (program->abstractions program))]
-                  [converted-body (sexp-search color? return-parameters (program->body program))])
-             (make-program converted-abstractions converted-body))))
+                  [converted-body (sexp-search gaussian? return-parameters (program->body program))])
+             (make-program converted-abstractions converted-body)))
+
+         (define gaussian->mean second)
+         (define gaussian->variance third))

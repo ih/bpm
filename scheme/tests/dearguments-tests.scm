@@ -56,12 +56,12 @@
 
 
 ;;;noisy-number variables
-;; (define noisy-number-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1 V2)))
-;; (define noisy-number-program (make-program (list noisy-number-target-abstraction) '(node (F1 1 2) (F1 1.1 2))))
+(define noisy-number-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1 V2)))
+(define noisy-number-program (make-program (list noisy-number-target-abstraction) '(node (F1 1 2) (F1 1.1 2))))
 
-;; (define noisy-node-program (make-program (list (make-named-abstraction 'F1 '(data (label V1) (radius V2) (blobbiness V3) (Distance V4 0.5) (Straightness 0 0.1)) '(V1 V2 V3 V4))) '(lambda () ((uniform-draw (list (lambda () (N (F1 1 10 3.5 5) (N (F1 2 5 3.5 3) (N (F1 3 2 3.5 2) (N (F1 4 5 10 5)) (N (F1 5 5 10 5))))))))))))
+;;(define noisy-node-program (make-program (list (make-named-abstraction 'F1 '(data (label V1) (radius V2) (blobbiness V3) (Distance V4 0.5) (Straightness 0 0.1)) '(V1 V2 V3 V4))) '(lambda () ((uniform-draw (list (lambda () (N (F1 1 10 3.5 5) (N (F1 2 5 3.5 3) (N (F1 3 2 3.5 2) (N (F1 4 5 10 5)) (N (F1 5 5 10 5))))))))))))
 ;;;noisy-number-replacement
-;; (check (noisy-number-replacement (find-variable-instances noisy-number-program noisy-number-target-abstraction 'V1)) => `(gaussian ,(my-mean (list 1 1.1)) ,(my-variance (list 1 1.1))))
+(check (noisy-number-replacement noisy-number-program noisy-number-target-abstraction 'V1 (find-variable-instances noisy-number-program noisy-number-target-abstraction 'V1)) => `(gaussian ,(my-mean (list 1 1.1)) ,(my-variance (list 1 1.1))))
 
 ;;;noisy-number test
 ;; (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))
@@ -72,36 +72,36 @@
 
 
 ;;;same-variable test
-(define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
-(define same-var-test-program (make-program (list same-var-test-abstraction) '(node (F1 1 1 3) (F1 2 2 1))))
-(define correct-abstractionV1 (make-named-abstraction 'F1 '((lambda (V1) (node V1 V2 V3)) V2) '(V2 V3)))
+;; (define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
+;; (define same-var-test-program (make-program (list same-var-test-abstraction) '(node (F1 1 1 3) (F1 2 2 1))))
+;; (define correct-abstractionV1 (make-named-abstraction 'F1 '((lambda (V1) (node V1 V2 V3)) V2) '(V2 V3)))
 ;;;find-matching-variable
-(check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V3) '(V2 V1)) => NO-REPLACEMENT)
+;; (check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V3) '(V2 V1)) => NO-REPLACEMENT)
 
-(check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V1) '(V2 V3)) => 'V2)
+;; (check (find-matching-variable same-var-test-program same-var-test-abstraction (find-variable-instances same-var-test-program same-var-test-abstraction 'V1) '(V2 V3)) => 'V2)
 ;;;same-variable-replacement
-(check (same-variable-replacement same-var-test-program same-var-test-abstraction 'V1 (find-variable-instances same-var-test-program same-var-test-abstraction 'V1)) => 'V2)
+;; (check (same-variable-replacement same-var-test-program same-var-test-abstraction 'V1 (find-variable-instances same-var-test-program same-var-test-abstraction 'V1)) => 'V2)
 ;;;deargument test
-(define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
-(let* ([correct-program (make-program (list correct-abstractionV1) '(node (F1 1 3) (F1 2 1)))]
-       [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2 V3)) V1) '(V1 V3))]
-       [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1 3) (F1 2 1)))])
-  (check (same-variable-dearguments same-var-test-program) => (list correct-program correct-program2)))
+;; (define same-variable-dearguments (make-dearguments-transformation same-variable-replacement))
+;; (let* ([correct-program (make-program (list correct-abstractionV1) '(node (F1 1 3) (F1 2 1)))]
+;;        [correct-abstraction2 (make-named-abstraction 'F1 '((lambda (V2) (node V1 V2 V3)) V1) '(V1 V3))]
+;;        [correct-program2 (make-program (list correct-abstraction2) '(node (F1 1 3) (F1 2 1)))])
+;;   (check (same-variable-dearguments same-var-test-program) => (list correct-program correct-program2)))
 
 ;;;remove-application-argument test
-(let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
-       [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
-       [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
-  (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
-;;;recursion dearguments test
-(define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
-(define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 (F1 1)))))
-(define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
-(define recursive-correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) (node V1)) ((multinomial (list (lambda () (F1)) (lambda () 1)) (list ,(/ 2 3) ,(/ 1 3))))) '()))
-(define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
+;; (let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
+;;        [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
+;;        [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
+;;   (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
+;; ;;;recursion dearguments test
+;; (define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
+;; (define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 (F1 1)))))
+;; (define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
+;; (define recursive-correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) (node V1)) ((multinomial (list (lambda () (F1)) (lambda () 1)) (list ,(/ 2 3) ,(/ 1 3))))) '()))
+;; (define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
 
-(check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))
-(check (recursion-dearguments non-recursive-program #t) => '())
+;; (check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))
+;; (check (recursion-dearguments non-recursive-program #t) => '())
 (check-report)
 (exit)
 

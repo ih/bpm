@@ -34,7 +34,7 @@
                   [db (pretty-print program-sizes)]
                   [programs-with-size (zip programs program-sizes)]
                   [size< (lambda (a b) (< (second a) (second b)))])
-             (map first (list-sort size< programs-with-size))))
+             (list-sort size< programs-with-size)))
 
          (define (shortest-n n programs)
            (max-take (sort-by-size programs) n))

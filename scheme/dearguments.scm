@@ -31,15 +31,13 @@
                  (let* ([non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
                         [da (display-all "div 0?" recursive-calls valid-variable-instances)]
                         [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))]
-                        [multinomial-params (pair  prob-of-recursion (make-list (length non-recursive-calls) (- 1 prob-of-recursion)))]
+                        [multinomial-params (pair  prob-of-recursion (make-list (length non-recursive-calls) (/ (- 1 prob-of-recursion) (length non-recursive-calls))))]
                         [choices (pair (uniform-draw recursive-calls) non-recursive-calls)])
                      `((multinomial (list ,@(map thunkify choices)) (list ,@multinomial-params)))))))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))
-               (let*
-                   ([instances-mean (my-mean variable-instances)])
-                 instances-mean)
+               (my-mean variable-instances)
                NO-REPLACEMENT))
 
          (define (same-variable-replacement program abstraction variable variable-instances)
