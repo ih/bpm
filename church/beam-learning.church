@@ -2,7 +2,7 @@
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
 (define SIZE-CONSTANT 1)
 (define LAG 20)
-(define POPSIZE 10)
+(define POPSIZE 100)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-program '() (make-initial-sexpr data))]
@@ -35,9 +35,9 @@
 
 
 (define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([db (for-each display (list "CURRENT DEPTH: " depth))]
+  (let* ([db (for-each display (list "CURRENT DEPTH: " depth " current size " (log-prior (program+->program program+)) "  \n\n"))]
          [transformed-programs+ (apply-and-filter-transformations depth cfilter program+)]
-         [da (display-all "programs at depth " depth " " transformed-programs+)])
+         [da (display-all "programs at depth " depth " " transformed-programs+ "\n \n")])
     (delete '()  (append transformed-programs+
              (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
 
@@ -45,14 +45,12 @@
  (if (= depth 0)
      '()
      (let* ([semantics-preserved-programs+ (apply-transformations program+ semantic-preserving-transformations #t)]
-            [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)]
-            [da (pretty-print "programs transformed")])
+            [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)])
        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
 
 ;;each transformation in transformations returns a list of transformed programs
 (define (apply-transformations program+ transformations semantics-preserving)
   (let* ([program (program+->program program+)]
-         [da (display-all "\nprogram being transformed " program "\n" )]
          [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program #t)) transformations)))]
          [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
     transformed-programs+))
@@ -65,11 +63,11 @@
   (let* ([programs (map program+->program programs+)]
          [semantics-flags (map program+->semantics-preserved programs+)]
          [log-priors (map log-prior programs)]
-         [da (display-all "log-priors: " log-priors "\n")]
+         [da (display-all "\n\nlog-priors: " log-priors "\n")]
          [log-likelihoods (map (lambda (prog+ semantics-flag)
                                  (if semantics-flag
                                      (program+->log-likelihood prog+)
-                                     (log-likelihood data (program+->program prog+) 10))) programs+ semantics-flags)]
+                                     (log-likelihood data (program+->program prog+) POPSIZE))) programs+ semantics-flags)]
          [da (display-all "log-likelihoods: " log-likelihoods "\n")]
          [posteriors (map + log-priors log-likelihoods)] 
          [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
@@ -118,18 +116,17 @@
 (define single-log-likelihood 
    (lambda (program popsize tree)
      (let* ([new-program (replace-gaussian program)]
-            [da (display-all  "likelihood for program:" (program->sexpr new-program) "\n" "on tree:" tree "\nprior:" (log-prior new-program)  " ")]
+            [da (display-all  "likelihood for program:  " (program->sexpr program) "\nprior:  " (log-prior program)  " ")]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
             [trees-with-parameters (second topology-scores+tree-parameters)]
             [data-scores (map (lambda (tree-with-parameters) (compute-data-score tree tree-with-parameters)) trees-with-parameters)] ;;remove -inf?
             [scores (delete -inf.0 (map + topology-scores data-scores))]
-            [da (display-all "\nlengths scores " (length data-scores) " " (length scores) "\n")]
             [score (if (null? scores)
                         -inf.0
                         (apply log-sum-exp scores))]
-            [da (display-all "likelihood:" score "\n")])
+            [da (display-all "likelihood:" score "\n\n")])
        score)))
 
 (define (compute-data-score tree tree-with-parameters)
@@ -160,15 +157,13 @@
          [repeat-symbol (find-repeat-symbol samples)]
          ;;remove duplicates in order to do selective model averaging:
          ;;find symbol for repeat function and delete (temporary fix)
-         [da (display-all "all samples:" (length samples))]
          [samples
           (fold (lambda (s a)
                   (if (member (mcmc-state->addrval s repeat-symbol)
                               (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a))
                       a (pair s a))) '() samples)]
          [topology-scores (map mcmc-state->score samples)]
-         [generated-trees (map mcmc-state->query-value samples)]
-         [da (display-all "\ncompute-top" (zip topology-scores generated-trees))])
+         [generated-trees (map mcmc-state->query-value samples)])
     (list topology-scores generated-trees)))
 ;;temporary fix of addresses for same xrps not being the same; this is due to the way smc-core creates the particles
 ;;the fix works because factor graph programs only contain node expressions and function definition (no uses of repeat)
