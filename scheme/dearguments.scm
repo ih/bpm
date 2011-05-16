@@ -29,9 +29,9 @@
                   [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]) 
              (if (or (null? valid-variable-instances) (null? recursive-calls))
                  NO-REPLACEMENT
-                 (let* ([non-recursive-call (first (remove (curry abstraction-application? abstraction) valid-variable-instances))]
+                 (let* ([non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
                         [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])
-                   `(if (flip ,prob-of-recursion) ,(first recursive-calls) ,non-recursive-call)))))
+                   `(if (flip ,prob-of-recursion) ,(first recursive-calls) ((uniform-draw (list ,@(map thunkify non-recursive-calls)))))))))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))

@@ -1,8 +1,8 @@
 (define semantic-preserving-transformations (list compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
 (define SIZE-CONSTANT 1)
-(define LAG 20)
-(define POPSIZE 30)
+(define LAG 10)
+(define POPSIZE 15)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-program '() (make-initial-sexpr data))]
