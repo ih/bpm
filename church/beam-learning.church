@@ -2,7 +2,7 @@
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
 (define SIZE-CONSTANT 1)
 (define LAG 20)
-(define POPSIZE 100)
+(define POPSIZE 30)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-program '() (make-initial-sexpr data))]
@@ -24,7 +24,8 @@
           (sort-by-posterior
            data 
            (beam-learn-search-transformations data init-program beam-size depth))]
-         [db (pretty-print (list "top transformations" top-transformations))])
+         ;[db (pretty-print (list "top transformations" top-transformations))]
+         )
     (if (null? top-transformations)
         init-program
         (program+->program (first top-transformations)))))
@@ -51,7 +52,7 @@
 ;;each transformation in transformations returns a list of transformed programs
 (define (apply-transformations program+ transformations semantics-preserving)
   (let* ([program (program+->program program+)]
-         [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program #t)) transformations)))]
+         [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program)) transformations)))]
          [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
     transformed-programs+))
 
@@ -63,7 +64,7 @@
   (let* ([programs (map program+->program programs+)]
          [semantics-flags (map program+->semantics-preserved programs+)]
          [log-priors (map log-prior programs)]
-         [da (display-all "\n\nlog-priors: " log-priors "\n")]
+         [da (display-all "\n\nlog-priors: " (zip log-priors semantics-flags) "\n")]
          [log-likelihoods (map (lambda (prog+ semantics-flag)
                                  (if semantics-flag
                                      (program+->log-likelihood prog+)
@@ -116,7 +117,7 @@
 (define single-log-likelihood 
    (lambda (program popsize tree)
      (let* ([new-program (replace-gaussian program)]
-            [da (display-all  "likelihood for program:  " (program->sexpr program) "\nprior:  " (log-prior program)  " ")]
+            [da (display-all  "likelihood for program:  " (program->sexpr program) "\n" tree "\nprior:  " (log-prior program)  " ")]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
@@ -126,7 +127,7 @@
             [score (if (null? scores)
                         -inf.0
                         (apply log-sum-exp scores))]
-            [da (display-all "likelihood:" score "\n\n")])
+            [da (display-all "likelihood:" topology-scores "|" data-scores "|" score "\n\n")])
        score)))
 
 (define (compute-data-score tree tree-with-parameters)
@@ -155,6 +156,7 @@
                                   (pair (lazy-topology-equal? s lazified-tree depth)
                                         (lambda () (first (lazy-list->list s depth))))))))]
          [repeat-symbol (find-repeat-symbol samples)]
+         [da (pretty-print (list "all samples " (length samples)))]
          ;;remove duplicates in order to do selective model averaging:
          ;;find symbol for repeat function and delete (temporary fix)
          [samples
@@ -162,6 +164,7 @@
                   (if (member (mcmc-state->addrval s repeat-symbol)
                               (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a))
                       a (pair s a))) '() samples)]
+         [da (pretty-print (list "after removal " (length samples)))]
          [topology-scores (map mcmc-state->score samples)]
          [generated-trees (map mcmc-state->query-value samples)])
     (list topology-scores generated-trees)))

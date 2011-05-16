@@ -23,17 +23,15 @@
                  NO-REPLACEMENT
                  `((uniform-draw (list ,@(map thunkify valid-variable-instances)))))))
          ;;make stronger check for whether a variable-instance is a recursive call (e.g. a different function that only calls the current function)
+         ;;flip version only works when data is a single line i.e. a function that only takes one argument and repeatedly calls itself
          (define (recursion-replacement program abstraction variable variable-instances)
            (let* ([valid-variable-instances (remove has-variable? variable-instances)]
                   [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]) 
              (if (or (null? valid-variable-instances) (null? recursive-calls))
                  NO-REPLACEMENT
-                 (let* ([non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
-                        [da (display-all "div 0?" recursive-calls valid-variable-instances)]
-                        [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))]
-                        [multinomial-params (pair  prob-of-recursion (make-list (length non-recursive-calls) (/ (- 1 prob-of-recursion) (length non-recursive-calls))))]
-                        [choices (pair (uniform-draw recursive-calls) non-recursive-calls)])
-                     `((multinomial (list ,@(map thunkify choices)) (list ,@multinomial-params)))))))
+                 (let* ([non-recursive-call (first (remove (curry abstraction-application? abstraction) valid-variable-instances))]
+                        [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])
+                   `(if (flip ,prob-of-recursion) ,(first recursive-calls) ,non-recursive-call)))))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))

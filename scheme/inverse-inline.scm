@@ -97,6 +97,6 @@
                    (if (not (null? nofilter))
                        compressed-programs
                        (filter (lambda (cp) (<= (program-size cp)
-                                                (+ prog-size 1)))
+                                                prog-size))
                                compressed-programs))])
              valid-compressed-programs)))
