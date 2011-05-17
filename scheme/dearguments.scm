@@ -67,7 +67,7 @@
            (define (base-case? sexpr)
              (cond [(branching? sexpr) (list-or (map base-case?  (get-branches sexpr)))]
                    [(application? sexpr) (if (any-abstraction-application? sexpr)
-                                             (terminating-abstraction? (operator sexpr))
+                                             (and (terminating-abstraction? (operator sexpr)) (all (map base-case? (operands sexpr))))
                                              (all (map base-case? (operands sexpr))))]
                    [else #t]))
            (begin
@@ -92,8 +92,9 @@
            (tagged-list? sexpr 'uniform-draw))
          
          (define (get-branches sexpr)
+           (define dethunkify third) 
            (cond [(if? sexpr) (list (third sexpr) (fourth sexpr))]
-                 [(uniform-draw? sexpr) (second sexpr)]
+                 [(uniform-draw? sexpr) (map dethunkify (rest (second sexpr)))]
                  [else (error "not a branching expression" sexpr)]))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
@@ -157,8 +158,8 @@
                     [valid-deargumented-programs
                      (if (not (null? nofilter))
                          deargumented-programs
-                         (filter (lambda (ip) (<= (program-size ip)
-                                                  (+ prog-size 1)))
+                         (filter (lambda (ip) (< (program-size ip)
+                                                 prog-size))
                                  deargumented-programs))])
                valid-deargumented-programs)))
 
