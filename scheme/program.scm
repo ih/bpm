@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform has-variable? abstraction-application?)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->semantics-preserved program+->program-transform has-variable? abstraction-application? program->abstraction-pattern any-abstraction-application?)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -74,6 +74,11 @@
                      #f)
                  #f))
 
+         (define (any-abstraction-application? sexpr)
+           (if (non-empty-list? sexpr)
+               (func? (first sexpr))
+               #f))
+
                   ;;searches through the body of the abstraction  and returns a list of free variables
          (define (get-free-vars abstraction)
            (let* ([pattern (abstraction->pattern abstraction)]
@@ -105,6 +110,15 @@
          (define program->abstractions second)
          (define program->body third)
 
+         (define (program->abstraction-pattern program abstraction-name)
+           (define (find-abstraction-pattern abstractions name)
+             (if (null? abstractions)
+                 (error "abstraction not found" name)
+                 (let* ([current-abstraction (first abstractions)])
+                   (if (eq? (abstraction->name current-abstraction) abstraction-name)
+                       (abstraction->pattern current-abstraction)
+                       (find-abstraction-pattern (rest abstractions) name)))))
+           (find-abstraction-pattern (program->abstractions program) abstraction-name))
          ;;it might also be possible to search over program->sexpr, but then we'd need a more complicated predicate to avoid the definition of the target-abstraction
          (define (program->abstraction-applications program target-abstraction)
            (define (target-abstraction-application? sexpr)

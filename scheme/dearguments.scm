@@ -1,10 +1,11 @@
 (library (dearguments)
-         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement same-variable-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments same-variable-dearguments NO-REPLACEMENT find-matching-variable recursion-dearguments)
+         (export make-dearguments-transformation has-arguments? find-variable-instances remove-abstraction-variable remove-ith-argument remove-application-argument abstraction-deargumentations uniform-replacement noisy-number-replacement noisy-number-simple-replacement same-variable-replacement deargument simple-noisy-number-dearguments uniform-draw-dearguments noisy-number-dearguments same-variable-dearguments NO-REPLACEMENT find-matching-variable recursion-dearguments recursion-replacement terminates?)
          (import (except (rnrs) string-hash string-ci-hash remove)
                  (program)
                  (except (_srfi :1) remove)
                  (only (srfi :1) remove)
                  (util)
+                 (srfi :69)
                  (church readable-scheme))
          (define NO-REPLACEMENT 'no-replacement)
          ;;program transformations
@@ -26,12 +27,74 @@
          ;;flip version only works when data is a single line i.e. a function that only takes one argument and repeatedly calls itself
          (define (recursion-replacement program abstraction variable variable-instances)
            (let* ([valid-variable-instances (remove has-variable? variable-instances)]
-                  [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]) 
-             (if (or (null? valid-variable-instances) (null? recursive-calls))
+                  [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]
+                  [non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
+                  [terminates (terminates? program (abstraction->name abstraction) non-recursive-calls)]
+                  ;[da (display-all "\nterminates:" terminates "\n")]
+                  ) 
+             (if (or (null? valid-variable-instances) (null? recursive-calls) (not terminates))
                  NO-REPLACEMENT
-                 (let* ([non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
-                        [prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])
+                 (let* ([prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])
                    `(if (flip ,prob-of-recursion) ,(first recursive-calls) ((uniform-draw (list ,@(map thunkify non-recursive-calls)))))))))
+
+         (define (terminates? program init-abstraction-name non-recursive-calls)
+           (define abstraction-statuses (make-hash-table eq?))
+
+           (define (initialize-statuses)
+             (let ([abstraction-names (map abstraction->name (program->abstractions program))])
+              (begin
+                (map (curry hash-table-set! abstraction-statuses) abstraction-names (make-list (length abstraction-names) 'unchecked))
+                (hash-table-set! abstraction-statuses init-abstraction-name 'checking))))
+
+           (define (status? name)
+             (hash-table-ref abstraction-statuses name))
+
+           (define (set-status! name new-status)
+             (hash-table-set! abstraction-statuses name new-status))
+           
+           (define (terminating-abstraction? abstraction-name)
+               (cond [(eq? (status? abstraction-name) 'terminates) #t]
+                     [(eq? (status? abstraction-name) 'checking) #f]
+                     [(eq? (status? abstraction-name) 'unchecked)
+                      (begin
+                        (set-status! abstraction-name 'checking)
+                        (if (base-case? (program->abstraction-pattern program abstraction-name))
+                            (begin
+                              (set-status! abstraction-name 'terminates)
+                              #t)
+                            #f))]))
+           
+           (define (base-case? sexpr)
+             (cond [(branching? sexpr) (list-or (map base-case?  (get-branches sexpr)))]
+                   [(application? sexpr) (if (any-abstraction-application? sexpr)
+                                             (terminating-abstraction? (operator sexpr))
+                                             (all (map base-case? (operands sexpr))))]
+                   [else #t]))
+           (begin
+             ;(display-all "\nterminates?" init-abstraction-name " " non-recursive-calls "\n")
+             (initialize-statuses)
+             (list-or (map base-case? non-recursive-calls))))
+
+
+         (define application? pair?)
+         
+         (define operator first)
+
+         (define operands rest)
+
+         (define (branching? sexpr)
+           (or (if? sexpr) (uniform-draw? sexpr)))
+         
+         (define (if? sexpr)
+           (tagged-list? sexpr 'if))
+
+         (define (uniform-draw? sexpr)
+           (tagged-list? sexpr 'uniform-draw))
+         
+         (define (get-branches sexpr)
+           (cond [(if? sexpr) (list (third sexpr) (fourth sexpr))]
+                 [(uniform-draw? sexpr) (second sexpr)]
+                 [else (error "not a branching expression" sexpr)]))
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))
@@ -165,7 +228,5 @@
              new-program))
 
          ;;assumes abstractions and only abstractions have name of the form '[FUNC-SYMBOL][Number]
-         (define (application? sexpr)
-           (if (non-empty-list? sexpr)
-               (func? (first sexpr)))))
+         )
 
