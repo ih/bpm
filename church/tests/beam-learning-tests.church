@@ -97,8 +97,8 @@
 
 ;;;single-log-likelihood
 ;; (define timed-single-log-likelihood (time-it single-log-likelihood "single-log-likelihood"))
-;; (let ([single-node-data '((data (2) (1)))])
-;;   (equal?-test "likelihood for single node noiseless program" (exp (single-log-likelihood single-node-program 10 single-node-data))  (normal-pdf 2 1 25)))
+(let ([single-node-data '((data (2) (1)))])
+  (equal?-test "likelihood for single node noiseless program" (exp (single-log-likelihood single-node-program 10 single-node-data))  (normal-pdf 2 1 25)))
 
 ;; (equal?-test "likelihood for single node noiseless program" (exp (single-log-likelihood single-node-program 10 single-node-tree))  (normal-pdf 1 1 25))
 ;; (let ([noisy-program (make-program '() '(lambda () (node (data (color (gaussian 2 25)) (size 1)))))])
@@ -106,9 +106,9 @@
 ;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))]
 ;;       [noisy-program (make-program '() '(lambda () ((uniform-draw (list (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)))))))))])
 ;;   (equal?-test "likelihood for two node" (exp (single-log-likelihood noisy-program 10 two-node-data))  (* .5 (normal-pdf 2 2 25) 1)))
-;; (let ([two-node-data '((data (2) (1)) ((data (2) (1))))]
-;;       [noisy-program (make-program '() '(lambda () ((uniform-draw (list (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1))))) (lambda () (node (data (color (gaussian 2 25)) (size 1)))))))))])
-;;   (equal?-test "likelihood for two node two same program" (exp (single-log-likelihood noisy-program 10 two-node-data))  (* (/ 2 3) (normal-pdf 2 2 25) 1)))
+(let ([two-node-data '((data (2) (1)) ((data (2) (1))))]
+      [noisy-program (make-program '() '(lambda () (uniform-choice (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1)))) (node (data (color (gaussian 2 25)) (size 1)) (node (data (color 2) (size 1)))) (node (data (color (gaussian 2 25)) (size 1))))))])
+  (equal?-test "likelihood for two node two same program" (exp (single-log-likelihood noisy-program 10 two-node-data))  (* (/ 2 3) (normal-pdf 2 2 25) 1)))
 
 
 ;; (let* ([recursive-abstraction

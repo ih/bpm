@@ -89,19 +89,19 @@
 ;;   (check (same-variable-dearguments same-var-test-program) => (list correct-program correct-program2)))
 
 ;;;remove-application-argument test
-;; (let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
-;;        [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
-;;        [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
-;;   (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
-;; ;;;recursion dearguments test
-;; (define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
-;; (define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 (F1 1)))))
-;; (define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
-;; (define recursive-correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) (node V1)) ((multinomial (list (lambda () (F1)) (lambda () 1)) (list ,(/ 2 3) ,(/ 1 3))))) '()))
-;; (define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
+(let* ([newf1 (make-named-abstraction 'F1 '((lambda (V1) (+ V1 V2)) 2) '(V2))]
+       [oldf1 (make-named-abstraction 'F1 '(+ V1 V2)  '(V1 V2))]
+       [prog (make-program (list newf1) '(F1 2 (F1 2 (F1 2 3))))])
+  (check (remove-application-argument prog oldf1 'V1) => (make-program (list newf1) '(F1 (F1 (F1 3))))))
+;;;recursion dearguments test
+(define recursive-target-abstraction (make-named-abstraction 'F1 '(node V1) '(V1)))
+(define recursive-program (make-program (list recursive-target-abstraction) '(F1 (F1 (F1 1)))))
+(define non-recursive-program (make-program (list recursive-target-abstraction) '(F1 1)))
+(define recursive-correct-abstraction (make-named-abstraction 'F1 `((lambda (V1) (node V1)) (if (flip ,(/ 2 3)) (F1) (uniform-choice  1))) '()))
+(define recursive-correct-program (make-program (list recursive-correct-abstraction) '(F1)))
 
-;; (check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))
-;; (check (recursion-dearguments non-recursive-program #t) => '())
+(check (recursion-dearguments recursive-program #t) => (list recursive-correct-program))
+(check (recursion-dearguments non-recursive-program #t) => '())
 
 ;;;terminates?
 
@@ -109,7 +109,7 @@
 (let* ([abstraction1 (make-named-abstraction 'F1 '((lambda (V1) (node (F2 V1 0.1) V2)) -7.315789473684211) '(V2))]
        [abstraction2 (make-named-abstraction 'F2 '(data (color (gaussian V3 25)) (size V4)) '(V3 V4))]
        [abstraction3 (make-named-abstraction 'F3 '(F1 (F1 (F1 (F1 (F1 (node (F2 V5 0.3) (node (F2 V6 0.3)) (node (F2 V7 0.3)))))))) '(V5 V6 V7))]
-       [program (make-program (list abstraction1 abstraction2 abstraction3) '(lambda () ((uniform-draw (list (lambda () (node (F2 5e1 1) (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F3 222.0 272.0 268.0)))))))))) (F3 168.0 126.0 145.0))))))))])
+       [program (make-program (list abstraction1 abstraction2 abstraction3) '(lambda () (uniform-choice  (node (F2 5e1 1) (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F1 (F3 222.0 272.0 268.0)))))))))) (F3 168.0 126.0 145.0)))))])
   (check (recursion-dearguments program) => '()))
 
 

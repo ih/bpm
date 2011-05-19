@@ -35,7 +35,7 @@
              (if (or (null? valid-variable-instances) (null? recursive-calls) (not terminates))
                  NO-REPLACEMENT
                  (let* ([prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])
-                   `(if (flip ,prob-of-recursion) ,(first recursive-calls) ((uniform-draw (list ,@(map thunkify non-recursive-calls)))))))))
+                   `(if (flip ,prob-of-recursion) ,(first recursive-calls) (uniform-choice  ,@non-recursive-calls))))))
 
          (define (terminates? program init-abstraction-name non-recursive-calls)
            (define abstraction-statuses (make-hash-table eq?))
