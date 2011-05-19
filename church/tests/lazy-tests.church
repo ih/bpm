@@ -5,7 +5,7 @@
 (define ltree1 (list->lazy-list tree1))
 (define tree2 (lazy-list->all-list (eval '(N (data (color 1) (size 5))))))
 (define ltree2 (list->lazy-list tree2))
-(define tree1-gen (eval (make-initial-sexpr (list tree1))))
+(define tree1-gen (eval (incorporate-data (list tree1))))
 (define tree11 (lazy-list->all-list (tree1-gen)))
 (define ltree11 (list->lazy-list tree11))
 (define tree12 (lazy-list->all-list (tree1-gen)))

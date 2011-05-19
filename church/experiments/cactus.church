@@ -71,8 +71,8 @@
 (define noisy-constructor1 (lazy-list->all-list (N (data (color 20) (size .5)) (N (data (node 105) (size .5))))))
 
 
-;;make-initial-sexpr figure
-(define init-sexpr (make-initial-sexpr (list cactus1 cactus2)))
+;;incorporate-data figure
+(define init-sexpr (incorporate-data (list cactus1 cactus2)))
 (define simple-cacti '(lambda ()
                         (lazy-list->all-list ((uniform-draw
                                                (list

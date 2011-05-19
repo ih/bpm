@@ -20,23 +20,23 @@
 (define tree2 (lazy-list->all-list (eval tree2-expression)))
 (define trees (list tree))
 (define single-node-tree '((data (1) (1))))
-(define single-node-program (make-program '() (make-initial-sexpr (list single-node-tree))))
+(define single-node-program (make-program '() (incorporate-data (list single-node-tree))))
 
 ;;;global test data
 (define worse-than-initial-sexpr (list 'lambda '() (list (list 'uniform-draw  (list 'list (list 'lambda '() tree-expression) (list 'lambda '() tree2-expression))))))
 
-(define models-for-comparison (let* ([sexprs (list (make-initial-sexpr trees) worse-than-initial-sexpr)]
+(define models-for-comparison (let* ([sexprs (list (incorporate-data trees) worse-than-initial-sexpr)]
                                      [possible-programs (map (lambda (p) (make-program '() p)) sexprs)])
                                 possible-programs))
 
-;;;make-initial-sexpr test, this is a program that returns lazy trees
+;;;incorporate-data test, this is a program that returns lazy trees
 (display-all single-node-program)
 
 
-(display-all (lazy-list->all-list ((eval (make-initial-sexpr trees)))) tree)
+(display-all (lazy-list->all-list ((eval (incorporate-data trees)))) tree)
 
-;; (pretty-print ((eval (make-initial-sexpr trees))))
-(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (make-initial-sexpr trees)))) #t)
+;; (pretty-print ((eval (incorporate-data trees))))
+(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (incorporate-data trees)))) #t)
 
 ;;;apply-transformations 
 ;; (define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
@@ -45,7 +45,7 @@
 ;; (evaluates?-test "apply-transformations" (apply-transformations (make-program+ same-var-test-program 0 0 0 #f) semantic-changing-transformations #f))
 ;;;apply-and-filter-transformations
 ;; (define timed-apply-and-filter-transformations (time-it apply-and-filter-transformations "apply-and-filter-transformations"))
-;; (evaluates?-test "timed-apply-and-filter-transformations" (timed-apply-and-filter-transformations 1 (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f)))
+;; (evaluates?-test "timed-apply-and-filter-transformations" (timed-apply-and-filter-transformations 1 (lambda (x) x) (make-program+ (make-program '() (incorporate-data trees)) 0 0 0 #f)))
 
 ;;;depth-iterated-compressions
 ;;(define timed-iterated-transformations (time-it depth-iterated-transformations "depth-iterated-transformations"))
@@ -65,7 +65,7 @@
 ;;                (list program1 program2 program3 program4 program5)))
 
 
-;; (evaluates?-test "depth-iterated-transformations" (timed-iterated-transformations (lambda (x) x) (make-program+ (make-program '() (make-initial-sexpr trees)) 0 0 0 #f) 2))
+;; (evaluates?-test "depth-iterated-transformations" (timed-iterated-transformations (lambda (x) x) (make-program+ (make-program '() (incorporate-data trees)) 0 0 0 #f) 2))
 
 ;;;log-prior (how do you normalize these values?)
 ;; (equal?-test "log-prior test" (log-prior (make-program '() '(+ 2 3 4))) -5)
@@ -142,17 +142,17 @@
 
 ;;;best-n tests
 ;; (define timed-best-n (time-it best-n "best-n"))
-;; (equal?-test "best-n by score only" (timed-best-n trees models-for-comparison 1) (list (make-program '() (make-initial-sexpr trees))))
+;; (equal?-test "best-n by score only" (timed-best-n trees models-for-comparison 1) (list (make-program '() (incorporate-data trees))))
 
 
 ;;;beam-learn-search-transformations test
 ;; (define timed-beam-learn-search-transformations (time-it beam-learn-search-transformations "beam-learn-search"))
-;; (evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (make-initial-sexpr trees)) 2 2))
+;; (evaluates?-test "beam-learn-search-transformations" (timed-beam-learn-search-transformations trees (make-program '() (incorporate-data trees)) 2 2))
 
 
 ;;;beam-learn test
 ;beam learn takes a list of factors graphs as data and an sexpr
-;;(evaluates?-test "beam-learn runs" (beam-learn trees (make-initial-sexpr trees) 1 2))
+;;(evaluates?-test "beam-learn runs" (beam-learn trees (incorporate-data trees) 1 2))
 
 
 ;;;learn-model tests
