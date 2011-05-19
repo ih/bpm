@@ -17,7 +17,7 @@
 ;;incorporate-data :: images => scheme-program
 (define (incorporate-data trees)
   (let* ([tree-expressions (map tree->expression trees)])
-   (list 'lambda '() (list (list 'uniform-draw (pair 'list (map thunkify tree-expressions)))))))
+    (list 'lambda '() (pair 'uniform-choice tree-expressions))))
 
 ;;;returns an sexpr
 (define (beam-learn data init-program beam-size depth)

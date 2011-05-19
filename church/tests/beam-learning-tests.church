@@ -18,7 +18,7 @@
 
 (define tree2-expression '(N (data (color 1) (size 5))))
 (define tree2 (lazy-list->all-list (eval tree2-expression)))
-(define trees (list tree))
+(define trees (list tree tree2))
 (define single-node-tree '((data (1) (1))))
 (define single-node-program (make-program '() (incorporate-data (list single-node-tree))))
 
@@ -30,13 +30,15 @@
                                 possible-programs))
 
 ;;;incorporate-data test, this is a program that returns lazy trees
-(display-all single-node-program)
+;(display-all single-node-program "\n")
 
 
-(display-all (lazy-list->all-list ((eval (incorporate-data trees)))) tree)
+(pretty-print (make-program '() (incorporate-data trees)))
+(pretty-print (lazy-list->all-list ((eval (program->sexpr (desugar (make-program '() (incorporate-data trees))))))))
+;(display-all (lazy-list->all-list ((eval (program->sexpr (desugar (incorporate-data trees)))))) tree)
 
 ;; (pretty-print ((eval (incorporate-data trees))))
-(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (incorporate-data trees)))) #t)
+;(equal?-test "initial sexpr evaluates to lazy-pair" (lazy-pair? ((eval (incorporate-data trees)))) #t)
 
 ;;;apply-transformations 
 ;; (define same-var-test-abstraction (make-named-abstraction 'F1 '(node V1 V2 V3) '(V1 V2 V3)))
@@ -157,8 +159,8 @@
 
 ;;;learn-model tests
 ;;type check, learn-model should process a list of trees and return a function that generates trees
-(define timed-learn-model (time-it learn-model))
-(evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
+;; (define timed-learn-model (time-it learn-model))
+;; (evaluates?-test "learned-model" ((timed-learn-model trees 1 2)))
 
 
 (exit)
