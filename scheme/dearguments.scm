@@ -29,9 +29,7 @@
            (let* ([valid-variable-instances (remove has-variable? variable-instances)]
                   [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]
                   [non-recursive-calls (remove (curry abstraction-application? abstraction) valid-variable-instances)]
-                  [terminates (terminates? program (abstraction->name abstraction) non-recursive-calls)]
-                  ;[da (display-all "\nterminates:" terminates "\n")]
-                  ) 
+                  [terminates (terminates? program (abstraction->name abstraction) non-recursive-calls)]) 
              (if (or (null? valid-variable-instances) (null? recursive-calls) (not terminates))
                  NO-REPLACEMENT
                  (let* ([prob-of-recursion (/ (length recursive-calls) (length valid-variable-instances))])

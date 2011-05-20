@@ -8,7 +8,7 @@
 (define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-program '() (incorporate-data data))]
          [learned-program (beam-learn data initial-sexpr beam-size depth)]
-         [model (lambda () (lazy-list->all-list ((eval (program->sexpr learned-program)))))])
+         [model (lambda () (lazy-list->all-list ((eval (program->sexpr (desugar learned-program))))))])
     (pretty-print (list "compressed-program:" (program->sexpr learned-program) "size: " (program-size learned-program)))
     (draw-trees (pair "./model-output.png" (repeat 20 (lambda () (model)))))
     model))
