@@ -124,7 +124,7 @@ $\includegraphics[scale=.7]{initData.pdf}$
 \end{lstlisting}
 
 We get the program 
-\begin{lstlisting}[mathescape=true, label=initProgram, caption={A program created by data incorporation.}]
+\begin{lstlisting}[mathescape=true]
   (lambda ()
    (uniform-choice
       (node (data (color 70) (size 1))
@@ -143,7 +143,7 @@ $\includegraphics[scale=.7]{initProgram.pdf}$
 
 \section{Probabilistic Programs}
 A generative model is a probability distribution over data.  We can represent probability distributions as programs in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}.  One reason this is interesting is the structure of a program (i.e. the decomposition into functions and the flow of control) can capture different regularties in the data.    We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants} and see how different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readibility, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
-\begin{lstlisting}[mathescape=true, label=prog:genModel, caption={A probabilistic program that generates trees.}]
+\begin{lstlisting}[mathescape=true]
 (define tree
  (lambda ()
   (uniform-choice
@@ -173,19 +173,19 @@ A generative model is a probability distribution over data.  We can represent pr
  (node (data (color shade) (size .3))))
 $\includegraphics[scale=.35]{trees2.pdf}$
 \end{lstlisting}
-We can think programs as a combination of data constructor operations with some additional control flow operations and lambda abstractions.  The program in listing \ref{prog:genModel} begins by determining the number of branches the tree will have and then creating a large body node that connects these branches.  Each branch function recursively connects a series of small nodes together and ends in a call to the flower function, passing it one of two colors.  The flower function creates a node with three ``petal'' nodes each of the same color.  Looking at this program we see how patterns such as a flower having three petals and the body having a large base are reflected in the program structure.  The compositionality of the language also captures relational patterns such as branches end in flowers.  Now that we know many different patterns can be represented within a probabilistic program, the main question becomes how do we change the structure of our initial data incorporated program to reflect such patterns.
+We can think programs as a combination of data constructor operations with some additional control flow operations and lambda abstractions.  The above tree program begins by determining the number of branches the tree will have and then creating a large body node that connects these branches.  Each branch function recursively connects a series of small nodes together and ends in a call to the flower function, passing it one of two colors.  The flower function creates a node with three ``petal'' nodes each of the same color.  Looking at this program we see how patterns such as a flower having three petals and the body having a large base are reflected in the program structure.  The compositionality of the language also captures relational patterns such as branches end in flowers.  Now that we know many different patterns can be represented within a probabilistic program, the main question becomes how do we change the structure of our initial data incorporated program to reflect such patterns.
 
 \subsection{Data Abstractions}
 We use data abstractions for programs and functions created by merge operations on programs.  A function created by a merge operation is called an abstraction (after lambda abstraction).  It consists of a name, variables, and a pattern i.e. the s-expression that makes up the body of the function.  
 \begin{lstlisting}[frame=trBL]
-(define (make-abstraction pattern variables)
- (make-named-abstraction (sym FUNC-SYMBOL) pattern variables))
-(define (make-named-abstraction name pattern variables)
- (list 'abstraction name variables pattern))
+(define (make-abstraction body variables)
+ (make-named-abstraction (sym FUNC-SYMBOL) body variables))
+(define (make-named-abstraction name body variables)
+ (list 'abstraction name variables body))
 
 (define abstraction->name second)
 (define abstraction->vars third)
-(define abstraction->pattern fourth)
+(define abstraction->body fourth)
 \end{lstlisting}
 Here \texttt{sym} is used to create unique symbols in an orderly manner for use as function or variable names.
 
@@ -236,7 +236,7 @@ This prior effectively biases the search towards smaller programs.  A program's 
                  (apply + (map sexpr-size sexpr))
                  1))
            (define (abstraction-size abstraction)
-             (sexpr-size (abstraction->pattern abstraction)))
+             (sexpr-size (abstraction->body abstraction)))
            (let* ([abstraction-sizes (apply + (map abstraction-size (program->abstractions program)))]
                   [body-size (sexpr-size (program->body program))])
              (+ abstraction-sizes body-size)))
@@ -270,7 +270,7 @@ The idea behind estimating the likelihood for a single tree, $P(t|p)$, is to eva
                         (apply log-sum-exp scores))])
        score)))
 \end{lstlisting}
-We take advantage of the fact we can directly compute the probability of a sample from a Gaussian given the parameters.  We do this by modifying the Gaussian functions in the program to output the mean and variance for a particular node rather than sampling a value from the distribution.
+We take advantage of the fact we can directly compute the probability of a sample from a Gaussian given the parameters.  We do this by modifying the Gaussian functions in the program to output the mean and variance for a particular node rather than sampling a value from the distribution.  The code below also changes the uniform-choice 
 \begin{lstlisting}[frame=trBL]
 (define (desugar program)
            (define (gaussian? sexpr)
@@ -288,7 +288,7 @@ We take advantage of the fact we can directly compute the probability of a sampl
                    sexpr
                    tests+replacements))
            (define (desugar-abstraction abstraction)
-             (make-named-abstraction (abstraction->name abstraction) (apply-transforms (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
+             (make-named-abstraction (abstraction->name abstraction) (apply-transforms (abstraction->body abstraction)) (abstraction->vars abstraction)))
            (let* ([converted-abstractions (map  desugar-abstraction (program->abstractions program))]
                   [converted-body (apply-transforms (program->body program))])
              (make-program converted-abstractions converted-body)))
@@ -420,7 +420,7 @@ Inlining is the process of replacing function calls in a program with the body o
              valid-compressed-programs))
 
 (define (condense-program program)
-           `(,@(map abstraction->pattern (program->abstractions program))
+           `(,@(map abstraction->body (program->abstractions program))
              ,(program->body program)))
 
 (define (possible-abstractions expr)
@@ -513,7 +513,7 @@ Now that we have created lambda abstractions from the partial matches between tw
 
 (define (compress-abstraction compressor compressee)
            (make-named-abstraction (abstraction->name compressee)
-                                   (replace-matches (abstraction->pattern compressee) compressor)
+                                   (replace-matches (abstraction->body compressee) compressor)
                                    (abstraction->vars compressee)))                           
 \end{lstlisting}
 Finding and replacing pattern matches of an abstraction F in an expression E proceeds recursively by taking the body of F and trying to match it to the expressio on E.  A match between the body of the abstraction and the expression is determined by unification, if a match exists then the application of F is returned where the arguments to F are refactored (if F has arguments).  If the match does not hold then E is returned with each of its subexpressions refactored.  If E is a primitive and not a match it is returned.
@@ -521,7 +521,7 @@ Finding and replacing pattern matches of an abstraction F in an expression E pro
 \begin{lstlisting}[frame=trBL]
 (define (replace-matches s abstraction)
            (let ([unified-vars (unify s
-                                      (abstraction->pattern abstraction)
+                                      (abstraction->body abstraction)
                                       (abstraction->vars abstraction))])
              (if (false? unified-vars)
                  (if (list? s)
@@ -589,8 +589,8 @@ If the expression being unified with F1 had been \texttt{(- (+ 2 2) (- 2 5))} th
 \subsubsection{Summary}
 Inverse-inlining is a useful program transformation that identifies repeated computation in a program by finding patterns in its syntax.  These patterns in syntax correspond to patterns in the data.  We can interpret this in terms of repeated computation by recognizing repeated syntax corresponds to repeated sequences of operations.  This might seem like a limited notion of pattern, but it is worth contemplating the role of lambda abstraction in the lambda calculus and the expressiveness of this language despite (or perhaps because of) its simplicity.
 
-The process of inverse inlining follows two main steps (1) create abstractions from common subexpressions in a program via anti-unification (2) compress the program with the abstractions by replacing instances of the abstraction with a function application via unification.  Going back to our tree example we illustrate the process on the program in listing \ref{initProgram}.
-Two of the abstractions out of seventeen found with anti-unification that create the smallest compressed program and the fifth smallest are 
+The process of inverse inlining follows two main steps (1) create abstractions from common subexpressions in a program via anti-unification (2) compress the program with the abstractions by replacing instances of the abstraction with a function application via unification.  Going back to our tree example we illustrate the process on the program in the data incorporation section.
+Anti-unification found seventeen possible matches or abstractions.  The abstractions that produce the smallest compressed program and the fifth smallest are 
 \begin{lstlisting}
 (abstraction F1 (V1 V2)
        (data (color (gaussian V1 25)) (size V2)))
@@ -648,9 +648,9 @@ The abstraction whose variable is being removed keeps the same body, but the var
                   [variable-definition (replacement-function program abstraction variable variable-instances)])
              (if (equal? variable-definition NO-REPLACEMENT)
                  '()
-                 (let* ([new-pattern `((lambda (,variable) ,(abstraction->pattern abstraction)) ,variable-definition)]
+                 (let* ([new-body `((lambda (,variable) ,(abstraction->body abstraction)) ,variable-definition)]
                         [new-variables (delete variable (abstraction->vars abstraction))])
-                   (make-named-abstraction (abstraction->name abstraction) new-pattern new-variables)))))
+                   (make-named-abstraction (abstraction->name abstraction) new-body new-variables)))))
 
 (define (program->abstraction-applications program target-abstraction)
            (define (target-abstraction-application? sexpr)
@@ -659,8 +659,8 @@ The abstraction whose variable is being removed keeps the same body, but the var
                      #t
                      #f)
                  #f))
-           (let* ([abstraction-patterns (map abstraction->pattern (program->abstractions program))]
-                  [possible-locations (pair (program->body program) abstraction-patterns)])
+           (let* ([abstraction-bodies (map abstraction->body (program->abstractions program))]
+                  [possible-locations (pair (program->body program) abstraction-bodies)])
              (deep-find-all target-abstraction-application? possible-locations)))
 
 (define (deep-find-all pred? sexp)
@@ -894,7 +894,7 @@ We illustrate how recursive patterns can be discovered using deargument and a \t
                      [(eq? (status? abstraction-name) 'unchecked)
                       (begin
                         (set-status! abstraction-name 'checking)
-                        (if (base-case? (program->abstraction-pattern program abstraction-name))
+                        (if (base-case? (program->abstraction-body program abstraction-name))
                             (begin
                               (set-status! abstraction-name 'terminates)
                               #t)
