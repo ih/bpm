@@ -491,9 +491,9 @@ Now we recursively attempt to match the three subexpressions + with +, \texttt{(
 Since + and + are both primitives that are the same they match, and our partial match is now \texttt{(+ * *)}.
 Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)} we see that they are both lists of size 3 and so they match giving us a total partial match of \texttt{(+ (* * *) *)}.
 Again we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., + to -, 2 to 2, and 2 to 3.
-Since + and - are primitives that don't match we replace them with a variable to get a total partial match of \texttt{(+ (V1 * *) *)}
+Since + and - are primitives that do not match we replace them with a variable to get a total partial match of \texttt{(+ (V1 * *) *)}
 
-Likewise after comparing 2 to 2 and 2 to 3 we'll get \texttt{(+ (V1 2 V2) *)} as our partial match.
+Likewise after comparing 2 to 2 and 2 to 3 we get \texttt{(+ (V1 2 V2) *)} as our partial match.
 In the final comparison of \texttt{(- 2 5)} and 4 we check can see there is no match because one \texttt{(- 2 5)} is a list and 4 is a primitive so the final result of our anti-unification is \texttt{(+ (V1 2 V2) V3)}.
 
 
@@ -527,7 +527,7 @@ Finding and replacing pattern matches of an abstraction F in an expression E pro
                    (abstraction->vars abstraction))))))
 \end{lstlisting}
 \subsubsection{Compressing Program Example}
-In the case of \texttt{(+ (+ 2 2) (- 2 5))} the partial match we would get between the subexpression \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} is \texttt{(+ V1 V2)}.  We refactor the original expression \texttt{(+ (+ 2 2) (- 2 5))} in terms of \texttt{(+ V1 V2)} by creating a function \texttt{(define (F1 V1 V2) (+ V1 V2))} and applying it in the expression.  For example one application could be \texttt{(F1 (+ 2 2) (- 2 5))} and another could be \texttt{(+ (F1 2 2) (- 2 5))}.  In general we'll apply the function everywhere possible and get a refactored program like so...
+In the case of \texttt{(+ (+ 2 2) (- 2 5))} the partial match we would get between the subexpression \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} is \texttt{(+ V1 V2)}.  We refactor the original expression \texttt{(+ (+ 2 2) (- 2 5))} in terms of \texttt{(+ V1 V2)} by creating a function \texttt{(define (F1 V1 V2) (+ V1 V2))} and applying it in the expression.  For example one application could be \texttt{(F1 (+ 2 2) (- 2 5))} and another could be \texttt{(+ (F1 2 2) (- 2 5))}.  In general, we apply the function everywhere possible and get a refactored program such as:
 \begin{lstlisting}
 (+ (+ 2 2) (- 2 5))
 =>
@@ -916,7 +916,7 @@ The program we transform is \texttt{(begin (node (node a)))} and we can apply th
 $\includegraphics[scale=.25]{recBef.pdf}$
 \end{lstlisting}
 
-Now we'll apply Deargumentation and remove F1's argument.  The first step is to change the definition of F1 (via \texttt{remove-abstraction-variable}) so that x is drawn from a distribution of past instances of the argument like so:
+Now we apply Deargumentation and remove F1's argument.  The first step is to change the definition of F1 (via \texttt{remove-abstraction-variable}) so that x is drawn from a distribution of past instances of the argument like so:
 \begin{lstlisting}
 (begin
   (define (F1 x)
