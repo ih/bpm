@@ -26,9 +26,9 @@ What do you see when you look at figure \ref{fig:plants}? What kinds of patterns
 
 You might describe the image as a series of trees where each tree has a large base and a number of branches of variable length with each branch ending in a flower that is either red or purple.  Each part of this description corresponds to a different pattern detected in the image.  The large base for each individual plant, the variable length branches, branches end in red flowers, etc.  Recognizing patterns like these is an important aspect of intelligence and it would be useful if we could automate this process.  One possible way to approach this problem is in terms of learning generative models represented as probabilistic programs.  In this document, we build on the notion of representing patterns or concepts as probabilistic programs \cite{A.Stuhlmueller:2010:6d11a} and begin to explore a family of algorithms for learning such programs.
 
-One of the major difficulties with identifying regularities in data is the many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.   We propose approaching this problem by performing a ``reduction'' by first transforming data (whatever its type) into some canonical form (an expression in a programming language) and then using the notion of pattern as repeated computation in the program.  The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using a Bayesian posterior probability, and creating search moves based on detecting repeated computation.  The general algorithm can be summarized as (1) turn the data into a large program (2) identify repeated computation in the large program and extract these patterns by merging program structure (3) determine which merge moves to apply based on the posterior probability distribution of the program given the data.  The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference.  We illustrate these ideas on list structured data.  
+One of the major difficulties with identifying regularities in data is the many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.   We propose approaching this problem by performing a ``reduction'' by first transforming data (whatever its type) into a canonical form (an expression in a programming language) and then using the notion of a pattern as a repeated computation in this program.  The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using a Bayesian posterior probability, and creating search moves based on detecting repeated computation.  The general algorithm can be summarized as (1) turn the data into a large program (2) identify repeated computation in the large program and extract these patterns by merging program structure (3) determine which merge moves to apply based on the posterior probability distribution of the program given the data.  The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference.  We illustrate these ideas on list-structured data.  
 
-Generative models play a prominent role in modern machine learning and understanding different classes of models e.g. hidden Markov models, probabilistic context-free grammars, etc. have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying patterns from very small amounts of data.  
+Generative models play a prominent role in modern machine learning and understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying patterns from very small amounts of data.  
 
 We examine a class of generative models that are represented as programs in a probabilistic programming language.  These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and demonstrate the class' ability to capture interesting patterns in the list data domain.
 
@@ -37,7 +37,7 @@ evaluation of the program results in a sample from the distribution. We implemen
 
 
 \subsection{Bayesian Model Merging}
-Bayesian model merging is a framework for searching through a space of generative models in order to find one that accurately generates the desired data.  The main idea is to search program space through a series of merge transformations and to use the posterior $P(M|D)$ as a criteria for selecting transformations, here $M$ is the model and $D$ is the training data.  The method works by creating an initial model that has a uniform distribution over the training set by explicitly incorporating each training example into the model (details are model class specific), this process is called data incorporation.  While the initial model has a good likelihood $P(D|M)$, it will never generate points outside the training set, in other words it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (again specific details are dependent on the model class) and the result may have better generalization properties.  This technique has been successfully applied to learning artificial probabilistic grammars where the grammars were represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}.  Our work also uses the posterior distribution as a search criteria and merging model structure to achieve generalization.  Our work differs in that we use a significantly richer model class of probabilistic programs.  This allows for more complex patterns to be represented as well allowing for more types of transformations that lead to interesting generalization of the model, which can be thought of as lossy compression.   The use of programs as generative models also lends itself to a deeper understanding of the relationship between pattern, computation, and intelligence.
+Bayesian model merging is a framework for searching through a space of generative models in order to find one that accurately generates the desired data.  The main idea is to search program space through a series of merge transformations and to use the posterior $P(M|D)$ as a criteria for selecting transformations, here $M$ is the model and $D$ is the training data.  The method works by creating an initial model that has a uniform distribution over the training set by explicitly incorporating each training example into the model (details are model class specific), this process is called data incorporation.  While the initial model has a good likelihood $P(D|M)$, it will never generate points outside the training set, in other words it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (again specific details are dependent on the model class) and the result may have better generalization properties.  This technique has been successfully applied to learning artificial probabilistic grammars where the grammars were represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}.  Our work also uses the posterior distribution as a search criteria and merging model structure to achieve generalization.  Our work differs in that we use a significantly richer model class of probabilistic programs.  This allows for more complex patterns to be represented as well as allowing for more types of transformations that lead to interesting generalization of the model, which can be thought of as lossy compression.   The use of programs as generative models also lends itself to a deeper understanding of the relationship between pattern, computation, and intelligence.
 
 \section{Overview}
 The main parts of Bayesian program merging are as follows:
@@ -104,7 +104,7 @@ The first step of Bayesian program merging is data incorporation.  Data incorpor
   `(data (color ,(first (second lst)))
          (size ,(first (third lst)))))
 \end{lstlisting}
-In the implementation the data are unannotated s-expressions (an example being (((1) (2)))), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is (node (data (color 1) (size 2)))).  For sake of expository simplicity we assume data is already a tree expression.  An important question we leave for future work is how to perform data incorporation when the data is less structured e.g. feature vectors.  If we give \texttt{incorporate-data} the input: 
+In the implementation the data are unannotated s-expressions (an example being (((1) (2)))), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is (node (data (color 1) (size 2)))).  For sake of expository simplicity we assume data is already a tree expression.  An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors.  If we give \texttt{incorporate-data} the input: 
 \begin{lstlisting}[mathescape=true]
 ((node (data (color 70) (size 1))
        (node (data (color 37) (size 0.3))
@@ -139,7 +139,7 @@ $\includegraphics[scale=.7]{initProgram.pdf}$
 \end{lstlisting}
 
 \section{Probabilistic Programs}
-A generative model is a probability distribution over data.  We can represent probability distributions as programs in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}.  One reason this is interesting is the structure of a program (i.e. the decomposition into functions and the flow of control) can capture different regularities in the data.    We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants} and see how different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
+A generative model is a probability distribution over data.  We can represent probability distributions as programs in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}.  One reason this is interesting is the structure of a program (i.e., the decomposition into functions and the flow of control) can capture different regularities in the data.    We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants} and see how different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
 \begin{lstlisting}[mathescape=true]
 (define tree
   (lambda ()
@@ -173,7 +173,7 @@ $\includegraphics[scale=.35]{trees2.pdf}$
 We can think programs as a combination of data constructor operations with some additional control flow operations and lambda abstractions.  The above tree program begins by determining the number of branches the tree will have and then creating a large body node that connects these branches.  Each branch function recursively connects a series of small nodes together and ends in a call to the flower function, passing it one of two colors.  The flower function creates a node with three ``petal'' nodes each of the same color.  Looking at this program we see how patterns such as a flower having three petals and the body having a large base are reflected in the program structure.  The compositionality of the language also captures relational patterns such as branches end in flowers.  Now that we know many different patterns can be represented within a probabilistic program, the main question becomes how do we change the structure of our initial data incorporated program to reflect such patterns.
 
 \subsection{Data Abstractions}
-We use data abstractions for programs and functions created by merge operations on programs.  A function created by a merge operation is called an abstraction (after lambda abstraction).  It consists of a name, variables, and a pattern i.e. the s-expression that makes up the body of the function.  
+We use data abstractions for programs and functions created by merge operations on programs.  A function created by a merge operation is called an abstraction (after lambda abstraction).  It consists of a name, variables, and a pattern, i.e., the s-expression that makes up the body of the function.  
 \begin{lstlisting}[frame=trBL]
 (define (make-abstraction body variables)
   (make-named-abstraction (sym FUNC-SYMBOL) body variables))
@@ -249,7 +249,7 @@ where $ts$ stands for trees, our target data, the $t$ stands for a single tree, 
 (define (log-likelihood trees prog sample-size)
   (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 \end{lstlisting}
-The idea behind estimating the likelihood for a single tree, $P(t|p)$, is to evaluate the program several times forcing the computation to result in the target tree each time.  Each evaluation gives a probability for a possible way of generating the tree from the model.  This probability is the product of random choices made in the program during evaluation.  Since there may be several possible ways to generate the tree from the program we average the different evaluations.  In the code below \texttt{smc-core} (where smc stands for sequential Monte Carlo) is the part that forces evaluation of the program to the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report, but it can be thought of as an incremental forward sampling process.  Due to the forward-sampling nature of this process, we separate random choices used in generating the continuous-valued parts of the tree (i.e. the color) from the random choices that influence the tree structure.
+The idea behind estimating the likelihood for a single tree, $P(t|p)$, is to evaluate the program several times forcing the computation to result in the target tree each time.  Each evaluation gives a probability for a possible way of generating the tree from the model.  This probability is the product of random choices made in the program during evaluation.  Since there may be several possible ways to generate the tree from the program we average the different evaluations.  In the code below \texttt{smc-core} (where smc stands for sequential Monte Carlo) is the part that forces evaluation of the program to the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report, but it can be thought of as an incremental forward sampling process.  Due to the forward-sampling nature of this process, we separate random choices used in generating the continuous-valued parts of the tree (i.e., the color) from the random choices that influence the tree structure.
 \begin{lstlisting}[frame=trBL]
 (define single-log-likelihood 
   (lambda (program popsize tree)
@@ -399,7 +399,7 @@ The posterior distribution is estimated by combining an estimate of the likeliho
 We described earlier how patterns in the program representation of data can be viewed as repeated computation.  Here we describe how this idea manifests itself as specific program transformations used in exploring the search space.
 
 \subsection{Inverse Inlining}
-Inlining is the process of replacing function calls in a program with the body of the function called.  Inverse inlining creates new functions based on patterns in subexpressions of a program and replaces these subexpressions with functions calls to the new function.  We can think of this process as creating lambda abstractions that potentially compress the program by removing duplication in the code and acts as a proxy for recognizing repeated computation.  The following code fragment outlines this procedure where compressions finds the different (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program).  Duplicate abstractions are filtered out then potential program transformations are created by inverse-inlining function calls for each of the abstractions.  
+Inlining is the process of replacing function calls in a program with the body of the function called.  Inverse Inlining creates new functions based on patterns in subexpressions of a program and replaces these subexpressions with functions calls to the new function.  We can think of this process as creating lambda abstractions that potentially compress the program by removing duplication in the code and acts as a proxy for recognizing repeated computation.  The following code fragment outlines this procedure where compressions finds the different (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program).  Duplicate abstractions are filtered out then potential program transformations are created by Inverse Inlining function calls for each of the abstractions.  
 
 \begin{lstlisting}[frame=trBL]
 (define (compressions program . nofilter)
@@ -425,16 +425,15 @@ Inlining is the process of replacing function calls in a program with the body o
     (filter-abstractions  abstractions)))
 \end{lstlisting}
 
-Aside from the obvious correspondence between repetition in program syntax and repetition in computation, there are a few different reasons for believing this is a useful program transformation.  In terms of Bayesian model merging we are merging the structure of the model, which potentially leads to models with better generalization properties \cite{Stolcke:1994:IPG:645515.658235}.  Inverse-inlining can also also be interpreted as finding partial symmetries like in \cite{DBLP:journals/tog/BokelohWS10}, which was successful in the domain of inverse-procedural modeling.
+Aside from the obvious correspondence between repetition in program syntax and repetition in computation, there are a few different reasons for believing this is a useful program transformation.  In terms of Bayesian model merging we are merging the structure of the model, which potentially leads to models with better generalization properties \cite{Stolcke:1994:IPG:645515.658235}.  Inverse Inlining can also also be interpreted as finding partial symmetries like in \cite{DBLP:journals/tog/BokelohWS10}, which was successful in the domain of inverse-procedural modeling.
 
 \subsubsection{Overview}
-The following example illustrates the inverse inlining transformation on a language slightly different from the tree example.
+The following example illustrates the Inverse Inlining transformation on a language slightly different from the tree example.
 \begin{lstlisting}[mathescape=true]
-(define (inverse-inlining-example)
-  (uniform-choice 
-   (node
-    (node a (node a (node b) (node b)))
-    (node a (node a (node c) (node c))))))
+(uniform-choice 
+ (node
+  (node a (node a (node b) (node b)))
+  (node a (node a (node c) (node c)))))
 $\includegraphics[scale=.40]{csrExample.pdf}$
 \end{lstlisting}
 a possible result of this transformation would be
@@ -446,13 +445,13 @@ a possible result of this transformation would be
 $\includegraphics[scale=.40]{csrDecompose1.pdf}\\
 \includegraphics[scale=.40]{csrDecompose2.pdf}$
 \end{lstlisting}
-The first thing to note is both programs have the same behavior i.e. this transformation is semantics preserving.  Both programs return either \texttt{(a (a (b) (b)))} or \texttt{(a (a (c) (c)))} with equal probability.
+The first thing to note is both programs have the same behavior, i.e., this transformation is semantics preserving.  Both programs return either \texttt{(a (a (b) (b)))} or \texttt{(a (a (c) (c)))} with equal probability.
 
   The transformation can be described as refactoring subexpressions that partially match in a program with a function whose body is the common parts of the matching subexpressions.  In the above example the subexpressions that partially match are \texttt{(node a (node a (node b) (node b)))} and \texttt{(node a (node a (node c) (node c)))}.  The common subexpression is \texttt{(node a (node a (node x) (node y)))}, the function created using this common subexpression is \texttt{F1} and the original subexpressions are refactored as \texttt{(F1 b b)} and \texttt{(F1 c c)}.
 
-An inverse inlining transformation can be created for each pair of subexpressions that have a partial match.  In the case of \texttt{(+ (+ 2 2) (- 2 5))} the following pairs of subexpressions have a partial match: \texttt{[2,2], [(+ 2 2), (- 2 5)], [(+ 2 2), (+ (+ 2 2) (+ 2 5))], [(+ 2 5), (+ (+ 2 2) (+ 2 5))]}, the only subexpressions that do not have a partial match in this example.
+An Inverse Inlining transformation can be created for each pair of subexpressions that have a partial match.  In the case of \texttt{(+ (+ 2 2) (- 2 5))} the following pairs of subexpressions have a partial match: \texttt{[2,2], [(+ 2 2), (- 2 5)], [(+ 2 2), (+ (+ 2 2) (+ 2 5))], [(+ 2 5), (+ (+ 2 2) (+ 2 5))]}, the only subexpressions that do not have a partial match in this example.
 \subsubsection{Anti-unification}
-The process of finding a partial match between two expressions is called anti-unification.  One way to understand the process is in terms of the syntax trees for the expressions.  Every s-expression can be thought of as a tree where the lists and sublists of the s-expression make up the interior nodes and the primitive elements of the lists (e.g. symbols, numbers, etc.) are the leaves.  The tree in figure \ref{expressionTree} corresponds to the expression \texttt{(+ (+ 2 2) (- 2 5))}.  Finding a partial match between two expressions can be thought of as finding a common subtree between their tree representations.
+The process of finding a partial match between two expressions is called anti-unification.  One way to understand the process is in terms of the syntax trees for the expressions.  Every s-expression can be thought of as a tree where the lists and sublists of the s-expression make up the interior nodes and the primitive elements of the lists (e.g., symbols, numbers) are the leaves.  The tree in figure \ref{expressionTree} corresponds to the expression \texttt{(+ (+ 2 2) (- 2 5))}.  Finding a partial match between two expressions can be thought of as finding a common subtree between their tree representations.
 \begin{figure}[h]
 \begin{center}
 \includegraphics[scale=.40]{expressionTree.pdf}
@@ -491,7 +490,7 @@ The first step is to compare the root of the trees and make sure we have lists o
 Now we recursively attempt to match the three subexpressions + with +, \texttt{(+ 2 2)} with \texttt{(- 2 3)}, and \texttt{(- 2 5)} with 4.
 Since + and + are both primitives that are the same they match, and our partial match is now \texttt{(+ * *)}.
 Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)} we see that they are both lists of size 3 and so they match giving us a total partial match of \texttt{(+ (* * *) *)}.
-Again we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)} i.e. + to -, 2 to 2, and 2 to 3.
+Again we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., + to -, 2 to 2, and 2 to 3.
 Since + and - are primitives that don't match we replace them with a variable to get a total partial match of \texttt{(+ (V1 * *) *)}
 
 Likewise after comparing 2 to 2 and 2 to 3 we'll get \texttt{(+ (V1 2 V2) *)} as our partial match.
@@ -512,7 +511,7 @@ Now that we have created lambda abstractions from the partial matches between tw
                           (replace-matches (abstraction->body compressee) compressor)
                           (abstraction->vars compressee)))                           
 \end{lstlisting}
-Finding and replacing pattern matches of an abstraction F in an expression E proceeds recursively by taking the body of F and trying to match it to the expression on E.  A match between the body of the abstraction and the expression is determined by unification, if a match exists then the application of F is returned where the arguments to F are refactored (if F has arguments).  If the match does not hold then E is returned with each of its subexpressions refactored.  If E is a primitive and not a match it is returned.
+Finding and replacing pattern matches of an abstraction F in an expression E proceeds recursively by taking the body of F and trying to match it to the expression on E.  A match between the body of the abstraction and the expression is determined by unification. If a match exists, then the application of F is returned where the arguments to F are refactored (if F has arguments).  If the match does not hold then E is returned with each of its subexpressions refactored.  If E is a primitive and not a match it is returned.
 
 \begin{lstlisting}[frame=trBL]
 (define (replace-matches s abstraction)
@@ -549,7 +548,7 @@ In the example \texttt{(+ (+ 2 2) (- 2 5))} matches \texttt{(+ V1 V2)} so an app
 \subsubsection{Unification}
 Determining whether there is a match between a function body and an expression is known as unification.  Earlier we described anti-unification which can be thought of as a process to create a pattern from two expressions, unification can be viewed as the opposite process of seeing if and how a given pattern fits onto an expression.  The return value of unification is a list of assignments for the variables of the function that would make the function the same as the expression.
 
-The input to unification is a function F, and an expression E.  Unification occurs recursively by checking whether the body of F and E are lists of the same size.  If they are the same size then unification returns the unification of each of the subexpressions.  If they are not the same size or only one of them is a list unification returns false.  In the case where both expressions being unified are primitives true is returned if they are equal and false otherwise.  In the case where the function expression of the unification is a variable an assignment is returned i.e. the variable along with the other expression passed to unification.  At the end a check is made to see if any unifications have returned false, in which case unification of F and E returns false.  There is also a check that any variable that is repeated in F has the same value assigned to it for each place it appears.  If this is not the case unification returns false. If unification is not false then an assignment for each unique variable of F is returned.
+The input to unification is a function F, and an expression E.  Unification occurs recursively by checking whether the body of F and E are lists of the same size.  If they are the same size then unification returns the unification of each of the subexpressions.  If they are not the same size or only one of them is a list unification returns false.  In the case where both expressions being unified are primitives true is returned if they are equal and false otherwise.  In the case where the function expression of the unification is a variable an assignment is returned, i.e., the variable along with the other expression passed to unification.  At the end a check is made to see if any unifications have returned false, in which case unification of F and E returns false.  There is also a check that any variable that is repeated in F has the same value assigned to it for each place it appears.  If this is not the case unification returns false. If unification is not false then an assignment for each unique variable of F is returned.
 
 \begin{lstlisting}[frame=trBL]
 (define unify
@@ -583,9 +582,9 @@ Unification between + and + returns nothing since neither is a variable and they
 If the expression being unified with F1 had been \texttt{(- (+ 2 2) (- 2 5))} then unification between the outer - of the expression and the + of F1 would have returned false and the unification would have failed.
 
 \subsubsection{Summary}
-Inverse-inlining is a useful program transformation that identifies repeated computation in a program by finding patterns in its syntax.  These patterns in syntax correspond to patterns in the data.  We can interpret this in terms of repeated computation by recognizing repeated syntax corresponds to repeated sequences of operations.  This might seem like a limited notion of pattern, but it is worth contemplating the role of lambda abstraction in the lambda calculus and the expressiveness of this language despite (or perhaps because of) its simplicity.
+Inverse Inlining is a useful program transformation that identifies repeated computation in a program by finding patterns in its syntax.  These patterns in syntax correspond to patterns in the data.  We can interpret this in terms of repeated computation by recognizing that repeated syntax corresponds to repeated sequences of operations.  This might seem like a limited notion of pattern, but it is worth contemplating the role of lambda abstraction in the lambda calculus and the expressiveness of this language despite (or perhaps because of) its simplicity.
 
-The process of inverse inlining follows two main steps (1) create abstractions from common subexpressions in a program via anti-unification (2) compress the program with the abstractions by replacing instances of the abstraction with a function application via unification.  Going back to our tree example we illustrate the process on the program in the data incorporation section.
+The process of Inverse Inlining follows two main steps (1) create abstractions from common subexpressions in a program via anti-unification (2) compress the program with the abstractions by replacing instances of the abstraction with a function application via unification.  Going back to our tree example we illustrate the process on the program in the data incorporation section.
 Anti-unification found seventeen possible matches or abstractions.  The abstractions that produce the smallest compressed program and the fifth smallest are 
 \begin{lstlisting}
 (abstraction F1 (V1 V2)
@@ -626,8 +625,8 @@ The following are the programs compressed using these abstractions the first bei
         (F1 33 220 224 207))))
 \end{lstlisting}
 The last abstraction captures the flower pattern we mentioned earlier.  Intuitively it seems like we can capture even more structure and replace the variables for the petal colors with a fixed value since they are all similar.  So rather than explaining the data as being drawn from several Gaussians with slightly different means, we would like to say the data comes from only one Gaussian with a single mean.  We address this issue in the next section with another type of program transformation.
-\subsection{Deargument}
-Deargument is a program transformation that takes a function in a program and removes one of its arguments.  The variable that is removed is redefined inside the function in terms of all the values it has been assigned (i.e. the values passed to the function for that variable during an application).  We can create different program transformations by allowing multiple schemes for redefining a variable, via \texttt{replacement-function},  as a function of its instantiations.  
+\subsection{Deargumentation}
+Deargumentation is a program transformation that takes a function in a program and removes one of its arguments.  The variable that is removed is redefined inside the function in terms of all the values it has been assigned (i.e., the values passed to the function for that variable during an application).  We can create different program transformations by allowing multiple schemes for redefining a variable, via \texttt{replacement-function},  as a function of its instantiations.  
 \begin{lstlisting}[frame=trBL]
 (define (deargument replacement-function program abstraction variable)
   (let* ([new-abstraction (remove-abstraction-variable replacement-function program abstraction variable)])
@@ -678,7 +677,7 @@ The abstraction whose variable is being removed keeps the same body, but the var
   (list-ref function-application (+ i 1)))
 
 \end{lstlisting}
-After the abstraction has been adjusted, any place it was used (i.e. the function was applied) needs to be changed so that no values are passed in to the variable that was removed.
+After the abstraction has been adjusted, any place it was used (i.e., the function was applied) needs to be changed so that no values are passed in to the variable that was removed.
 \begin{lstlisting}[frame=trBL]
 (define (remove-application-argument program abstraction variable)
   (define (abstraction-application? sexpr)
@@ -708,10 +707,10 @@ After the abstraction has been adjusted, any place it was used (i.e. the functio
           (map (curry sexp-search pred? func) sexp)
           sexp)))
 \end{lstlisting}
-This transformation is useful for generalizing a program to have recursive structure as well as dealing with continuous data types that may be distorted with noise, for example the color data of the tree examples.
+In the following, we demonstrate that this transformation is useful for generalizing a program to have recursive structure as well as dealing with continuous data types that may be distorted with noise, for example the color data of the tree examples.
 
 \subsubsection{Noisy data example}
-One issue with inverse-inlining is anything other than perfect equality results in the creation of a variable when matching two expressions.  So if we have an expression such as \texttt{(+ 2 2)} and \texttt{(+ 2 2.01)} and we know there is some noise in the system then we may went to treat these expressions as if they were the same i.e. inverse inline them to \texttt{(define (F1) (+ 2 2))} or \texttt{(define (F1) (+ 2 2.01))} rather than \texttt{(define (F1 x) (+ 2 x))}.  We can do this using a deargument transformation along with a \texttt{replacment-function} called \texttt{noisy-number-replacment} that replaces the variable with the mean of its instances.  
+One issue with Inverse Inlining is that anything other than perfect equality results in the creation of a variable when matching two expressions.  So if we have an expression such as \texttt{(+ 2 2)} and \texttt{(+ 2 2.01)} and we know there is some noise in the system then we may want to treat these expressions as if they were the same, i.e., inverse-inline them to \texttt{(define (F1) (+ 2 2))} or \texttt{(define (F1) (+ 2 2.01))} rather than \texttt{(define (F1 x) (+ 2 x))}.  We can do this using a Deargumentation transformation along with a \texttt{replacment-function} called \texttt{noisy-number-replacment} that replaces the variable with the mean of its instances.  
 \begin{lstlisting}[frame=trBL]
 (define (noisy-number-replacement program abstraction variable variable-instances)
   (if (all (map number? variable-instances))
@@ -733,7 +732,7 @@ Going back to the tree example, suppose we have the program following program.
   (flower 33 220 224 207))
 $\includegraphics[scale=.6]{noisyNumberProgram.pdf}$
 \end{lstlisting}
-Applying the deargument transformation on the \texttt{flower} function and variabe \texttt{V2} would first result in identifying instances of \texttt{V2}, which are \texttt{213} and \texttt{220}.  The abstraction, \texttt{flower}, is now changed using \texttt{remove-abstraction-variable} to get:
+Applying the Deargumentation transform to the \texttt{flower} function and variabe \texttt{V2} would first result in identifying instances of \texttt{V2}, which are \texttt{213} and \texttt{220}.  The abstraction, \texttt{flower}, is now changed using \texttt{remove-abstraction-variable} to get:
 \begin{lstlisting}
 (define flower
   (lambda (V1 V3 V4)
@@ -761,7 +760,7 @@ The whole program is now adjusted to incorporate the new version of \texttt{flow
   (flower 33 224 207))
 $\includegraphics[scale=.6]{noisyNumberTrans1.pdf}$
 \end{lstlisting}
-Now if we had applied the  deargument transformation on the \texttt{flower} function to variabe \texttt{V1} whose variable instances are not similar we would get the following abstraction.  Which creates a program that generated data unlike the original program. 
+Now if we had applied the Deargumentation transform to the \texttt{flower} function to variabe \texttt{V1} whose variable instances are not similar we would get the following abstraction.  Which creates a program that generated data unlike the original program. 
 \begin{lstlisting}
 (define flower
   (lambda (V2 V3 V4)
@@ -789,7 +788,7 @@ Now if we had applied the  deargument transformation on the \texttt{flower} func
 $\includegraphics[scale=.6]{noisyNumberTrans2.pdf}$
 \end{lstlisting}
 \subsubsection{Same Variable example}
-An inverse-inline transformation creates an abstraction with variables where the variables represent parts of an expression that differ between specific abstraction instances.  It might be the case that variables with different names in the abstraction really ought to be treated as the same variable i.e. we would like to allow a variable to occur in multiple places within an abstract expression.  We can address this with a deargument transformation that uses the the following replacement function.  This function basically checks that all variable instances are equal or have the same type if they are numbers to allow for some flexibility.
+An Inverse Inlining transformation creates an abstraction with variables where the variables represent parts of an expression that differ between specific abstraction instances.  It might be the case that variables with different names in the abstraction really ought to be treated as the same variable, i.e., we would like to allow a variable to occur in multiple places within an abstract expression.  We can address this with a Deargumentation transform that uses the the following replacement function.  This function basically checks that all variable instances are equal or have the same type if they are numbers to allow for some flexibility.
 \begin{lstlisting}[frame=trBL]
 (define (same-variable-replacement program abstraction variable variable-instances)
   (let* ([possible-match-variables (delete variable (abstraction->vars abstraction))])
@@ -810,7 +809,7 @@ An inverse-inline transformation creates an abstraction with variables where the
             hypothesis-variable
             (find-matching-variable program abstraction variable-instances (delete hypothesis-variable possible-match-variables))))))
 \end{lstlisting}
-The basic idea is to check whether two variables take on the same values in each application of the function and if they do, they can be considered as the same variable.  Putting this in terms of the deargument transformation we start with some variable of an abstraction we are trying to remove and check the other variables to see whether they match.  Variables are randomly selected and if one matches it is returned as the definition for the variable that is being removed.  
+The basic idea is to check whether two variables take on the same values in each application of the function and if they do, they can be considered as the same variable.  Putting this in terms of the Deargumentation transform we start with some variable of an abstraction we are trying to remove and check the other variables to see whether they match.  Variables are randomly selected and if one matches it is returned as the definition for the variable that is being removed.  
 
 Going back to the tree example, suppose we have the abstraction:
 \begin{lstlisting}
@@ -821,7 +820,7 @@ Going back to the tree example, suppose we have the abstraction:
           (node (data (color (gaussian V3 25)) (size 0.3)))
           (node (data (color (gaussian V4 25)) (size 0.3))))))
 \end{lstlisting}
-Applying the deargument transformation with the \texttt{same-variable-replacment} to variable \texttt{V2} can give us a program that generates data similar to the original if the \texttt{V2} is matched to a variable that is a ``petal'' e.g. \texttt{V3}.
+Applying the Deargumentation transform with the \texttt{same-variable-replacment} to variable \texttt{V2} can give us a program that generates data similar to the original if the \texttt{V2} is matched to a variable that is a ``petal'', e.g., \texttt{V3}.
 
 \begin{lstlisting}[mathescape=true]
 (begin
@@ -838,7 +837,7 @@ Applying the deargument transformation with the \texttt{same-variable-replacment
   (flower 33 224 207))
 $\includegraphics[scale=.6]{sameVarTrans1.pdf}$
 \end{lstlisting}
-If the variable does not match a petal e.g. \texttt{V1} then we get a program that generates data unlike the original program.
+If the variable does not match a petal, e.g. \texttt{V1}, then we get a program that generates data unlike the original program.
 
 \begin{lstlisting}[mathescape=true]
 (begin
@@ -857,7 +856,7 @@ $\includegraphics[scale=.6]{sameVarTrans2.pdf}$
 \end{lstlisting}
 
 \subsubsection{Recursion example}
-We illustrate how recursive patterns can be discovered using deargument and a \texttt{replacement-function} called \texttt{recursion-replacement} that redefines a variable as a choice between a recursive call and a non-recursive call.  The basic idea is to check whether variable instances are calls to the function being deargumented.  If they are then there is a recursion.  The probability of recursing is a function of how many variable instances are recursive function calls.  We also check to see whether this transformation creates an infinite loop.  This approach is admittedly very limited in what it can capture, but we use it as a starting point to illustrate how recursion might be identified.
+We illustrate how recursive patterns can be discovered using Deargumentation and a \texttt{replacement-function} called \texttt{recursion-replacement} that redefines a variable as a choice between a recursive call and a non-recursive call.  The basic idea is to check whether variable instances are calls to the function being deargumented.  If they are then there is a recursion.  The probability of recursing is a function of how many variable instances are recursive function calls.  We also check to see whether this transformation creates an infinite loop.  This approach is admittedly very limited in what it can capture, but we use it as a starting point to illustrate how recursion might be identified.
 \begin{lstlisting}[frame=trBL]
 (define (recursion-replacement program abstraction variable variable-instances)
   (let* ([valid-variable-instances (remove has-variable? variable-instances)]
@@ -907,7 +906,7 @@ We illustrate how recursive patterns can be discovered using deargument and a \t
     (list-or (map base-case? non-recursive-calls))))
 \end{lstlisting}
 
-The program we transform is \texttt{(begin (node (node a)))} and we can apply the inverse inlining transformation to get the following:
+The program we transform is \texttt{(begin (node (node a)))} and we can apply the Inverse Inlining transformation to get the following:
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F1 
@@ -917,14 +916,14 @@ The program we transform is \texttt{(begin (node (node a)))} and we can apply th
 $\includegraphics[scale=.25]{recBef.pdf}$
 \end{lstlisting}
 
-Now we'll apply deargument and remove F1's argument.  The first step is to change the definition of F1 (via \texttt{remove-abstraction-variable}) so that x is drawn from a distribution of past instances of the argument like so:
+Now we'll apply Deargumentation and remove F1's argument.  The first step is to change the definition of F1 (via \texttt{remove-abstraction-variable}) so that x is drawn from a distribution of past instances of the argument like so:
 \begin{lstlisting}
 (begin
   (define (F1 x)
     ((lambda (x) (node x)) (if (flip .5) (F1 a) a)))
   (F1 (F1 a)))
 \end{lstlisting}
-Here the instances of x (i.e. what was passed into the function F1) are \texttt{'(F1 a)}.   The final step is to remove the argument from F1 and any applications of F1 resulting in the program using \texttt{remove-application-argument}.
+Here the instances of x (i.e., what was passed into the function F1) are \texttt{'(F1 a)}.   The final step is to remove the argument from F1 and any applications of F1 resulting in the program using \texttt{remove-application-argument}.
 \begin{lstlisting}[mathescape=true]
 (begin
   (define (F1)
@@ -933,8 +932,8 @@ Here the instances of x (i.e. what was passed into the function F1) are \texttt{
 $\includegraphics[scale=.25]{recAft.pdf}$
 \end{lstlisting}
 
-\subsubsection{Deargument and Program Induction}
-In some sense the problem we are trying to address with the deargument transformation is program induction itself.  We can view the values for each variable as data generated by some process we would like to identify i.e. there is some sort of common computation between variable values that we would like to represent as a program.  In the case of the noisy-number transformation we can view the generation of values for a single variable as coming from the same process, here we restrict the program representing this process to a Gaussian.  Similarly, in the case of the recursive transformation we can view the generation of values for a single variable as coming from a the same process, but we restrict the program representing this process to be the function being deargumented.  In the case of the same variable transformation we can view the generation of values for multiple variables as coming from the same process and we implicitly use the program for one variable as the generating process for the other.  It seems natural to ask whether we could reformulate the deargument transformation as recursive calls to the Bayesian program merging procedure in an attempt to find programs for generating the values of the variables.  One can think of this as recursively squeezing out the randomness in the data where the abstractions created by inverse-inlining create a separation between the ``structured'' parts of the data (the fixed common sub-expressions) and the random parts of the data (the variables in the expression patterns).  As an abstraction is applied one gets more data for the random parts and could conceivably attempt to learn a program to generate this data i.e. separate out even more structure.
+\subsubsection{Deargumentation and Program Induction}
+In some sense the problem we are trying to address with the Deargumentation is program induction itself.  We can view the values for each variable as data generated by some process we would like to identify, i.e., there is some sort of common computation between variable values that we would like to represent as a program.  In the case of the noisy-number transformation we can view the generation of values for a single variable as coming from the same process, here we restrict the program representing this process to a Gaussian.  Similarly, in the case of the recursive transformation we can view the generation of values for a single variable as coming from a the same process, but we restrict the program representing this process to be the function being deargumented.  In the case of the same variable transformation we can view the generation of values for multiple variables as coming from the same process and we implicitly use the program for one variable as the generating process for the other.  It seems natural to ask whether we could reformulate the Deargumentation transform as recursive calls to the Bayesian program merging procedure in an attempt to find programs for generating the values of the variables.  One can think of this as recursively squeezing out the randomness in the data where the abstractions created by Inverse Inlining create a separation between the ``structured'' parts of the data (the fixed common sub-expressions) and the random parts of the data (the variables in the expression patterns).  As an abstraction is applied one gets more data for the random parts and could conceivably attempt to learn a program to generate this data, i.e., separate out even more structure.
 \section{Experiments}
 \subsection{Flower}
 Here we used the following program to generate ten instances of flower that have alternating colors.  
@@ -1097,7 +1096,7 @@ We generated colors for our trees using Gaussians and one motivation for this wo
 \caption{Some trees.}
 \label{fig:noiseCons}
 \end{figure}
-Without a noisy data constructor (i.e. if there were no Gaussian inside calls to \texttt{color}) we might create the following generative model:
+Without a noisy data constructor (i.e., if there were no Gaussian inside calls to \texttt{color}) we might create the following generative model:
 \begin{lstlisting}
 (if (flip)
  (node (data (color 20) (size .5)) (node (data (color 255) (size .5))))
