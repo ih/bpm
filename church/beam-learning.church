@@ -1,7 +1,7 @@
 (define id (lambda (program . nofilter) (list program)))
 (define semantic-preserving-transformations (list id compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
-(define SIZE-CONSTANT 1)
+(define SIZE-CONSTANT 3)
 (define LAG 10)
 (define POPSIZE 50)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
@@ -36,11 +36,14 @@
 
 
 (define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([db (for-each display (list "CURRENT DEPTH: " depth " current size " (log-prior (program+->program program+)) "  \n\n"))]
+  (let* ([db (display-all "CURRENT DEPTH: " depth " SIZE: " (program+->log-prior program+) " SEMANTICS PRESERVED: " (program+->semantics-preserved program+) "  \n\n" )]
+         [db (pretty-print (program->sexpr (program+->program program+)))]
          [transformed-programs+ (apply-and-filter-transformations depth cfilter program+)]
-         [da (display-all "programs at depth " depth " " transformed-programs+ "\n \n")])
+         ;;[da (display-all "programs at depth " depth " " transformed-programs+ "\n \n")]
+         )
+    
     (delete '()  (append transformed-programs+
-             (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
+                         (apply append (map (lambda (prog) (depth-iterated-transformations cfilter prog (- depth 1))) transformed-programs+))))))
 
 (define (apply-and-filter-transformations depth cfilter program+)
  (if (= depth 0)
@@ -69,7 +72,7 @@
                                  (if semantics-flag
                                      (program+->log-likelihood prog+)
                                      (log-likelihood data (program+->program prog+) POPSIZE))) programs+ semantics-flags)]
-         [da (display-all "log-likelihoods: " log-likelihoods "\n")]
+         ;;[da (display-all "log-likelihoods: " log-likelihoods "\n")]
          [posteriors (map + log-priors log-likelihoods)] 
          [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
          [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
@@ -127,7 +130,8 @@
             [score (if (null? scores)
                         -inf.0
                         (apply log-sum-exp scores))]
-            [da (display-all "likelihood:" topology-scores "|" data-scores "|" score "\n\n")])
+            ;;[da (display-all "likelihood:" topology-scores "|" data-scores "|" score "\n\n")]
+            )
        score)))
 
 (define (compute-data-score tree tree-with-parameters)
@@ -156,7 +160,7 @@
                                   (pair (lazy-topology-equal? s lazified-tree depth)
                                         (lambda () (first (lazy-list->list s depth))))))))]
          [repeat-symbol (find-repeat-symbol samples)]
-         [da (pretty-print (list "all samples " (length samples)))]
+         ;;[da (pretty-print (list "all samples " (length samples)))]
          ;;remove duplicates in order to do selective model averaging:
          ;;find symbol for repeat function and delete (temporary fix)
          [samples
@@ -164,7 +168,7 @@
                   (if (member (mcmc-state->addrval s repeat-symbol)
                               (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a))
                       a (pair s a))) '() samples)]
-         [da (pretty-print (list "after removal " (length samples)))]
+         ;;[da (pretty-print (list "after removal " (length samples)))]
          [topology-scores (map mcmc-state->score samples)]
          [generated-trees (map mcmc-state->query-value samples)])
     (list topology-scores generated-trees)))
