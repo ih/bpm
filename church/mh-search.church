@@ -1,0 +1,37 @@
+;;move this into scheme and pass in proposal distribution as a parameter? write proposal distribution as a church function and call map-estimate as a scheme library function from church
+
+(define (map-estimate data minutes)
+  (let* ([start-time (current-time-minutes)]
+         [init-program (make-program+ '() (incorporate-data data))]
+         [time-left minutes])
+    (mcmc-walk data start-time time-left init-program init-program)))
+
+(define (mh-walk data start-time time-left current-state best-state)
+  (if (<= time-left 0)
+      best-program
+      (let ([time-left (decrement-time time-left start-time)]
+            [new-state (mh-step data current-state)]
+            [best-program (max-posterior new-state best-state)])
+        (mh-walk data start-time time-left new-state best-program))))
+
+(define (decrement-time time-left start-time)
+  (let* ([time-passed (- (current-time-minutes) start-time)])
+    (- time-left time-passed)))
+
+(define (mh-step data current-state)
+  (let* ([proposed-state (proposal-distribution current-state)])
+    (if (acceptance proposed-state current-state)
+        proposed-state
+        current-state)))
+
+(define (acceptance proposed-state current-state)
+  (let* ([true-log-ratio (- (posterior proposed-state) (posterior current-state))]
+         [log-transition-ratio (- (backward-probability proposed-state current-state) (forward-probability current-state proposed-state))]
+         [accept (+ true-log-ratio log-transition-ratio)])
+    (if (>=  accept 0)
+        proposed-state
+        (if (log-flip accept)
+            proposed-state
+            current-state))))
+
+(map-estimate data 5)
