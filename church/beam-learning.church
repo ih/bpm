@@ -1,7 +1,7 @@
 (define id (lambda (program . nofilter) (list program)))
 (define semantic-preserving-transformations (list id compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
-(define SIZE-CONSTANT 3)
+(define SIZE-CONSTANT 1)
 (define LAG 10)
 (define POPSIZE 50)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
@@ -10,7 +10,9 @@
          [learned-program (beam-learn data initial-sexpr beam-size depth)]
          [model (lambda () (lazy-list->all-list ((eval (program->sexpr (desugar learned-program))))))])
     (pretty-print (list "compressed-program:" (program->sexpr learned-program) "size: " (program-size learned-program)))
-    (draw-trees (pair "./model-output.png" (repeat 20 (lambda () (model)))))
+    (pretty-print (list "desugared program:" (program->sexpr (desugar learned-program))))
+    (pretty-print (list "model output " (repeat 5 (lambda () (model)))))
+    (draw-trees (pair "./model-output.png" (repeat 50 (lambda () (model)))))
     model))
 
 ;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
@@ -119,7 +121,7 @@
 ;;computes p(fg_top|compression) only takes into account the topology of a factor-graph
 (define single-log-likelihood 
    (lambda (program popsize tree)
-     (let* ([new-program (desugar program)]
+     (let* ([new-program (replace-gaussian (desugar program))]
             [da (display-all  "likelihood for program:  " (program->sexpr program) "\n" "\nprior:  " (log-prior program)  " ")]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]

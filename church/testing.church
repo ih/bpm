@@ -7,7 +7,7 @@
     (let ([start-time (current-time)]
           [value (apply proc args)]
           [end-time (current-time)])
-      (for-each display (list name " run-time:" (time-second (time-difference start-time end-time)) "\n"))
+      (for-each display (list name " run-time:" (/ (time-second (time-difference start-time end-time)) 60.0) " minutes \n"))
       value)))
 
 
