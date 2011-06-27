@@ -1,7 +1,7 @@
 (define id (lambda (program . nofilter) (list program)))
 (define semantic-preserving-transformations (list id compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
-(define SIZE-CONSTANT 1)
+(define SIZE-CONSTANT 3)
 (define LAG 10)
 (define POPSIZE 50)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
@@ -11,8 +11,8 @@
          [model (lambda () (lazy-list->all-list ((eval (program->sexpr (desugar learned-program))))))])
     (pretty-print (list "compressed-program:" (program->sexpr learned-program) "size: " (program-size learned-program)))
     (pretty-print (list "desugared program:" (program->sexpr (desugar learned-program))))
-    (pretty-print (list "model output " (repeat 5 (lambda () (model)))))
-    (draw-trees (pair "./model-output.png" (repeat 50 (lambda () (model)))))
+    (pretty-print (list "model output " (repeat 3 (lambda () (model)))))
+    (draw-trees (pair "./model-output.png" (repeat 20 (lambda () (model)))))
     model))
 
 ;;;turns each image into factor-graphs then turns factor-graphs into programs then wraps that in a uniform draw
@@ -69,12 +69,11 @@
   (let* ([programs (map program+->program programs+)]
          [semantics-flags (map program+->semantics-preserved programs+)]
          [log-priors (map log-prior programs)]
-         [da (display-all "\n\nlog-priors: " (zip log-priors semantics-flags) "\n")]
          [log-likelihoods (map (lambda (prog+ semantics-flag)
                                  (if semantics-flag
                                      (program+->log-likelihood prog+)
                                      (log-likelihood data (program+->program prog+) POPSIZE))) programs+ semantics-flags)]
-         ;;[da (display-all "log-likelihoods: " log-likelihoods "\n")]
+         [da (pretty-print (list "log-priors and log-likelihoods: " (my-list-sort (lambda (a b) (> (third a) (third b))) (zip log-priors log-likelihoods (map + log-priors log-likelihoods) semantics-flags))))]
          [posteriors (map + log-priors log-likelihoods)] 
          [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
          [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
@@ -122,7 +121,9 @@
 (define single-log-likelihood 
    (lambda (program popsize tree)
      (let* ([new-program (replace-gaussian (desugar program))]
-            [da (display-all  "likelihood for program:  " (program->sexpr program) "\n" "\nprior:  " (log-prior program)  " ")]
+            [da (display-all "prior:  " (log-prior program) "\n")]
+            [da (pretty-print "likelihood for program:")]
+            [da (pretty-print (program->sexpr program))]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]
             [topology-scores (first topology-scores+tree-parameters)]
@@ -132,7 +133,7 @@
             [score (if (null? scores)
                         -inf.0
                         (apply log-sum-exp scores))]
-            ;;[da (display-all "likelihood:" topology-scores "|" data-scores "|" score "\n\n")]
+            [da (display-all "likelihood:" topology-scores "|" data-scores "|" score "\n\n")]
             )
        score)))
 
