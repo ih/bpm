@@ -1,7 +1,7 @@
 (define id (lambda (program . nofilter) (list program)))
 (define semantic-preserving-transformations (list id compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
-(define SIZE-CONSTANT 3)
+(define SIZE-CONSTANT 1)
 (define LAG 10)
 (define POPSIZE 50)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs

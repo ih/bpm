@@ -282,7 +282,7 @@
 
 (define trees2 (map lazy-list->all-list (repeat 1 tree)))
 
-(define param-tree (map lazy-list->all-list (list (flower 20) (flower 220) (node (body) (branch-param 11) (branch-param 12)))))
+(define param-tree (map lazy-list->all-list (list (flower 20) (flower 220) (node (body) (branch-param 14) (branch-param 15)) (flower 20))))
 ;(define param-tree (branch-param 3))
 
 
