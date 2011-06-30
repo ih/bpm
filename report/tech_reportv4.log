@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.4.26)  7 JUN 2011 13:03
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.4.26)  29 JUN 2011 18:04
 entering extended mode
  %&-line parsing enabled.
 **\input tech_reportv4.tex
@@ -208,20 +208,20 @@ File: initData.pdf Graphic file (type pdf)
 <initProgram.pdf, id=33, 436.63126pt x 82.3075pt>
 File: initProgram.pdf Graphic file (type pdf)
  <use initProgram.pdf>
-[4 <./initData.pdf>] <trees2.pdf, id=47, 631.35875pt x 232.87pt>
+[4 <./initData.pdf>] <trees2.pdf, id=43, 631.35875pt x 232.87pt>
 File: trees2.pdf Graphic file (type pdf)
 
 <use trees2.pdf> [5 <./initProgram.pdf> <./trees2.pdf>] [6] [7] [8] [9]
-[10] [11] <csrExample.pdf, id=82, 95.35625pt x 72.27pt>
+[10] [11] <csrExample.pdf, id=79, 95.35625pt x 72.27pt>
 File: csrExample.pdf Graphic file (type pdf)
  <use csrExample.pdf>
-<csrDecompose1.pdf, id=83, 148.555pt x 82.3075pt>
+<csrDecompose1.pdf, id=80, 148.555pt x 82.3075pt>
 File: csrDecompose1.pdf Graphic file (type pdf)
  <use csrDecompose1.pdf>
-<csrDecompose2.pdf, id=84, 148.555pt x 82.3075pt>
+<csrDecompose2.pdf, id=81, 148.555pt x 82.3075pt>
 File: csrDecompose2.pdf Graphic file (type pdf)
  <use csrDecompose2.pdf>
-<expressionTree.pdf, id=85, 719.68875pt x 344.28625pt>
+<expressionTree.pdf, id=82, 719.68875pt x 344.28625pt>
 File: expressionTree.pdf Graphic file (type pdf)
 
 <use expressionTree.pdf>
@@ -229,7 +229,7 @@ File: expressionTree.pdf Graphic file (type pdf)
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (29.86334pt too wide) in paragraph at lines 463--464
+Overfull \hbox (29.86334pt too wide) in paragraph at lines 461--462
 []\OT1/cmr/m/n/10 Anti-unification pro-ceeds by re-cur-sively com-par-ing two e
 x-pres-sions, A and B (per-formed by \OT1/cmtt/m/n/10 build-pattern\OT1/cmr/m/n
 /10 ).
@@ -237,116 +237,121 @@ x-pres-sions, A and B (per-formed by \OT1/cmtt/m/n/10 build-pattern\OT1/cmr/m/n
 
 [12 <./csrExample.pdf> <./csrDecompose1.pdf> <./csrDecompose2.pdf>] [13 <./expr
 essionTree.pdf>] [14]
-Overfull \hbox (0.36343pt too wide) in paragraph at lines 578--579
+Overfull \hbox (0.36343pt too wide) in paragraph at lines 576--577
 \OT1/cmr/m/n/10 The ex-am-ple listed ear-lier where the func-tion F is \OT1/cmt
 t/m/n/10 (define (F1 V1 V2) (+ V1 V2)) \OT1/cmr/m/n/10 and the s-expression
  []
 
-[15] [16] [17] [18] <noisyNumberProgram.pdf, id=130, 436.63126pt x 49.18375pt>
+[15] [16] [17] [18] <noisyNumberProgram.pdf, id=127, 436.63126pt x 49.18375pt>
 File: noisyNumberProgram.pdf Graphic file (type pdf)
 
 <use noisyNumberProgram.pdf>
-Overfull \hbox (46.55888pt too wide) in paragraph at lines 746--747
+Overfull \hbox (46.55888pt too wide) in paragraph at lines 744--745
 \OT1/cmr/m/n/10 The whole pro-gram is now ad-justed to in-cor-po-rate the new v
 er-sion of \OT1/cmtt/m/n/10 flower \OT1/cmr/m/n/10 us-ing \OT1/cmtt/m/n/10 remo
 ve-application-argument\OT1/cmr/m/n/10 .
  []
 
-<noisyNumberTrans1.pdf, id=131, 436.63126pt x 49.18375pt>
+<noisyNumberTrans1.pdf, id=128, 436.63126pt x 49.18375pt>
 File: noisyNumberTrans1.pdf Graphic file (type pdf)
 
 <use noisyNumberTrans1.pdf> [19 <./noisyNumberProgram.pdf> <./noisyNumberTrans1
-.pdf>] <noisyNumberTrans2.pdf, id=144, 436.63126pt x 49.18375pt>
+.pdf>] <noisyNumberTrans2.pdf, id=141, 436.63126pt x 49.18375pt>
 File: noisyNumberTrans2.pdf Graphic file (type pdf)
 
 <use noisyNumberTrans2.pdf> [20 <./noisyNumberTrans2.pdf>]
-<sameVarTrans1.pdf, id=152, 436.63126pt x 49.18375pt>
+<sameVarTrans1.pdf, id=149, 436.63126pt x 49.18375pt>
 File: sameVarTrans1.pdf Graphic file (type pdf)
  <use sameVarTrans1.pdf>
-<sameVarTrans2.pdf, id=153, 436.63126pt x 49.18375pt>
+<sameVarTrans2.pdf, id=150, 436.63126pt x 49.18375pt>
 File: sameVarTrans2.pdf Graphic file (type pdf)
  <use sameVarTrans2.pdf>
-Overfull \hbox (13.44841pt too wide) in paragraph at lines 859--860
+Overfull \hbox (13.44841pt too wide) in paragraph at lines 857--858
 \OT1/cmr/m/n/10 We il-lus-trate how re-cur-sive pat-terns can be dis-cov-ered u
 s-ing Dear-gu-men-ta-tion and a \OT1/cmtt/m/n/10 replacement-function
  []
 
 [21 <./sameVarTrans1.pdf> <./sameVarTrans2.pdf>] [22]
-<recBef.pdf, id=168, 331.2375pt x 58.2175pt>
+<recBef.pdf, id=165, 331.2375pt x 58.2175pt>
 File: recBef.pdf Graphic file (type pdf)
  <use recBef.pdf>
-Overfull \hbox (57.83714pt too wide) in paragraph at lines 926--927
+Overfull \hbox (57.83714pt too wide) in paragraph at lines 924--925
 \OT1/cmr/m/n/10 move the ar-gu-ment from F1 and any ap-pli-ca-tions of F1 re-su
 lt-ing in the pro-gram us-ing \OT1/cmtt/m/n/10 remove-application-argument\OT1/
 cmr/m/n/10 . 
  []
 
-<recAft.pdf, id=169, 306.14375pt x 140.525pt>
+<recAft.pdf, id=166, 306.14375pt x 140.525pt>
 File: recAft.pdf Graphic file (type pdf)
- <use recAft.pdf> [23 <./recBef.pdf> <./recAft.pdf>] <paramPartsData.pdf, id=18
-1, 436.63126pt x 49.18375pt>
+ <use recAft.pdf> [23 <./recBef.pdf> <./recAft.pdf>] <paramPartsData.pdf, id=17
+8, 436.63126pt x 49.18375pt>
 File: paramPartsData.pdf Graphic file (type pdf)
 
 <use paramPartsData.pdf>
-<paramPartsModelData.pdf, id=182, 858.20625pt x 49.18375pt>
+<paramPartsModelData.pdf, id=179, 858.20625pt x 49.18375pt>
 File: paramPartsModelData.pdf Graphic file (type pdf)
 
 <use paramPartsModelData.pdf>
-<recursionData.pdf, id=183, 147.55125pt x 290.08376pt>
+<recursionData.pdf, id=180, 147.55125pt x 290.08376pt>
 File: recursionData.pdf Graphic file (type pdf)
  <use recursionData.pdf>
-<recursionModel.pdf, id=184, 547.04375pt x 522.95375pt>
+[24 <./paramPartsData.pdf> <./paramPartsModelData.pdf> <./recursionData.pdf>]
+<recursionModel.pdf, id=196, 547.04375pt x 522.95375pt>
 File: recursionModel.pdf Graphic file (type pdf)
 
-<use recursionModel.pdf> [24 <./paramPartsData.pdf> <./paramPartsModelData.pdf>
- <./recursionData.pdf>] <vineData.pdf, id=200, 146.5475pt x 198.7425pt>
+<use recursionModel.pdf> <vineData.pdf, id=197, 146.5475pt x 198.7425pt>
 File: vineData.pdf Graphic file (type pdf)
 
-<use vineData.pdf> <vineModel.pdf, id=201, 1807.75375pt x 398.48875pt>
+<use vineData.pdf> [25 <./recursionModel.pdf> <./vineData.pdf>]
+<vineModel.pdf, id=210, 1807.75375pt x 398.48875pt>
 File: vineModel.pdf Graphic file (type pdf)
-
-<use vineModel.pdf> [25 <./recursionModel.pdf> <./vineData.pdf>]
-<treeData.pdf, id=214, 90.3375pt x 168.63pt>
+ <use vineModel.pdf>
+<treeData.pdf, id=211, 159.59625pt x 168.63pt>
 File: treeData.pdf Graphic file (type pdf)
  <use treeData.pdf> [26 <./vineModel.pdf> <./treeData.pdf>] <treeModel.pdf, id=
-226, 1510.64375pt x 450.68375pt>
+223, 739.76375pt x 255.95625pt>
 File: treeModel.pdf Graphic file (type pdf)
 
-<use treeModel.pdf> <noisyConstructor.pdf, id=227, 281.05pt x 57.21375pt>
+<use treeModel.pdf> <noisyConstructor.pdf, id=224, 281.05pt x 57.21375pt>
 File: noisyConstructor.pdf Graphic file (type pdf)
 
-<use noisyConstructor.pdf> (./tech_reportv4.bbl [27 <./treeModel.pdf> <./noisyC
-onstructor.pdf>]) [28] (./tech_reportv4.aux) ) 
+<use noisyConstructor.pdf> [27 <./treeModel.pdf> <./noisyConstructor.pdf>]
+<learnnoise-data.pdf, id=236, 245.91875pt x 61.22874pt>
+File: learnnoise-data.pdf Graphic file (type pdf)
+
+<use learnnoise-data.pdf> [28 <./learnnoise-data.pdf>]
+<learnnoise-output.pdf, id=244, 476.78125pt x 61.22874pt>
+File: learnnoise-output.pdf Graphic file (type pdf)
+
+<use learnnoise-output.pdf> (./tech_reportv4.bbl [29 <./learnnoise-output.pdf>]
+) [30] (./tech_reportv4.aux) ) 
 Here is how much of TeX's memory you used:
- 3826 strings out of 495061
- 51318 string characters out of 1182621
+ 3841 strings out of 495061
+ 51640 string characters out of 1182621
  194662 words of memory out of 3000000
- 6962 multiletter control sequences out of 15000+50000
- 11485 words of font info for 43 fonts, out of 3000000 for 9000
+ 6976 multiletter control sequences out of 15000+50000
+ 11317 words of font info for 42 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 27i,8n,40p,1933b,1519s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/t
-ype1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public
-/amsfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
-m/cmbx9.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb
-></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/sha
-re/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-te
-xlive/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/
-type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public
-/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm
-/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr6.pfb></
-usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/tex
-mf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/fo
-nts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texmf-texlive/fonts/type1/pub
-lic/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfont
-s/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.
-pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/s
-hare/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/share/texmf-t
-exlive/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/share/texmf-texlive/fonts
-/type1/public/amsfonts/latxfont/lcircle1.pfb>
-Output written on tech_reportv4.pdf (28 pages, 857466 bytes).
+ 27i,7n,40p,1933b,1519s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texmf-texlive/fonts/type1/public/amsf
+onts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmb
+x12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx9.pfb></us
+r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/tex
+mf-texlive/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/share/texmf-texlive
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/ams
+fonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr
+12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr
+/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-
+texlive/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texmf-texlive/fonts
+/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/publ
+ic/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
+cm/cmti10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.p
+fb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/sha
+re/texmf-texlive/fonts/type1/public/amsfonts/latxfont/lcircle1.pfb>
+Output written on tech_reportv4.pdf (30 pages, 756315 bytes).
 PDF statistics:
- 307 PDF objects out of 1000 (max. 8388607)
+ 311 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 126 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 136 words of extra memory for PDF output out of 10000 (max. 10000000)
 

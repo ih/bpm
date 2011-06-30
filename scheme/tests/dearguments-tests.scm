@@ -61,7 +61,7 @@
 
 ;;(define noisy-node-program (make-program (list (make-named-abstraction 'F1 '(data (label V1) (radius V2) (blobbiness V3) (Distance V4 0.5) (Straightness 0 0.1)) '(V1 V2 V3 V4))) '(lambda () ((uniform-draw (list (lambda () (N (F1 1 10 3.5 5) (N (F1 2 5 3.5 3) (N (F1 3 2 3.5 2) (N (F1 4 5 10 5)) (N (F1 5 5 10 5))))))))))))
 ;;;noisy-number-replacement
-;; (check (noisy-number-replacement noisy-number-program noisy-number-target-abstraction 'V1 (find-variable-instances noisy-number-program noisy-number-target-abstraction 'V1)) => `(gaussian ,(my-mean (list 1 1.1)) ,(my-variance (list 1 1.1))))
+(check (noisy-number-replacement noisy-number-program noisy-number-target-abstraction 'V1 (find-variable-instances noisy-number-program noisy-number-target-abstraction 'V1)) => `(gaussian ,(my-mean (list 1 1.1)) ,(my-variance (list 1 1.1))))
 
 ;;;noisy-number test
 ;; (define noisy-number-dearguments (make-dearguments-transformation noisy-number-replacement))

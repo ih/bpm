@@ -97,7 +97,9 @@
 
          (define (noisy-number-replacement program abstraction variable variable-instances)
            (if (all (map number? variable-instances))
-               (my-mean variable-instances)
+               (let* ([instances-mean (my-mean variable-instances)]
+                      [instances-deviation (sqrt (sample-variance variable-instances))])
+                 `(gaussian ,instances-mean ,instances-deviation))
                NO-REPLACEMENT))
 
          (define (same-variable-replacement program abstraction variable variable-instances)

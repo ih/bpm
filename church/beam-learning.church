@@ -1,9 +1,9 @@
 (define id (lambda (program . nofilter) (list program)))
 (define semantic-preserving-transformations (list id compressions))
 (define semantic-changing-transformations (list noisy-number-dearguments recursion-dearguments same-variable-dearguments))
-(define SIZE-CONSTANT 1)
+(define SIZE-CONSTANT 3)
 (define LAG 10)
-(define POPSIZE 50)
+(define POPSIZE 100)
 ;;;searches through transformations of the sexpr (uniform-draw (list [observed data here])) , returns a thunk evaluates a uniforml draws over compressed forms of each observation, here data is a list of factor graphs
 (define (learn-model data beam-size depth)
   (let* ([initial-sexpr (make-program '() (incorporate-data data))]
@@ -122,7 +122,8 @@
    (lambda (program popsize tree)
      (let* ([new-program (replace-gaussian (desugar program))]
             [da (display-all "prior:  " (log-prior program) "\n")]
-            [da (pretty-print "likelihood for program:")]
+            [da (pretty-print "likelihood for tree given program:")]
+            [da (pretty-print tree)]
             [da (pretty-print (program->sexpr program))]
             [model (eval (program->sexpr new-program))]
             [topology-scores+tree-parameters (compute-topology-scores+evaluate model tree popsize)]

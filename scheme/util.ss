@@ -3,7 +3,7 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance thunkify normal-pdf deep-find display-all tagged-list? list-or)
+         (export all-equal? all-assoc curry all max-take sexp-replace sexp-search get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance thunkify normal-pdf deep-find display-all tagged-list? list-or sample-variance)
          (import (except (rnrs) string-hash string-ci-hash)
                  (_srfi :1)
                  (_srfi :69)
@@ -171,6 +171,16 @@
          (define (my-variance lst)
            (let ((mn (my-mean lst)))
              (my-mean (map (lambda (x) (expt (- x mn) 2)) lst))))
+
+         ;; (define (sum lst)
+         ;;   (fold-left + 0 lst))
+         
+         (define (sample-variance lst)
+           (let* ([n (length lst)]
+                  [sample-mean (my-mean lst)]
+                  [sum-ysquare (sum (map (lambda (y) (expt y 2)) lst))]
+                  [nymeansquare (* n (expt sample-mean 2))])
+             (/ (- sum-ysquare nymeansquare) (- n 1))))
          
          (define (normal-pdf x mu sigma) (* (/ 1 (sqrt (* 2 3.1415 (expt sigma 2)))) (exp (- (/ (expt (- x mu) 2) (* 2 (expt sigma 2))))))))
 

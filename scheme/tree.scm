@@ -17,7 +17,7 @@
                  (pair 'node (pair (node-data->expression (first tree)) (map tree->expression (rest tree))))))
 
          (define (node-data->expression lst)
-           `(data (color (gaussian ,(first (second lst)) 25)) (size ,(first (third lst)))))
+           `(data (color ,(first (second lst))) (size ,(first (third lst)))))
 
          ;;used in scoring (computing the likelihood for a program that generates trees)
          ;;replace-color::program->program
