@@ -1,0 +1,3061 @@
+convert ~/bpm/church/experiments/hand-tree.png ~/Dropbox/bmm/hand-tree.pdfprior:  -290
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian 4e1 25)) (size 0.3)))
+        (node (data (color (gaussian 31 25)) (size 0.3)))
+        (node (data (color (gaussian 41.0 25)) (size 0.3))))
+      (node (data (color (gaussian 13.0 25)) (size 1))
+        (node (data (color (gaussian 89.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 111.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 81.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 85.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 120.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 118.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 51.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 95.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 79.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 108.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 131.0 25))
+                                  (size 0.1))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 204.0 25))
+                                    (size 0.3))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 241.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 233.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 240.0 25))
+                                      (size 0.3))))))))))))))))
+        (node (data (color (gaussian 85.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 121.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 57.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 107.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 58.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 112.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 9e1 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 103.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 84.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 93.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 151.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian -21.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 45.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color (gaussian 3e1 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 44.0 25))
+                                    (size 0.3)))))))))))))))))))
+/tmp/tree-0.226326319332.png
+/tmp/tree-1.226326319332.png
+likelihood:(-0.6931471805599453)|(-132.4095875705154)|-133.10273475107536
+
+prior:  -290
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian 4e1 25)) (size 0.3)))
+        (node (data (color (gaussian 31 25)) (size 0.3)))
+        (node (data (color (gaussian 41.0 25)) (size 0.3))))
+      (node (data (color (gaussian 13.0 25)) (size 1))
+        (node (data (color (gaussian 89.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 111.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 81.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 85.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 120.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 118.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 51.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 95.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 79.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 108.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 131.0 25))
+                                  (size 0.1))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 204.0 25))
+                                    (size 0.3))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 241.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 233.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 240.0 25))
+                                      (size 0.3))))))))))))))))
+        (node (data (color (gaussian 85.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 121.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 57.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 107.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 58.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 112.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 9e1 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 103.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 84.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 93.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 151.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian -21.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 45.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color (gaussian 3e1 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 44.0 25))
+                                    (size 0.3)))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+CURRENT DEPTH: 10 SIZE: -290 SEMANTICS PRESERVED: #f  
+
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian 4e1 25)) (size 0.3)))
+        (node (data (color (gaussian 31 25)) (size 0.3)))
+        (node (data (color (gaussian 41.0 25)) (size 0.3))))
+      (node (data (color (gaussian 13.0 25)) (size 1))
+        (node (data (color (gaussian 89.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 111.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 81.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 85.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 120.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 118.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 51.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 95.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 79.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 108.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 131.0 25))
+                                  (size 0.1))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 204.0 25))
+                                    (size 0.3))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 241.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 233.0 25))
+                                      (size 0.3)))
+                                  (node
+                                    (data
+                                      (color
+                                        (gaussian 240.0 25))
+                                      (size 0.3))))))))))))))))
+        (node (data (color (gaussian 85.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 121.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 57.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 107.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 58.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 112.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 9e1 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 103.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 84.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 93.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 151.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian -21.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 45.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color (gaussian 3e1 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 44.0 25))
+                                    (size 0.3)))))))))))))))))))
+("log-priors and log-likelihoods: "
+  ((-153 -150.34708037794974 -303.34708037794974 #t)
+    (-161 -150.34708037794974 -311.34708037794974 #t)
+    (-164 -150.34708037794974 -314.34708037794974 #t)
+    (-175 -150.34708037794974 -325.34708037794974 #t)
+    (-182 -150.34708037794974 -332.34708037794974 #t)
+    (-188 -150.34708037794974 -338.34708037794974 #t)
+    (-195 -150.34708037794974 -345.34708037794974 #t)
+    (-202 -150.34708037794974 -352.34708037794974 #t)
+    (-208 -150.34708037794974 -358.34708037794974 #t)
+    (-214 -150.34708037794974 -364.34708037794974 #t)
+    (-216 -150.34708037794974 -366.34708037794974 #t)
+    (-220 -150.34708037794974 -370.34708037794974 #t)
+    (-222 -150.34708037794974 -372.34708037794974 #t)
+    (-226 -150.34708037794974 -376.34708037794974 #t)
+    (-227 -150.34708037794974 -377.34708037794974 #t)
+    (-232 -150.34708037794974 -382.34708037794974 #t)
+    (-233 -150.34708037794974 -383.34708037794974 #t)
+    (-237 -150.34708037794974 -387.34708037794974 #t)
+    (-237 -150.34708037794974 -387.34708037794974 #t)
+    (-238 -150.34708037794974 -388.34708037794974 #t)
+    (-239 -150.34708037794974 -389.34708037794974 #t)
+    (-241 -150.34708037794974 -391.34708037794974 #t)
+    (-244 -150.34708037794974 -394.34708037794974 #t)
+    (-244 -150.34708037794974 -394.34708037794974 #t)
+    (-245 -150.34708037794974 -395.34708037794974 #t)
+    (-250 -150.34708037794974 -400.34708037794974 #t)
+    (-251 -150.34708037794974 -401.34708037794974 #t)
+    (-256 -150.34708037794974 -406.34708037794974 #t)
+    (-257 -150.34708037794974 -407.34708037794974 #t)
+    (-262 -150.34708037794974 -412.34708037794974 #t)
+    (-269 -150.34708037794974 -419.34708037794974 #t)
+    (-280 -150.34708037794974 -430.34708037794974 #t)
+    (-285 -150.34708037794974 -435.34708037794974 #t)
+    (-285 -150.34708037794974 -435.34708037794974 #t)
+    (-288 -150.34708037794974 -438.34708037794974 #t)
+    (-288 -150.34708037794974 -438.34708037794974 #t)
+    (-289 -150.34708037794974 -439.34708037794974 #t)
+    (-289 -150.34708037794974 -439.34708037794974 #t)
+    (-290 -150.34708037794974 -440.34708037794974 #t)))
+CURRENT DEPTH: 9 SIZE: -153 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (node (F1 89.0 0.1)
+          (node (F1 111.0 0.1)
+            (node (F1 81.0 0.1)
+              (node (F1 85.0 0.1)
+                (node (F1 120.0 0.1)
+                  (node (F1 117.0 0.1)
+                    (node (F1 118.0 0.1)
+                      (node (F1 51.0 0.1)
+                        (node (F1 95.0 0.1)
+                          (node (F1 79.0 0.1)
+                            (node (F1 108.0 0.1)
+                              (node (F1 131.0 0.1)
+                                (node (F1 204.0 0.3)
+                                  (node (F1 241.0 0.3))
+                                  (node (F1 233.0 0.3))
+                                  (node (F1 240.0 0.3)))))))))))))))
+        (node (F1 85.0 0.1)
+          (node (F1 121.0 0.1)
+            (node (F1 57.0 0.1)
+              (node (F1 107.0 0.1)
+                (node (F1 58.0 0.1)
+                  (node (F1 112.0 0.1)
+                    (node (F1 9e1 0.1)
+                      (node (F1 103.0 0.1)
+                        (node (F1 84.0 0.1)
+                          (node (F1 93.0 0.1)
+                            (node (F1 151.0 0.1)
+                              (node (F1 -21.0 0.3)
+                                (node (F1 45.0 0.3))
+                                (node (F1 3e1 0.3))
+                                (node (F1 44.0 0.3))))))))))))))))))
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        V1)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (node (F1 89.0)
+          (node (F1 111.0)
+            (node (F1 81.0)
+              (node (F1 85.0)
+                (node (F1 120.0)
+                  (node (F1 117.0)
+                    (node (F1 118.0)
+                      (node (F1 51.0)
+                        (node (F1 95.0)
+                          (node (F1 79.0)
+                            (node (F1 108.0)
+                              (node (F1 131.0)
+                                (node (F1 204.0)
+                                  (node (F1 241.0))
+                                  (node (F1 233.0))
+                                  (node (F1 240.0)))))))))))))))
+        (node (F1 85.0)
+          (node (F1 121.0)
+            (node (F1 57.0)
+              (node (F1 107.0)
+                (node (F1 58.0)
+                  (node (F1 112.0)
+                    (node (F1 9e1)
+                      (node (F1 103.0)
+                        (node (F1 84.0)
+                          (node (F1 93.0)
+                            (node (F1 151.0)
+                              (node (F1 -21.0)
+                                (node (F1 45.0))
+                                (node (F1 3e1))
+                                (node (F1 44.0))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        V1)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (node (F1 89.0)
+          (node (F1 111.0)
+            (node (F1 81.0)
+              (node (F1 85.0)
+                (node (F1 120.0)
+                  (node (F1 117.0)
+                    (node (F1 118.0)
+                      (node (F1 51.0)
+                        (node (F1 95.0)
+                          (node (F1 79.0)
+                            (node (F1 108.0)
+                              (node (F1 131.0)
+                                (node (F1 204.0)
+                                  (node (F1 241.0))
+                                  (node (F1 233.0))
+                                  (node (F1 240.0)))))))))))))))
+        (node (F1 85.0)
+          (node (F1 121.0)
+            (node (F1 57.0)
+              (node (F1 107.0)
+                (node (F1 58.0)
+                  (node (F1 112.0)
+                    (node (F1 9e1)
+                      (node (F1 103.0)
+                        (node (F1 84.0)
+                          (node (F1 93.0)
+                            (node (F1 151.0)
+                              (node (F1 -21.0)
+                                (node (F1 45.0))
+                                (node (F1 3e1))
+                                (node (F1 44.0))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V2)
+      ((lambda (V1)
+         (data (color (gaussian V1 25)) (size V2)))
+        V2)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 0.3) (node (F1 0.3)) (node (F1 0.3))
+        (node (F1 0.3)))
+      (node (F1 1)
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.1)
+                                (node (F1 0.3)
+                                  (node (F1 0.3))
+                                  (node (F1 0.3))
+                                  (node (F1 0.3)))))))))))))))
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.3) (node (F1 0.3))
+                                (node (F1 0.3))
+                                (node (F1 0.3))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-491.1249075705154)|-491.81805475107535
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V2)
+      ((lambda (V1)
+         (data (color (gaussian V1 25)) (size V2)))
+        V2)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 0.3) (node (F1 0.3)) (node (F1 0.3))
+        (node (F1 0.3)))
+      (node (F1 1)
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.1)
+                                (node (F1 0.3)
+                                  (node (F1 0.3))
+                                  (node (F1 0.3))
+                                  (node (F1 0.3)))))))))))))))
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.3) (node (F1 0.3))
+                                (node (F1 0.3))
+                                (node (F1 0.3))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-20.59692644631442)|-21.290073626874364
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.19166666666666654)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (node (F1 89.0)
+          (node (F1 111.0)
+            (node (F1 81.0)
+              (node (F1 85.0)
+                (node (F1 120.0)
+                  (node (F1 117.0)
+                    (node (F1 118.0)
+                      (node (F1 51.0)
+                        (node (F1 95.0)
+                          (node (F1 79.0)
+                            (node (F1 108.0)
+                              (node (F1 131.0)
+                                (node (F1 204.0)
+                                  (node (F1 241.0))
+                                  (node (F1 233.0))
+                                  (node (F1 240.0)))))))))))))))
+        (node (F1 85.0)
+          (node (F1 121.0)
+            (node (F1 57.0)
+              (node (F1 107.0)
+                (node (F1 58.0)
+                  (node (F1 112.0)
+                    (node (F1 9e1)
+                      (node (F1 103.0)
+                        (node (F1 84.0)
+                          (node (F1 93.0)
+                            (node (F1 151.0)
+                              (node (F1 -21.0)
+                                (node (F1 45.0))
+                                (node (F1 3e1))
+                                (node (F1 44.0))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.19166666666666654)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (node (F1 89.0)
+          (node (F1 111.0)
+            (node (F1 81.0)
+              (node (F1 85.0)
+                (node (F1 120.0)
+                  (node (F1 117.0)
+                    (node (F1 118.0)
+                      (node (F1 51.0)
+                        (node (F1 95.0)
+                          (node (F1 79.0)
+                            (node (F1 108.0)
+                              (node (F1 131.0)
+                                (node (F1 204.0)
+                                  (node (F1 241.0))
+                                  (node (F1 233.0))
+                                  (node (F1 240.0)))))))))))))))
+        (node (F1 85.0)
+          (node (F1 121.0)
+            (node (F1 57.0)
+              (node (F1 107.0)
+                (node (F1 58.0)
+                  (node (F1 112.0)
+                    (node (F1 9e1)
+                      (node (F1 103.0)
+                        (node (F1 84.0)
+                          (node (F1 93.0)
+                            (node (F1 151.0)
+                              (node (F1 -21.0)
+                                (node (F1 45.0))
+                                (node (F1 3e1))
+                                (node (F1 44.0))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V2)
+      ((lambda (V1)
+         (data (color (gaussian V1 25)) (size V2)))
+        94.91666666666667)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 0.3) (node (F1 0.3)) (node (F1 0.3))
+        (node (F1 0.3)))
+      (node (F1 1)
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.1)
+                                (node (F1 0.3)
+                                  (node (F1 0.3))
+                                  (node (F1 0.3))
+                                  (node (F1 0.3)))))))))))))))
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.3) (node (F1 0.3))
+                                (node (F1 0.3))
+                                (node (F1 0.3))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-225.2626986816265)|-225.95584586218644
+
+prior:  -120
+"likelihood for program:"
+(let ()
+  (define F1
+    (lambda (V2)
+      ((lambda (V1)
+         (data (color (gaussian V1 25)) (size V2)))
+        94.91666666666667)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 0.3) (node (F1 0.3)) (node (F1 0.3))
+        (node (F1 0.3)))
+      (node (F1 1)
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.1)
+                                (node (F1 0.3)
+                                  (node (F1 0.3))
+                                  (node (F1 0.3))
+                                  (node (F1 0.3)))))))))))))))
+        (node (F1 0.1)
+          (node (F1 0.1)
+            (node (F1 0.1)
+              (node (F1 0.1)
+                (node (F1 0.1)
+                  (node (F1 0.1)
+                    (node (F1 0.1)
+                      (node (F1 0.1)
+                        (node (F1 0.1)
+                          (node (F1 0.1)
+                            (node (F1 0.1)
+                              (node (F1 0.3) (node (F1 0.3))
+                                (node (F1 0.3))
+                                (node (F1 0.3))))))))))))))))))
+likelihood:(-0.6931471805599453)|(-27.929087335203313)|-28.622234515763257
+
+("log-priors and log-likelihoods: "
+  ((-107 -150.34708037794974 -257.34708037794974 #t)
+    (-110 -150.34708037794974 -260.34708037794974 #t)
+    (-112 -150.34708037794974 -262.34708037794974 #t)
+    (-115 -150.34708037794974 -265.34708037794974 #t)
+    (-118 -150.34708037794974 -268.34708037794974 #t)
+    (-125 -150.34708037794974 -275.34708037794974 #t)
+    (-127 -150.34708037794974 -277.34708037794974 #t)
+    (-127 -150.34708037794974 -277.34708037794974 #t)
+    (-129 -150.34708037794974 -279.34708037794974 #t)
+    (-131 -150.34708037794974 -281.34708037794974 #t)
+    (-133 -150.34708037794974 -283.34708037794974 #t)
+    (-133 -150.34708037794974 -283.34708037794974 #t)
+    (-134 -150.34708037794974 -284.34708037794974 #t)
+    (-135 -150.34708037794974 -285.34708037794974 #t)
+    (-136 -150.34708037794974 -286.34708037794974 #t)
+    (-136 -150.34708037794974 -286.34708037794974 #t)
+    (-136 -150.34708037794974 -286.34708037794974 #t)
+    (-137 -150.34708037794974 -287.34708037794974 #t)
+    (-138 -150.34708037794974 -288.34708037794974 #t)
+    (-139 -150.34708037794974 -289.34708037794974 #t)
+    (-139 -150.34708037794974 -289.34708037794974 #t)
+    (-140 -150.34708037794974 -290.34708037794974 #t)
+    (-141 -150.34708037794974 -291.34708037794974 #t)
+    (-142 -150.34708037794974 -292.34708037794974 #t)
+    (-143 -150.34708037794974 -293.34708037794974 #t)
+    (-144 -150.34708037794974 -294.34708037794974 #t)
+    (-145 -150.34708037794974 -295.34708037794974 #t)
+    (-152 -150.34708037794974 -302.34708037794974 #t)
+    (-152 -150.34708037794974 -302.34708037794974 #t)
+    (-153 -150.34708037794974 -303.34708037794974 #t)
+    (-120 -254.5780803779497 -374.57808037794973 #f)
+    (-120 -513.1081283779497 -633.1081283779497 #f)
+    (-120 -inf.0 -inf.0 #f) (-120 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 8 SIZE: -107 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F2
+    (lambda (V3 V4 V5)
+      (node (F1 V3 0.1) (node (F1 V4 0.1) V5))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V3)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-142.6055875705154)|-143.29873475107536
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V3)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V4)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-142.6055875705154)|-143.29873475107536
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V4)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -89
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V4)
+      ((lambda (V5) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        (if (flip 9/11)
+            (F2 81.0 85.0)
+            (uniform-choice
+              (node (F1 204.0 0.3) (node (F1 241.0 0.3))
+                (node (F1 233.0 0.3)) (node (F1 240.0 0.3)))
+              (node (F1 151.0 0.1)
+                (node (F1 -21.0 0.3) (node (F1 45.0 0.3))
+                  (node (F1 3e1 0.3)) (node (F1 44.0 0.3)))))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1) (F2 89.0 111.0) (F2 85.0 121.0)))))
+likelihood:(-7.2949739853160445)|(-141.16398757051536)|-148.4589615558314
+
+prior:  -89
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V4)
+      ((lambda (V5) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        (if (flip 9/11)
+            (F2 81.0 85.0)
+            (uniform-choice
+              (node (F1 204.0 0.3) (node (F1 241.0 0.3))
+                (node (F1 233.0 0.3)) (node (F1 240.0 0.3)))
+              (node (F1 151.0 0.1)
+                (node (F1 -21.0 0.3) (node (F1 45.0 0.3))
+                  (node (F1 3e1 0.3)) (node (F1 44.0 0.3)))))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1) (F2 89.0 111.0) (F2 85.0 121.0)))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -94
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V4 V5) (node (F1 V3) (node (F1 V4) V5))))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3062499999999999)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (node (F1 204.0) (node (F1 241.0))
+                      (node (F1 233.0)) (node (F1 240.0)))))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0)
+                    (node (F1 -21.0) (node (F1 45.0))
+                      (node (F1 3e1)) (node (F1 44.0)))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -94
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V4 V5) (node (F1 V3) (node (F1 V4) V5))))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3062499999999999)))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1) (node (F1 4e1)) (node (F1 31))
+        (node (F1 41.0)))
+      (node (F1 13.0)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (node (F1 204.0) (node (F1 241.0))
+                      (node (F1 233.0)) (node (F1 240.0)))))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0)
+                    (node (F1 -21.0) (node (F1 45.0))
+                      (node (F1 3e1)) (node (F1 44.0)))))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-136.50631484324265)|-137.1994620238026
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-135.8389693886972)|-136.53211656925714
+
+prior:  -99
+"likelihood for program:"
+(let ()
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice
+      (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+        (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0
+                    (node (F1 204.0 0.3)
+                      (node (F1 241.0 0.3))
+                      (node (F1 233.0 0.3))
+                      (node (F1 240.0 0.3)))))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (node (F1 -21.0 0.3)
+                      (node (F1 45.0 0.3))
+                      (node (F1 3e1 0.3))
+                      (node (F1 44.0 0.3)))))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+("log-priors and log-likelihoods: "
+  ((-90 -150.34708037794974 -240.34708037794974 #t)
+    (-93 -150.34708037794974 -243.34708037794974 #t)
+    (-98 -150.34708037794974 -248.34708037794974 #t)
+    (-99 -153.77646219613152 -252.77646219613152 #f)
+    (-99 -154.44380765067697 -253.44380765067697 #f)
+    (-89 -165.70330718270577 -254.70330718270577 #f)
+    (-106 -150.34708037794974 -256.34708037794974 #t)
+    (-106 -150.34708037794974 -256.34708037794974 #t)
+    (-107 -150.34708037794974 -257.34708037794974 #t)
+    (-99 -160.54308037794974 -259.54308037794976 #f)
+    (-99 -160.54308037794974 -259.54308037794976 #f)
+    (-94 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 7 SIZE: -90 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V4 V5)
+      (node (F1 V3 0.1) (node (F1 V4 0.1) V5))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V3)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-142.6055875705154)|-143.29873475107536
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V3)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V4)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-142.6055875705154)|-143.29873475107536
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        V4)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V4)
+      ((lambda (V5) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        (if (flip 9/11)
+            (F2 81.0 85.0)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2 89.0 111.0) (F2 85.0 121.0)))))
+likelihood:(-7.2949739853160445)|(-141.16398757051536)|-148.4589615558314
+
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V4)
+      ((lambda (V5) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        (if (flip 9/11)
+            (F2 81.0 85.0)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2 89.0 111.0) (F2 85.0 121.0)))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -85
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V3 V4 V5) (node (F1 V3) (node (F1 V4) V5))))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -85
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V3 V4 V5) (node (F1 V3) (node (F1 V4) V5))))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2 89.0 111.0
+          (F2 81.0 85.0
+            (F2 120.0 117.0
+              (F2 118.0 51.0
+                (F2 95.0 79.0
+                  (F2 108.0 131.0
+                    (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0 121.0
+          (F2 57.0 107.0
+            (F2 58.0 112.0
+              (F2 9e1 103.0
+                (F2 84.0 93.0
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453 -0.6931471805599453)|(-inf.0 -inf.0)|-inf.0
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-136.50631484324265)|-137.1994620238026
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V3 V5)
+      ((lambda (V4) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 89.0
+          (F2 81.0
+            (F2 120.0
+              (F2 118.0
+                (F2 95.0
+                  (F2 108.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 85.0
+          (F2 57.0
+            (F2 58.0
+              (F2 9e1
+                (F2 84.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-135.8389693886972)|-136.53211656925714
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+("log-priors and log-likelihoods: "
+  ((-82 -153.77646219613152 -235.77646219613152 #f)
+    (-82 -154.44380765067697 -236.44380765067697 #f)
+    (-72 -165.70330718270577 -237.70330718270577 #f)
+    (-88 -150.34708037794974 -238.34708037794974 #t)
+    (-89 -150.34708037794974 -239.34708037794974 #t)
+    (-89 -150.34708037794974 -239.34708037794974 #t)
+    (-90 -150.34708037794974 -240.34708037794974 #t)
+    (-82 -160.54308037794974 -242.54308037794974 #f)
+    (-82 -160.54308037794974 -242.54308037794974 #f)
+    (-85 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 6 SIZE: -82 SEMANTICS PRESERVED: #f  
+
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4)
+      ((lambda (V5)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        (if (flip 9/11)
+            (F2 85.0)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2 111.0) (F2 121.0)))))
+likelihood:(-7.2949739853160445)|(-140.5853693886972)|-147.88034337401322
+
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4)
+      ((lambda (V5)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        (if (flip 9/11)
+            (F2 85.0)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2 111.0) (F2 121.0)))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -77
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -77
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -74
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-139.93569666142446)|-140.6288438419844
+
+prior:  -74
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+("log-priors and log-likelihoods: "
+  ((-74 -157.87318946885878 -231.87318946885878 #f)
+    (-80 -153.77646219613152 -233.77646219613152 #t)
+    (-81 -153.77646219613152 -234.77646219613152 #t)
+    (-81 -153.77646219613152 -234.77646219613152 #t)
+    (-82 -153.77646219613152 -235.77646219613152 #t)
+    (-72 -165.1246890008876 -237.1246890008876 #f)
+    (-77 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 5 SIZE: -74 SEMANTICS PRESERVED: #f  
+
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda ()
+      ((lambda (V5)
+         ((lambda (V4)
+            ((lambda (V3)
+               (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+              89.54545454545455))
+           100.9090909090909))
+        (if (flip 9/11)
+            (F2)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2) (F2)))))
+likelihood:(-7.2949739853160445)|(-139.93569666142446)|-147.2306706467405
+
+prior:  -72
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda ()
+      ((lambda (V5)
+         ((lambda (V4)
+            ((lambda (V3)
+               (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+              89.54545454545455))
+           100.9090909090909))
+        (if (flip 9/11)
+            (F2)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2) (F2)))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -69
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -69
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (node (F1 V7)) (node (F1 V8))
+        (node (F1 V9)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3125)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+("log-priors and log-likelihoods: "
+  ((-72 -157.87318946885878 -229.87318946885878 #t)
+    (-72 -157.87318946885878 -229.87318946885878 #t)
+    (-72 -157.87318946885878 -229.87318946885878 #t)
+    (-72 -157.87318946885878 -229.87318946885878 #t)
+    (-73 -157.87318946885878 -230.87318946885878 #t)
+    (-73 -157.87318946885878 -230.87318946885878 #t)
+    (-73 -157.87318946885878 -230.87318946885878 #t)
+    (-74 -157.87318946885878 -231.87318946885878 #t)
+    (-72 -164.47501627361487 -236.47501627361487 #f)
+    (-69 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 4 SIZE: -72 SEMANTICS PRESERVED: #t  
+
+(let () (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+prior:  -70
+"likelihood for program:"
+(let () (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda ()
+      ((lambda (V5)
+         ((lambda (V4)
+            ((lambda (V3)
+               (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+              89.54545454545455))
+           100.9090909090909))
+        (if (flip 9/11)
+            (F2)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2) (F2)))))
+likelihood:(-7.2949739853160445)|(-139.93569666142446)|-147.2306706467405
+
+prior:  -70
+"likelihood for program:"
+(let () (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda ()
+      ((lambda (V5)
+         ((lambda (V4)
+            ((lambda (V3)
+               (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+              89.54545454545455))
+           100.9090909090909))
+        (if (flip 9/11)
+            (F2)
+            (uniform-choice (F3 204.0 241.0 233.0 240.0)
+              (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1) (F2) (F2)))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+prior:  -69
+"likelihood for program:"
+(let () (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3166666666666667)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -69
+"likelihood for program:"
+(let () (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3166666666666667)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+("log-priors and log-likelihoods: "
+  ((-70 -157.87318946885878 -227.87318946885878 #t)
+    (-70 -157.87318946885878 -227.87318946885878 #t)
+    (-70 -157.87318946885878 -227.87318946885878 #t)
+    (-71 -157.87318946885878 -228.87318946885878 #t)
+    (-71 -157.87318946885878 -228.87318946885878 #t)
+    (-72 -157.87318946885878 -229.87318946885878 #t)
+    (-70 -164.47501627361487 -234.47501627361487 #f)
+    (-69 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 3 SIZE: -70 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (node (F1 151.0 0.1) (F3 -21.0 45.0 3e1 44.0)))))))
+prior:  -67
+"likelihood for program:"
+(let ()
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3166666666666667)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -67
+"likelihood for program:"
+(let ()
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (node (F1 V3) (node (F1 V4) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.3166666666666667)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (node (F1 151.0) (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+("log-priors and log-likelihoods: "
+  ((-69 -157.87318946885878 -226.87318946885878 #t)
+    (-70 -157.87318946885878 -227.87318946885878 #t)
+    (-67 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 2 SIZE: -69 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F6 (lambda (V12 V13) (node (F1 V12 0.1) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+prior:  -68
+"likelihood for program:"
+(let () (define F6 (lambda (V12 V13) (node (F1 V12) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.42500000000000004)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -68
+"likelihood for program:"
+(let () (define F6 (lambda (V12 V13) (node (F1 V12) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.42500000000000004)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+("log-priors and log-likelihoods: "
+  ((-69 -157.87318946885878 -226.87318946885878 #t)
+    (-68 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 1 SIZE: -69 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F6 (lambda (V12 V13) (node (F1 V12 0.1) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+prior:  -68
+"likelihood for program:"
+(let () (define F6 (lambda (V12 V13) (node (F1 V12) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.42500000000000004)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+prior:  -68
+"likelihood for program:"
+(let () (define F6 (lambda (V12 V13) (node (F1 V12) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1)
+      ((lambda (V2)
+         (data (color (gaussian V1 25)) (size V2)))
+        0.42500000000000004)))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0) (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+likelihood:(-0.6931471805599453)|(-inf.0)|-inf.0
+
+("log-priors and log-likelihoods: "
+  ((-69 -157.87318946885878 -226.87318946885878 #t)
+    (-68 -inf.0 -inf.0 #f)))
+CURRENT DEPTH: 0 SIZE: -69 SEMANTICS PRESERVED: #t  
+
+(let ()
+  (define F6 (lambda (V12 V13) (node (F1 V12 0.1) V13)))
+  (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+  (define F4 (lambda (V10) (node (F1 V10 0.3))))
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3) (F6 V3 (F6 V4 V5))) 89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+        (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+prior:  -74
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-139.93569666142446)|-140.6288438419844
+
+prior:  -74
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V5)
+      ((lambda (V4)
+         ((lambda (V3)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+           89.54545454545455))
+        100.9090909090909)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2
+          (F2
+            (F2 (F2 (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2
+          (F2
+            (F2
+              (F2
+                (F2
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453 -0.6931471805599453)|(-16.551198446314423 -16.551198446314423)|-16.551198446314423
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-135.8389693886972)|-136.53211656925714
+
+prior:  -82
+"likelihood for program:"
+(let ()
+  (define F3
+    (lambda (V6 V7 V8 V9)
+      (node (F1 V6 0.3) (node (F1 V7 0.3))
+        (node (F1 V8 0.3)) (node (F1 V9 0.3)))))
+  (define F2
+    (lambda (V4 V5)
+      ((lambda (V3) (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+        89.54545454545455)))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 3e1 4e1 31 41.0)
+      (node (F1 13.0 1)
+        (F2 111.0
+          (F2 85.0
+            (F2 117.0
+              (F2 51.0
+                (F2 79.0
+                  (F2 131.0 (F3 204.0 241.0 233.0 240.0)))))))
+        (F2 121.0
+          (F2 107.0
+            (F2 112.0
+              (F2 103.0
+                (F2 93.0
+                  (node (F1 151.0 0.1)
+                    (F3 -21.0 45.0 3e1 44.0)))))))))))
+likelihood:(-0.6931471805599453)|(-16.551198446314423)|-17.244345626874367
+
+("log-priors and log-likelihoods: "
+  ((-69 -157.87318946885878 -226.87318946885878 #t)
+    (-69 -157.87318946885878 -226.87318946885878 #t)
+    (-69 -157.87318946885878 -226.87318946885878 #t)
+    (-70 -157.87318946885878 -227.87318946885878 #t)
+    (-72 -157.87318946885878 -229.87318946885878 #t)
+    (-74 -157.18004228829884 -231.18004228829884 #f)
+    (-82 -153.77646219613152 -235.77646219613152 #f)
+    (-90 -150.34708037794974 -240.34708037794974 #t)
+    (-107 -150.34708037794974 -257.34708037794974 #t)
+    (-153 -150.34708037794974 -303.34708037794974 #t)))
+("top transformations"
+  ((program+
+     (program
+       ((abstraction F6 (V12 V13) (node (F1 V12 0.1) V13))
+         (abstraction F5 (V11) (F2 (F2 (F2 (F2 (F2 V11))))))
+         (abstraction F4 (V10) (node (F1 V10 0.3)))
+         (abstraction F3 (V6 V7 V8 V9)
+           (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9)))
+         (abstraction F2 (V5)
+           ((lambda (V4)
+              ((lambda (V3) (F6 V3 (F6 V4 V5)))
+                89.54545454545455))
+             100.9090909090909))
+         (abstraction F1 (V1 V2)
+           (data (color (gaussian V1 25)) (size V2))))
+       (lambda ()
+         (uniform-choice (F3 3e1 4e1 31 41.0)
+           (node (F1 13.0 1)
+             (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+             (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+     -226.87318946885878 -157.87318946885878 -69 #t)
+    (program+
+      (program
+        ((abstraction F6 (V12 V13) (node (F1 V12 0.1) V13))
+          (abstraction F5 (V11) (F2 (F2 (F2 (F2 (F2 V11))))))
+          (abstraction F4 (V10) (node (F1 V10 0.3)))
+          (abstraction F3 (V6 V7 V8 V9)
+            (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9)))
+          (abstraction F2 (V5)
+            ((lambda (V4)
+               ((lambda (V3) (F6 V3 (F6 V4 V5)))
+                 89.54545454545455))
+              100.9090909090909))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+              (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+      -226.87318946885878 -157.87318946885878 -69 #t)
+    (program+
+      (program
+        ((abstraction F6 (V12 V13) (node (F1 V12 0.1) V13))
+          (abstraction F5 (V11) (F2 (F2 (F2 (F2 (F2 V11))))))
+          (abstraction F4 (V10) (node (F1 V10 0.3)))
+          (abstraction F3 (V6 V7 V8 V9)
+            (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9)))
+          (abstraction F2 (V5)
+            ((lambda (V4)
+               ((lambda (V3) (F6 V3 (F6 V4 V5)))
+                 89.54545454545455))
+              100.9090909090909))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+              (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+      -226.87318946885878 -157.87318946885878 -69 #t)
+    (program+
+      (program
+        ((abstraction F5 (V11) (F2 (F2 (F2 (F2 (F2 V11))))))
+          (abstraction F4 (V10) (node (F1 V10 0.3)))
+          (abstraction F3 (V6 V7 V8 V9)
+            (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9)))
+          (abstraction F2 (V5)
+            ((lambda (V4)
+               ((lambda (V3)
+                  (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+                 89.54545454545455))
+              100.9090909090909))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+              (F5
+                (node (F1 151.0 0.1)
+                  (F3 -21.0 45.0 3e1 44.0)))))))
+      -227.87318946885878 -157.87318946885878 -70 #t)
+    (program+
+      (program
+        ((abstraction F4 (V10) (node (F1 V10 0.3)))
+          (abstraction F3 (V6 V7 V8 V9)
+            (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9)))
+          (abstraction F2 (V5)
+            ((lambda (V4)
+               ((lambda (V3)
+                  (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+                 89.54545454545455))
+              100.9090909090909))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F2
+                (F2
+                  (F2
+                    (F2
+                      (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+              (F2
+                (F2
+                  (F2
+                    (F2
+                      (F2
+                        (node (F1 151.0 0.1)
+                          (F3 -21.0 45.0 3e1 44.0)))))))))))
+      -229.87318946885878 -157.87318946885878 -72 #t)
+    (program+
+      (program
+        ((abstraction F3 (V6 V7 V8 V9)
+           (node (F1 V6 0.3) (node (F1 V7 0.3))
+             (node (F1 V8 0.3)) (node (F1 V9 0.3))))
+          (abstraction F2 (V5)
+            ((lambda (V4)
+               ((lambda (V3)
+                  (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+                 89.54545454545455))
+              100.9090909090909))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F2
+                (F2
+                  (F2
+                    (F2
+                      (F2 (F2 (F3 204.0 241.0 233.0 240.0)))))))
+              (F2
+                (F2
+                  (F2
+                    (F2
+                      (F2
+                        (node (F1 151.0 0.1)
+                          (F3 -21.0 45.0 3e1 44.0)))))))))))
+      -231.18004228829884 -157.18004228829884 -74 #f)
+    (program+
+      (program
+        ((abstraction F3 (V6 V7 V8 V9)
+           (node (F1 V6 0.3) (node (F1 V7 0.3))
+             (node (F1 V8 0.3)) (node (F1 V9 0.3))))
+          (abstraction F2 (V4 V5)
+            ((lambda (V3)
+               (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+              89.54545454545455))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F2 111.0
+                (F2 85.0
+                  (F2 117.0
+                    (F2 51.0
+                      (F2 79.0
+                        (F2 131.0
+                          (F3 204.0 241.0 233.0 240.0)))))))
+              (F2 121.0
+                (F2 107.0
+                  (F2 112.0
+                    (F2 103.0
+                      (F2 93.0
+                        (node (F1 151.0 0.1)
+                          (F3 -21.0 45.0 3e1 44.0)))))))))))
+      -235.77646219613152 -153.77646219613152 -82 #f)
+    (program+
+      (program
+        ((abstraction F3 (V6 V7 V8 V9)
+           (node (F1 V6 0.3) (node (F1 V7 0.3))
+             (node (F1 V8 0.3)) (node (F1 V9 0.3))))
+          (abstraction F2 (V3 V4 V5)
+            (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice (F3 3e1 4e1 31 41.0)
+            (node (F1 13.0 1)
+              (F2 89.0 111.0
+                (F2 81.0 85.0
+                  (F2 120.0 117.0
+                    (F2 118.0 51.0
+                      (F2 95.0 79.0
+                        (F2 108.0 131.0
+                          (F3 204.0 241.0 233.0 240.0)))))))
+              (F2 85.0 121.0
+                (F2 57.0 107.0
+                  (F2 58.0 112.0
+                    (F2 9e1 103.0
+                      (F2 84.0 93.0
+                        (node (F1 151.0 0.1)
+                          (F3 -21.0 45.0 3e1 44.0)))))))))))
+      -240.34708037794974 -150.34708037794974 -90 #t)
+    (program+
+      (program
+        ((abstraction F2 (V3 V4 V5)
+           (node (F1 V3 0.1) (node (F1 V4 0.1) V5)))
+          (abstraction F1 (V1 V2)
+            (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice
+            (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+              (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+            (node (F1 13.0 1)
+              (F2 89.0 111.0
+                (F2 81.0 85.0
+                  (F2 120.0 117.0
+                    (F2 118.0 51.0
+                      (F2 95.0 79.0
+                        (F2 108.0 131.0
+                          (node (F1 204.0 0.3)
+                            (node (F1 241.0 0.3))
+                            (node (F1 233.0 0.3))
+                            (node (F1 240.0 0.3)))))))))
+              (F2 85.0 121.0
+                (F2 57.0 107.0
+                  (F2 58.0 112.0
+                    (F2 9e1 103.0
+                      (F2 84.0 93.0
+                        (node (F1 151.0 0.1)
+                          (node (F1 -21.0 0.3)
+                            (node (F1 45.0 0.3))
+                            (node (F1 3e1 0.3))
+                            (node (F1 44.0 0.3)))))))))))))
+      -257.34708037794974 -150.34708037794974 -107 #t)
+    (program+
+      (program
+        ((abstraction F1 (V1 V2)
+           (data (color (gaussian V1 25)) (size V2))))
+        (lambda ()
+          (uniform-choice
+            (node (F1 3e1 0.3) (node (F1 4e1 0.3))
+              (node (F1 31 0.3)) (node (F1 41.0 0.3)))
+            (node (F1 13.0 1)
+              (node (F1 89.0 0.1)
+                (node (F1 111.0 0.1)
+                  (node (F1 81.0 0.1)
+                    (node (F1 85.0 0.1)
+                      (node (F1 120.0 0.1)
+                        (node (F1 117.0 0.1)
+                          (node (F1 118.0 0.1)
+                            (node (F1 51.0 0.1)
+                              (node (F1 95.0 0.1)
+                                (node (F1 79.0 0.1)
+                                  (node (F1 108.0 0.1)
+                                    (node (F1 131.0 0.1)
+                                      (node (F1 204.0 0.3)
+                                        (node (F1 241.0 0.3))
+                                        (node (F1 233.0 0.3))
+                                        (node (F1 240.0 0.3)))))))))))))))
+              (node (F1 85.0 0.1)
+                (node (F1 121.0 0.1)
+                  (node (F1 57.0 0.1)
+                    (node (F1 107.0 0.1)
+                      (node (F1 58.0 0.1)
+                        (node (F1 112.0 0.1)
+                          (node (F1 9e1 0.1)
+                            (node (F1 103.0 0.1)
+                              (node (F1 84.0 0.1)
+                                (node (F1 93.0 0.1)
+                                  (node (F1 151.0 0.1)
+                                    (node (F1 -21.0 0.3)
+                                      (node (F1 45.0 0.3))
+                                      (node (F1 3e1 0.3))
+                                      (node (F1 44.0 0.3))))))))))))))))))
+      -303.34708037794974 -150.34708037794974 -153 #t)))
+("compressed-program:"
+  (let ()
+    (define F6 (lambda (V12 V13) (node (F1 V12 0.1) V13)))
+    (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+    (define F4 (lambda (V10) (node (F1 V10 0.3))))
+    (define F3
+      (lambda (V6 V7 V8 V9)
+        (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+    (define F2
+      (lambda (V5)
+        ((lambda (V4)
+           ((lambda (V3) (F6 V3 (F6 V4 V5)))
+             89.54545454545455))
+          100.9090909090909)))
+    (define F1
+      (lambda (V1 V2)
+        (data (color (gaussian V1 25)) (size V2))))
+    (lambda ()
+      (uniform-choice (F3 3e1 4e1 31 41.0)
+        (node (F1 13.0 1)
+          (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+          (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))
+  "size: " 69)
+("desugared program:"
+  (let ()
+    (define F6 (lambda (V12 V13) (node (F1 V12 0.1) V13)))
+    (define F5 (lambda (V11) (F2 (F2 (F2 (F2 (F2 V11)))))))
+    (define F4 (lambda (V10) (node (F1 V10 0.3))))
+    (define F3
+      (lambda (V6 V7 V8 V9)
+        (node (F1 V6 0.3) (F4 V7) (F4 V8) (F4 V9))))
+    (define F2
+      (lambda (V5)
+        ((lambda (V4)
+           ((lambda (V3) (F6 V3 (F6 V4 V5)))
+             89.54545454545455))
+          100.9090909090909)))
+    (define F1
+      (lambda (V1 V2)
+        (data (color (gaussian V1 25)) (size V2))))
+    (lambda ()
+      ((uniform-draw
+         (list (lambda () (F3 3e1 4e1 31 41.0))
+           (lambda ()
+             (node (F1 13.0 1)
+               (F5 (F2 (F3 204.0 241.0 233.0 240.0)))
+               (F5 (F6 151.0 (F3 -21.0 45.0 3e1 44.0)))))))))))
+("model output "
+  (((data (-28.0) (1))
+     ((data (126.0) (0.1))
+       ((data (102.0) (0.1))
+         ((data (97.0) (0.1))
+           ((data (126.0) (0.1))
+             ((data (108.0) (0.1))
+               ((data (118.0) (0.1))
+                 ((data (36.0) (0.1))
+                   ((data (93.0) (0.1))
+                     ((data (111.0) (0.1))
+                       ((data (170.0) (0.1))
+                         ((data (81.0) (0.1))
+                           ((data (106.0) (0.1))
+                             ((data (177.0) (0.3))
+                               ((data (253.0) (0.3)))
+                               ((data (197.0) (0.3)))
+                               ((data (253.0) (0.3))))))))))))))))
+     ((data (95.0) (0.1))
+       ((data (79.0) (0.1))
+         ((data (78.0) (0.1))
+           ((data (122.0) (0.1))
+             ((data (76.0) (0.1))
+               ((data (104.0) (0.1))
+                 ((data (73.0) (0.1))
+                   ((data (180.0) (0.1))
+                     ((data (79.0) (0.1))
+                       ((data (107.0) (0.1))
+                         ((data (205.0) (0.1))
+                           ((data (17.0) (0.3))
+                             ((data (28.0) (0.3)))
+                             ((data (26.0) (0.3)))
+                             ((data (26.0) (0.3))))))))))))))))
+    ((data (48.0) (1))
+      ((data (76.0) (0.1))
+        ((data (121.0) (0.1))
+          ((data (120.0) (0.1))
+            ((data (106.0) (0.1))
+              ((data (64.0) (0.1))
+                ((data (102.0) (0.1))
+                  ((data (106.0) (0.1))
+                    ((data (64.0) (0.1))
+                      ((data (5e1) (0.1))
+                        ((data (74.0) (0.1))
+                          ((data (87.0) (0.1))
+                            ((data (93.0) (0.1))
+                              ((data (191.0) (0.3))
+                                ((data (229.0) (0.3)))
+                                ((data (250.0) (0.3)))
+                                ((data (270.0) (0.3))))))))))))))))
+      ((data (1e2) (0.1))
+        ((data (123.0) (0.1))
+          ((data (58.0) (0.1))
+            ((data (104.0) (0.1))
+              ((data (135.0) (0.1))
+                ((data (105.0) (0.1))
+                  ((data (91.0) (0.1))
+                    ((data (8e1) (0.1))
+                      ((data (71.0) (0.1))
+                        ((data (118.0) (0.1))
+                          ((data (173.0) (0.1))
+                            ((data (-45.0) (0.3))
+                              ((data (58.0) (0.3)))
+                              ((data (73.0) (0.3)))
+                              ((data (13.0) (0.3))))))))))))))))
+    ((data (38.0) (0.3)) ((data (117.0) (0.3)))
+      ((data (4.0) (0.3))) ((data (68.0) (0.3))))
+    ((data (28.0) (1))
+      ((data (91.0) (0.1))
+        ((data (117.0) (0.1))
+          ((data (49.0) (0.1))
+            ((data (89.0) (0.1))
+              ((data (45.0) (0.1))
+                ((data (106.0) (0.1))
+                  ((data (121.0) (0.1))
+                    ((data (107.0) (0.1))
+                      ((data (149.0) (0.1))
+                        ((data (118.0) (0.1))
+                          ((data (9e1) (0.1))
+                            ((data (108.0) (0.1))
+                              ((data (237.0) (0.3))
+                                ((data (242.0) (0.3)))
+                                ((data (217.0) (0.3)))
+                                ((data (236.0) (0.3))))))))))))))))
+      ((data (122.0) (0.1))
+        ((data (133.0) (0.1))
+          ((data (142.0) (0.1))
+            ((data (75.0) (0.1))
+              ((data (81.0) (0.1))
+                ((data (84.0) (0.1))
+                  ((data (67.0) (0.1))
+                    ((data (89.0) (0.1))
+                      ((data (95.0) (0.1))
+                        ((data (112.0) (0.1))
+                          ((data (175.0) (0.1))
+                            ((data (-23.0) (0.3))
+                              ((data (4e1) (0.3)))
+                              ((data (8.0) (0.3)))
+                              ((data (12.0) (0.3))))))))))))))))
+    ((data (18.0) (1))
+      ((data (97.0) (0.1))
+        ((data (115.0) (0.1))
+          ((data (121.0) (0.1))
+            ((data (98.0) (0.1))
+              ((data (81.0) (0.1))
+                ((data (83.0) (0.1))
+                  ((data (48.0) (0.1))
+                    ((data (105.0) (0.1))
+                      ((data (99.0) (0.1))
+                        ((data (86.0) (0.1))
+                          ((data (104.0) (0.1))
+                            ((data (63.0) (0.1))
+                              ((data (237.0) (0.3))
+                                ((data (281.0) (0.3)))
+                                ((data (261.0) (0.3)))
+                                ((data (216.0) (0.3))))))))))))))))
+      ((data (121.0) (0.1))
+        ((data (96.0) (0.1))
+          ((data (127.0) (0.1))
+            ((data (69.0) (0.1))
+              ((data (105.0) (0.1))
+                ((data (91.0) (0.1))
+                  ((data (49.0) (0.1))
+                    ((data (98.0) (0.1))
+                      ((data (86.0) (0.1))
+                        ((data (33.0) (0.1))
+                          ((data (187.0) (0.1))
+                            ((data (1.0) (0.3))
+                              ((data (28.0) (0.3)))
+                              ((data (66.0) (0.3)))
+                              ((data (-1.0) (0.3))))))))))))))))))
+() run-time:66.26666666666667 minutes 
+#<procedure [char 117916 of /home/ih/bpm/church/experiments/paper.church.ss]>
+/tmp/tree-0.554120747945.png
+/tmp/tree-1.554120747945.png
+/tmp/tree-2.554120747945.png
+/tmp/tree-3.554120747945.png
+/tmp/tree-4.554120747945.png
+/tmp/tree-5.554120747945.png
+/tmp/tree-6.554120747945.png
+/tmp/tree-7.554120747945.png
+/tmp/tree-8.554120747945.png
+/tmp/tree-9.554120747945.png
+/tmp/tree-10.554120747945.png
+/tmp/tree-11.554120747945.png
+/tmp/tree-12.554120747945.png
+/tmp/tree-13.554120747945.png
+/tmp/tree-14.554120747945.png
+/tmp/tree-15.554120747945.png
+/tmp/tree-16.554120747945.png
+/tmp/tree-17.554120747945.png
+/tmp/tree-18.554120747945.png
+/tmp/tree-19.554120747945.png

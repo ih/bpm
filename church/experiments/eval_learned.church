@@ -1,0 +1,16 @@
+(load "../testing.church")
+
+(eval (desugar '(let ()
+          (define F2
+            (lambda (V5)
+              (data (color (gaussian V5 25)) (size 0.3))))
+          (define F1
+            (lambda (V1 V2 V4)
+              ((lambda (V3)
+                 (node (F2 V1) (node (F2 V2)) (node (F2 V3))
+                       (node (F2 V4))))
+               V1)))
+          (lambda ()
+            (uniform-choice (F1 119.0 46.0 87.0)
+                            (F1 132.0 76.0 86.0) (F1 239.0 205.0 289.0)
+                            (F1 111.0 128.0 126.0))))))

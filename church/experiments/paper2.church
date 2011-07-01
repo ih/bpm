@@ -1,0 +1,353 @@
+(load "../testing.church")
+(define timed-learn-model (time-it learn-model))
+(define (make-pdf-image fname trees)
+  (let* ([convert (string-append "convert ~/bpm/church/experiments/" fname ".png " "~/Dropbox/bmm/" fname ".pdf")]
+        [da (display-all convert)])
+    (draw-trees (pair (string-append "./" fname ".png") trees))
+    ))
+
+;; (define tree-pdf (lazy-list->all-list (eval '(node (data (color 50) (size 1))
+;;                                                    (node (data (color 30) (size 0.3))
+;;                                                          (node (data (color 225) (size 0.3)))
+;;                                                          (node (data (color 225) (size 0.3)))
+;;                                                          (node (data (color 225) (size 0.3))))))))
+;; ;; (display-all tree-pdf)
+
+;; ;; (make-pdf-image "tree" (list tree-pdf))
+
+;; (define init-data (lazy-list->all-list (eval '(lazy-list (node (data (color (gaussian 70 25)) (size 1))
+;;                                                      (node (data (color (gaussian 37 25)) (size 0.3))
+;;                                                            (node (data (color (gaussian 213 25)) (size 0.3)))
+;;                                                            (node (data (color (gaussian 207 25)) (size 0.3)))
+;;                                                            (node (data (color (gaussian 211 25)) (size 0.3)))))
+;;                                                (node (data (color (gaussian 43 25)) (size 1))
+;;                                                      (node (data (color (gaussian 47 25)) (size 0.1))
+;;                                                            (node (data (color (gaussian 33 25)) (size 0.3))
+;;                                                                  (node (data (color (gaussian 220 25)) (size 0.3)))
+;;                                                                  (node (data (color (gaussian 224 25)) (size 0.3)))
+;;                                                                  (node (data (color (gaussian 207 25)) (size 0.3))))))))))
+
+;; ;;(make-pdf-image "initData" init-data)
+
+;; (define init-program (eval '(lambda ()
+;;                               ((uniform-draw
+;;                                 (list
+;;                                  (lambda ()
+;;                                    (node (data (color (gaussian 70 25)) (size 1))
+;;                                          (node (data (color (gaussian 37 25)) (size 0.3))
+;;                                                (node (data (color (gaussian 213 25)) (size 0.3)))
+;;                                                (node (data (color (gaussian 207 25)) (size 0.3)))
+;;                                                (node (data (color (gaussian 211 25)) (size 0.3))))))
+;;                                  (lambda ()
+;;                                    (node (data (color (gaussian 43 25)) (size 1))
+;;                                          (node (data (color (gaussian 47 25)) (size 0.1))
+;;                                                (node (data (color (gaussian 33 25)) (size 0.3))
+;;                                                      (node (data (color (gaussian 220 25)) (size 0.3)))
+;;                                                      (node (data (color (gaussian 224 25)) (size 0.3)))
+;;                                                      (node (data (color (gaussian 207 25)) (size 0.3)))))))))))))
+
+;; (define init-p-data (map lazy-list->all-list (repeat 10 init-program)))
+
+;; ;;(make-pdf-image "initProgram" init-p-data)
+
+
+;; (define noisy-pre '(let ()
+;;                       (define flower
+;;                         (lambda (V1 V2 V3 V4)
+;;                           (node (data (color (gaussian V1 25)) (size 0.3))
+;;                                 (node (data (color (gaussian V2 25)) (size 0.3)))
+;;                                 (node (data (color (gaussian V3 25)) (size 0.3)))
+;;                                 (node (data (color (gaussian V4 25)) (size 0.3))))))
+;;                       ((uniform-draw
+;;                         (list
+;;                          (lambda ()
+;;                            (flower 200 213 207 211))
+;;                          (lambda ()
+;;                            (flower 33 220 224 207)))))))
+
+;; (define noisy-pre-data (map lazy-list->all-list (repeat 10 (lambda () (eval noisy-pre)))))
+
+;; ;(make-pdf-image "noisyNumberProgram" noisy-pre-data)
+
+
+
+;; (define noisy-trans1 '(let ()
+;;                       (define flower
+;;                         (lambda (V1 V3 V4)
+;;                           ((lambda (V2)
+;;                              (node (data (color (gaussian V1 25)) (size 0.3))
+;;                                    (node (data (color (gaussian V2 25)) (size 0.3)))
+;;                                    (node (data (color (gaussian V3 25)) (size 0.3)))
+;;                                    (node (data (color (gaussian V4 25)) (size 0.3))))) 216.5)))
+;;                       ((uniform-draw
+;;                         (list
+;;                          (lambda ()
+;;                            (flower 200 207 211))
+;;                          (lambda ()
+;;                            (flower 33 224 207)))))))
+
+;; (define noisy-trans1-data (map lazy-list->all-list (repeat 10 (lambda () (eval noisy-trans1)))))
+;; ;(make-pdf-image "noisyNumberTrans1" noisy-trans1-data)
+;; (define noisy-trans2 '(begin
+;;                         (define flower
+;;                           (lambda (V2 V3 V4)
+;;                             ((lambda (V1)
+;;                                (node (data (color (gaussian V1 25)) (size 0.3))
+;;                                      (node (data (color (gaussian V2 25)) (size 0.3)))
+;;                                      (node (data (color (gaussian V3 25)) (size 0.3)))
+;;                                      (node (data (color (gaussian V4 25)) (size 0.3)))))
+;;                              116.5)))
+;;                         ((uniform-draw
+;;                           (list
+;;                            (lambda ()
+;;                              (flower 213 207 211))
+;;                            (lambda ()
+;;                              (flower 220 224 207)))))))
+
+
+
+;; (define noisy-trans2-data (map lazy-list->all-list (repeat 10 (lambda () (eval noisy-trans2)))))
+;; ;(make-pdf-image "noisyNumberTrans2" noisy-trans2-data)
+
+;; (define same-var-prog '(let ()
+;;  (define flower
+;;   (lambda (V1 V3 V4)
+;;    ((lambda (V2)
+;;      (node (data (color (gaussian V1 25)) (size 0.3))
+;;       (node (data (color (gaussian V2 25)) (size 0.3)))
+;;       (node (data (color (gaussian V3 25)) (size 0.3)))
+;;       (node (data (color (gaussian V4 25)) (size 0.3)))))
+;;     V3)))
+;;  ((uniform-draw
+;;   (list
+;;    (lambda ()
+;;     (flower 200 207 211))
+;;    (lambda ()
+;;     (flower 33 224 207)))))))
+
+;; (define same-var-data (map lazy-list->all-list (repeat 10 (lambda () (eval same-var-prog)))))
+;; ;(make-pdf-image "sameVarTrans1" same-var-data)
+
+;; (define same-var2 '(begin
+;;  (define flower
+;;   (lambda (V2 V3 V4)
+;;    ((lambda (V1)
+;;      (node (data (color (gaussian V1 25)) (size 0.3))
+;;       (node (data (color (gaussian V2 25)) (size 0.3)))
+;;       (node (data (color (gaussian V3 25)) (size 0.3)))
+;;       (node (data (color (gaussian V4 25)) (size 0.3)))))
+;;     V2)))
+;;  ((uniform-draw
+;;   (list
+;;    (lambda ()
+;;     (flower 213 207 211))
+;;    (lambda ()
+;;     (flower 220 224 207)))))))
+
+;; (define same-var-data2 (map lazy-list->all-list (repeat 10 (lambda () (eval same-var2)))))
+;; ;(make-pdf-image "sameVarTrans2" same-var-data2)
+
+;; ;;experiments section
+;; (define (flower shade)
+;;  (node (data (color (gaussian shade 25)) (size .3))
+;;   (petal shade)
+;;   (petal shade)
+;;   (petal shade)))
+;; (define (petal shade)
+;;  (node (data (color (gaussian shade 25)) (size .3))))
+
+;; (define param-parts-data (map lazy-list->all-list (repeat 6 (lambda () (flower (if (flip) 100 220))))))
+;; (pretty-print (list "initial data" param-parts-data))
+;; (make-pdf-image "paramPartsData" param-parts-data)
+
+;; (pretty-print param-parts-data)
+
+;; (timed-learn-model param-parts-data 1 10)
+
+
+
+
+
+
+;; (define (vine)
+;;   (if (flip .1)
+;;       (node (data (color 100) (size .1)))
+;;       (node (data (color 100) (size .1)) (vine) (flower))))
+
+;; (define (vine-param len)
+;;   (if (= len 0)
+;;       (node (data (color 100) (size .1)))
+;;       (node (data (color 100) (size .1)) (vine-param (- len 1)) (flower))))
+
+;; (define (flower)
+;;   (node (data (color (gaussian 20 25)) (size .3))
+;;    (petal 20)))
+
+;; (define (petal shade)
+;;  (node (data (color (gaussian shade 25)) (size .3))))
+
+;; (define vine-data (map lazy-list->all-list (repeat 1 (lambda () (vine-param 13)))))
+
+
+
+
+;; (pretty-print vine-data)
+;; (make-pdf-image "vineData" vine-data)
+
+;; (timed-learn-model vine-data 1 2)
+;; ((data (200) (0.5))
+
+;; (define hand-picked-recursion '(((data (200) (0.5))
+;;      ((data (200) (0.5))
+;;        ((data (200) (0.5))
+;;          ((data (200) (0.5))
+;;            ((data (200) (0.5)) ((data (200) (0.5))))))))
+;;   ((data (200) (0.5))
+;;     ((data (200) (0.5))
+;;       ((data (200) (0.5))
+;;         ((data (200) (0.5))
+;;           ((data (200) (0.5))
+;;             ((data (200) (0.5))
+;;               ((data (200) (0.5))
+;;                 ((data (200) (0.5)) ((data (200) (0.5)))))))))))
+;; ((data (200) (0.5))
+;;     ((data (200) (0.5))
+;;       ((data (200) (0.5))
+;;         ((data (200) (0.5))
+;;           ((data (200) (0.5))
+;;             ((data (200) (0.5))
+;;               ((data (200) (0.5)) ((data (200) (0.5))))))))))  
+;;   ((data (200) (0.5))
+;;     ((data (200) (0.5))
+;;       ((data (200) (0.5))
+;;         ((data (200) (0.5))
+;;           ((data (200) (0.5))
+;;             ((data (200) (0.5))
+;;               ((data (200) (0.5))
+;;                 ((data (200) (0.5))
+;;                   ((data (200) (0.5))
+;;                     ((data (200) (0.5))
+;;                       ((data (200) (0.5))
+;;                         ((data (200) (0.5))
+;;                           ((data (200) (0.5))
+;;                             ((data (200) (0.5))
+;;                               ((data (200) (0.5))
+;;                                 ((data (200) (0.5))
+;;                                   ((data (200) (0.5)))))))))))))))))))
+;;   ((data (200) (0.5)))
+;;   ))
+
+
+
+
+;; (define (line)
+;;   (if (flip .2)
+;;       (node (data (color 200) (size .5)))
+;;       (node (data (color 200) (size .5)) (line))))
+
+;; (define recursion-data (map lazy-list->all-list (repeat 5 (lambda () (line)))))
+;; (pretty-print recursion-data)
+;; (make-pdf-image "recursionData" hand-picked-recursion)
+;; (timed-learn-model hand-picked-recursion 1 5)
+
+;; (define tree
+;;  (lambda ()
+;;   ((uniform-draw 
+;;     (list
+;;      (lambda () (node (body) (branch) (branch))))))))
+
+;; (define (body) 
+;;  (data (color (gaussian 50 25)) (size 1)))
+
+;; (define (branch)
+;;   (if (flip .1)
+;;       ((uniform-draw (list (lambda () (node (branch-info) (flower 20) (flower 220) (flower 20))) (lambda () (node (branch-info) (flower 220) (flower 20) (flower 220))))))
+;;       (node (branch-info) (branch))))
+
+;; (define (branch-info)
+;;  (data (color (gaussian 100 25)) (size .1)))
+
+;; (define (branch-param length)
+;;   (if (= length 0)
+;;       ((uniform-draw (list (lambda () (flower 20)) (lambda () (flower 220)))))
+;;       (node (branch-info) (branch-param (- length 1)))))
+
+;; (define (flower shade)
+;;  (node (data (color (gaussian shade 25)) (size .3))
+;;   (petal shade)
+;;   (petal shade)))
+
+;; (define (petal shade)
+;;  (node (data (color (gaussian shade 25)) (size .3))))
+
+;; (define trees2 (map lazy-list->all-list (repeat 1 tree)))
+
+;; (define param-tree (map lazy-list->all-list (list (flower 20) (flower 220) (node (body) (branch-param 14) (branch-param 15)) (flower 20))))
+;; ;(define param-tree (branch-param 3))
+
+
+;; (define hand-tree '(((data (225.0) (0.3))
+;;                            ((data (233.0) (0.3)))
+;;                            ((data (240) (0.3)))
+;;                            ((data (224.0) (0.3))))
+;;                     ((data (30.0) (0.3))
+;;                            ((data (40.0) (0.3)))
+;;                            ((data (31) (0.3)))
+;;                            ((data (41.0) (0.3))))
+;;                     ((data (31.0) (0.3))
+;;                            ((data (41.0) (0.3)))
+;;                            ((data (32) (0.3)))
+;;                            ((data (42.0) (0.3))))
+;;                     ((data (13.0) (1))
+;;                      ((data (90.0) (0.1))
+;;                       ((data (89.0) (0.1))
+;;                        ((data (111.0) (0.1))
+;;                         ((data (81.0) (0.1))
+;;                          ((data (85.0) (0.1))
+;;                           ((data (120.0) (0.1))
+;;                            ((data (117.0) (0.1))
+;;                             ((data (118.0) (0.1))
+;;                              ((data (51.0) (0.1))
+;;                               ((data (95.0) (0.1))
+;;                                ((data (79.0) (0.1))
+;;                                 ((data (108.0) (0.1))
+;;                                  ((data (131.0) (0.1))
+;;                                   ((data (90.0) (0.1))
+;;                                    ((data (89.0) (0.1))
+;;                                     ((data (111.0) (0.1))
+;;                                      ((data (81.0) (0.1))
+;;                                       ((data (85.0) (0.1))
+;;                                        ((data (120.0) (0.1))
+;;                                         ((data (117.0) (0.1))
+;;                                          ((data (118.0) (0.1))
+;;                                           ((data (51.0) (0.1))
+;;                                            ((data (95.0) (0.1))
+;;                                             ((data (79.0) (0.1))
+;;                                              ((data (108.0) (0.1))
+;;                                               ((data (131.0) (0.1))
+;;                                                ((data (204.0) (0.3))
+;;                                                 ((data (241.0) (0.3)))
+;;                                                 ((data (233.0) (0.3)))
+;;                                                 ((data (240.0) (0.3))))))))))))))))))))))))))))))
+;;                      )))
+
+;; ;;(pretty-print trees2)
+;(pretty-print param-tree)
+
+;; (make-pdf-image "param-tree" param-tree)
+;; (timed-learn-model param-tree 1 10)
+
+;;learning gaussians
+(define (two-dot shade)
+ (node (data (color 0) (size .3))
+  (node (data (color 0) (size .3)) (petal shade))))
+(define (petal shade)
+ (node (data (color (gaussian shade 10)) (size .3))))
+
+(define three-dot-data (map lazy-list->all-list (repeat 10 (lambda () (three-dot 200)))))
+(pretty-print (list "initial data" three-dot-data))
+(make-pdf-image "two-dot-color-noise" three-dot-data)
+
+(pretty-print three-dot-data)
+
+(timed-learn-model three-dot-data 1 10)

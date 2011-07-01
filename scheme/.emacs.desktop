@@ -1,0 +1,51 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sat May 14 14:50:32 2011
+;; Desktop file format version 206
+;; Emacs version 23.2.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/bpm/scheme/" "~/bpm/scheme/dearguments.scm" "~/bpm/church/experiments/paper.church" "~/bpm/scheme/tests/inverse-inline-tests.scm"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/dearguments.scm"
+  "dearguments.scm"
+  'scheme-mode
+  '(paredit-mode)
+  3491
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/tests/inverse-inline-tests.scm"
+  "inverse-inline-tests.scm"
+  'scheme-mode
+  '(paredit-mode)
+  3261
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/church/experiments/paper.church"
+  "paper.church"
+  'church-mode
+  '(paredit-mode)
+  8104
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+

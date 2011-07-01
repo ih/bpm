@@ -1,0 +1,649 @@
+convert ~/bpm/church/experiments/param-tree.png ~/Dropbox/bmm/param-tree.pdfprior:  -394
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian -14.0 25)) (size 0.3)))
+        (node (data (color (gaussian 51.0 25)) (size 0.3))))
+      (node (data (color (gaussian 224.0 25)) (size 0.3))
+        (node (data (color (gaussian 217.0 25)) (size 0.3)))
+        (node (data (color (gaussian 210.0 25)) (size 0.3))))
+      (node (data (color (gaussian 5e1 25)) (size 1))
+        (node (data (color (gaussian 102.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 131.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 8e1 25)) (size 0.1))
+              (node
+                (data (color (gaussian 81.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 89.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 88.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 92.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 89.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 87.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 228.0 25))
+                              (size 0.3))
+                            (node
+                              (data
+                                (color (gaussian 229.0 25))
+                                (size 0.3)))
+                            (node
+                              (data
+                                (color (gaussian 265.0 25))
+                                (size 0.3)))))))))))))
+        (node (data (color (gaussian 84.0 25)) (size 0.1))
+          (node (data (color (gaussian 52.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 77.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 102.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 7e1 25)) (size 0.1))
+                  (node
+                    (data (color (gaussian 130.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 76.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 133.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 113.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 94.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian -17.0 25))
+                                (size 0.3))
+                              (node
+                                (data
+                                  (color (gaussian 54.0 25))
+                                  (size 0.3)))
+                              (node
+                                (data
+                                  (color (gaussian 6e1 25))
+                                  (size 0.3))))))))))))))
+        (node (data (color (gaussian 130.0 25)) (size 0.1))
+          (node (data (color (gaussian 93.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 137.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 94.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 63.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 75.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 119.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 103.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 102.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 93.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 7.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 35.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 28.0 25))
+                                    (size 0.3))))))))))))))))
+      (node (data (color (gaussian 11.0 25)) (size 0.3))
+        (node (data (color (gaussian 7.0 25)) (size 0.3)))
+        (node (data (color (gaussian 55.0 25)) (size 0.3)))))))
+/tmp/tree-0.225483280329.png
+/tmp/tree-1.225483280329.png
+/tmp/tree-2.225483280329.png
+/tmp/tree-3.225483280329.png
+likelihood:(-1.3862943611198906 -1.3862943611198906 -1.3862943611198906)|(-103.20859883473582 -13.067798834735818 -12.413398834735817)|-13.381144833757249
+
+prior:  -394
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian -14.0 25)) (size 0.3)))
+        (node (data (color (gaussian 51.0 25)) (size 0.3))))
+      (node (data (color (gaussian 224.0 25)) (size 0.3))
+        (node (data (color (gaussian 217.0 25)) (size 0.3)))
+        (node (data (color (gaussian 210.0 25)) (size 0.3))))
+      (node (data (color (gaussian 5e1 25)) (size 1))
+        (node (data (color (gaussian 102.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 131.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 8e1 25)) (size 0.1))
+              (node
+                (data (color (gaussian 81.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 89.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 88.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 92.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 89.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 87.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 228.0 25))
+                              (size 0.3))
+                            (node
+                              (data
+                                (color (gaussian 229.0 25))
+                                (size 0.3)))
+                            (node
+                              (data
+                                (color (gaussian 265.0 25))
+                                (size 0.3)))))))))))))
+        (node (data (color (gaussian 84.0 25)) (size 0.1))
+          (node (data (color (gaussian 52.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 77.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 102.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 7e1 25)) (size 0.1))
+                  (node
+                    (data (color (gaussian 130.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 76.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 133.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 113.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 94.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian -17.0 25))
+                                (size 0.3))
+                              (node
+                                (data
+                                  (color (gaussian 54.0 25))
+                                  (size 0.3)))
+                              (node
+                                (data
+                                  (color (gaussian 6e1 25))
+                                  (size 0.3))))))))))))))
+        (node (data (color (gaussian 130.0 25)) (size 0.1))
+          (node (data (color (gaussian 93.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 137.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 94.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 63.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 75.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 119.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 103.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 102.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 93.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 7.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 35.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 28.0 25))
+                                    (size 0.3))))))))))))))))
+      (node (data (color (gaussian 11.0 25)) (size 0.3))
+        (node (data (color (gaussian 7.0 25)) (size 0.3)))
+        (node (data (color (gaussian 55.0 25)) (size 0.3)))))))
+likelihood:(-1.3862943611198906)|(-165.51198446314427)|-166.89827882426417
+
+prior:  -394
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian -14.0 25)) (size 0.3)))
+        (node (data (color (gaussian 51.0 25)) (size 0.3))))
+      (node (data (color (gaussian 224.0 25)) (size 0.3))
+        (node (data (color (gaussian 217.0 25)) (size 0.3)))
+        (node (data (color (gaussian 210.0 25)) (size 0.3))))
+      (node (data (color (gaussian 5e1 25)) (size 1))
+        (node (data (color (gaussian 102.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 131.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 8e1 25)) (size 0.1))
+              (node
+                (data (color (gaussian 81.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 89.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 88.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 92.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 89.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 87.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 228.0 25))
+                              (size 0.3))
+                            (node
+                              (data
+                                (color (gaussian 229.0 25))
+                                (size 0.3)))
+                            (node
+                              (data
+                                (color (gaussian 265.0 25))
+                                (size 0.3)))))))))))))
+        (node (data (color (gaussian 84.0 25)) (size 0.1))
+          (node (data (color (gaussian 52.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 77.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 102.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 7e1 25)) (size 0.1))
+                  (node
+                    (data (color (gaussian 130.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 76.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 133.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 113.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 94.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian -17.0 25))
+                                (size 0.3))
+                              (node
+                                (data
+                                  (color (gaussian 54.0 25))
+                                  (size 0.3)))
+                              (node
+                                (data
+                                  (color (gaussian 6e1 25))
+                                  (size 0.3))))))))))))))
+        (node (data (color (gaussian 130.0 25)) (size 0.1))
+          (node (data (color (gaussian 93.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 137.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 94.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 63.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 75.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 119.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 103.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 102.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 93.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 7.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 35.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 28.0 25))
+                                    (size 0.3))))))))))))))))
+      (node (data (color (gaussian 11.0 25)) (size 0.3))
+        (node (data (color (gaussian 7.0 25)) (size 0.3)))
+        (node (data (color (gaussian 55.0 25)) (size 0.3)))))))
+likelihood:(-1.3862943611198906 -1.3862943611198906 -1.3862943611198906)|(-103.20859883473582 -105.43579883473582 -12.413398834735817)|-13.799693195855708
+
+prior:  -394
+"likelihood for program:"
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian -14.0 25)) (size 0.3)))
+        (node (data (color (gaussian 51.0 25)) (size 0.3))))
+      (node (data (color (gaussian 224.0 25)) (size 0.3))
+        (node (data (color (gaussian 217.0 25)) (size 0.3)))
+        (node (data (color (gaussian 210.0 25)) (size 0.3))))
+      (node (data (color (gaussian 5e1 25)) (size 1))
+        (node (data (color (gaussian 102.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 131.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 8e1 25)) (size 0.1))
+              (node
+                (data (color (gaussian 81.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 89.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 88.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 92.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 89.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 87.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 228.0 25))
+                              (size 0.3))
+                            (node
+                              (data
+                                (color (gaussian 229.0 25))
+                                (size 0.3)))
+                            (node
+                              (data
+                                (color (gaussian 265.0 25))
+                                (size 0.3)))))))))))))
+        (node (data (color (gaussian 84.0 25)) (size 0.1))
+          (node (data (color (gaussian 52.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 77.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 102.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 7e1 25)) (size 0.1))
+                  (node
+                    (data (color (gaussian 130.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 76.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 133.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 113.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 94.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian -17.0 25))
+                                (size 0.3))
+                              (node
+                                (data
+                                  (color (gaussian 54.0 25))
+                                  (size 0.3)))
+                              (node
+                                (data
+                                  (color (gaussian 6e1 25))
+                                  (size 0.3))))))))))))))
+        (node (data (color (gaussian 130.0 25)) (size 0.1))
+          (node (data (color (gaussian 93.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 137.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 94.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 63.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 75.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 119.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 103.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 102.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 93.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 7.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 35.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 28.0 25))
+                                    (size 0.3))))))))))))))))
+      (node (data (color (gaussian 11.0 25)) (size 0.3))
+        (node (data (color (gaussian 7.0 25)) (size 0.3)))
+        (node (data (color (gaussian 55.0 25)) (size 0.3)))))))
+likelihood:(-1.3862943611198906 -1.3862943611198906 -1.3862943611198906)|(-12.413398834735817 -13.067798834735818 -105.43579883473582)|-13.381144833757249
+
+CURRENT DEPTH: 10 SIZE: -394 SEMANTICS PRESERVED: #f  
+
+(let ()
+  (lambda ()
+    (uniform-choice
+      (node (data (color (gaussian 3e1 25)) (size 0.3))
+        (node (data (color (gaussian -14.0 25)) (size 0.3)))
+        (node (data (color (gaussian 51.0 25)) (size 0.3))))
+      (node (data (color (gaussian 224.0 25)) (size 0.3))
+        (node (data (color (gaussian 217.0 25)) (size 0.3)))
+        (node (data (color (gaussian 210.0 25)) (size 0.3))))
+      (node (data (color (gaussian 5e1 25)) (size 1))
+        (node (data (color (gaussian 102.0 25)) (size 0.1))
+          (node
+            (data (color (gaussian 131.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 8e1 25)) (size 0.1))
+              (node
+                (data (color (gaussian 81.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 89.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 88.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 92.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 89.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 87.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 228.0 25))
+                              (size 0.3))
+                            (node
+                              (data
+                                (color (gaussian 229.0 25))
+                                (size 0.3)))
+                            (node
+                              (data
+                                (color (gaussian 265.0 25))
+                                (size 0.3)))))))))))))
+        (node (data (color (gaussian 84.0 25)) (size 0.1))
+          (node (data (color (gaussian 52.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 77.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 102.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 7e1 25)) (size 0.1))
+                  (node
+                    (data (color (gaussian 130.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 76.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 133.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 113.0 25))
+                            (size 0.1))
+                          (node
+                            (data (color (gaussian 94.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian -17.0 25))
+                                (size 0.3))
+                              (node
+                                (data
+                                  (color (gaussian 54.0 25))
+                                  (size 0.3)))
+                              (node
+                                (data
+                                  (color (gaussian 6e1 25))
+                                  (size 0.3))))))))))))))
+        (node (data (color (gaussian 130.0 25)) (size 0.1))
+          (node (data (color (gaussian 93.0 25)) (size 0.1))
+            (node
+              (data (color (gaussian 137.0 25)) (size 0.1))
+              (node
+                (data (color (gaussian 94.0 25)) (size 0.1))
+                (node
+                  (data (color (gaussian 63.0 25))
+                    (size 0.1))
+                  (node
+                    (data (color (gaussian 117.0 25))
+                      (size 0.1))
+                    (node
+                      (data (color (gaussian 75.0 25))
+                        (size 0.1))
+                      (node
+                        (data (color (gaussian 119.0 25))
+                          (size 0.1))
+                        (node
+                          (data (color (gaussian 103.0 25))
+                            (size 0.1))
+                          (node
+                            (data
+                              (color (gaussian 102.0 25))
+                              (size 0.1))
+                            (node
+                              (data
+                                (color (gaussian 93.0 25))
+                                (size 0.1))
+                              (node
+                                (data
+                                  (color (gaussian 7.0 25))
+                                  (size 0.3))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 35.0 25))
+                                    (size 0.3)))
+                                (node
+                                  (data
+                                    (color
+                                      (gaussian 28.0 25))
+                                    (size 0.3))))))))))))))))
+      (node (data (color (gaussian 11.0 25)) (size 0.3))
+        (node (data (color (gaussian 7.0 25)) (size 0.3)))
+        (node (data (color (gaussian 55.0 25)) (size 0.3)))))))
+command failed:
+ikarus  --r6rs-script '/home/ih/bpm/church/experiments/paper.church.ss'

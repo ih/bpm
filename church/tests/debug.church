@@ -1,0 +1,15 @@
+(load "../testing.church")
+(define errortrees '(((data (50) (1))
+                      ((data (30) (0.3)) ((data (120) (0.3)))
+                       ((data (120) (0.3))) ((data (120) (0.3)))))
+                     ((data (50) (1))
+                      ((data (30) (0.3)) ((data (120) (0.3)))
+                       ((data (120) (0.3))) ((data (120) (0.3)))))
+                     ((data (50) (1))
+                      ((data (30) (0.1))
+                       ((data (30) (0.3)) ((data (120) (0.3)))
+                        ((data (120) (0.3))) ((data (120) (0.3))))))))
+(define timed-learn-model (time-it learn-model))
+
+((timed-learn-model errortrees 1 5))
+

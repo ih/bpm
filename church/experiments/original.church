@@ -1,0 +1,6 @@
+(load "../testing.church")
+(define (prototype) (node (data (color 10) (size 1)) (node (data (color 10) (size 1)) (node (data (color 100) (size 1)) (node (data (color 220) (size 1))) (node (data (color 220) (size 1)))))))
+
+(define prototype-training-data (map lazy-list->all-list (repeat 5 prototype)))
+
+(for-each display prototype-training-data)

@@ -1,0 +1,51 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sat May  7 13:18:40 2011
+;; Desktop file format version 206
+;; Emacs version 23.2.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("find-va" "find-v" "instan" "var" "vari" "same-va" "check" "replacement-fun" "make-de"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/bpm/church/tests/" "~/bpm/scheme/program.scm" "~/bpm/scheme/tests/dearguments-tests.scm" "~/bpm/scheme/dearguments.scm"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/tests/dearguments-tests.scm"
+  "dearguments-tests.scm"
+  'scheme-mode
+  '(paredit-mode)
+  5957
+  '(5484 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/dearguments.scm"
+  "dearguments.scm"
+  'scheme-mode
+  '(paredit-mode)
+  476
+  '(2993 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/program.scm"
+  "program.scm"
+  'scheme-mode
+  '(paredit-mode)
+  5874
+  '(4102 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+

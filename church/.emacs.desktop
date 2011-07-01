@@ -1,0 +1,117 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Tue May 17 18:09:10 2011
+;; Desktop file format version 206
+;; Emacs version 23.2.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("fl" "uniform" "fli" "fl" "fli" "term" "prio" "12" "fl" "time" "apply-t" "-1070 #t" "-590 #f" "programs" "log-pri" "cure"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/bpm/church/" "~/bpm/scheme/dearguments.scm" "~/bpm/church/beam-learning.church" "~/bpm/church/experiments/paper.church" "~/bpm/scheme/tests/program-tests.scm" "~/bpm/scheme/program.scm" "~/bpm/scheme/util.ss" "~/bpm/scheme/tests/dearguments-tests.scm" "~/bpm/scheme/inverse-inline.scm" "~/bpm/scheme/unification.ss" "~/bpm/scheme/program.scm" "~/bpm/scheme/dearguments.scm"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/ih/bpm/church/beam-learning.church"
+  "beam-learning.church"
+  'church-mode
+  '(paredit-mode)
+  272
+  '(3662 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/church/experiments/paper.church"
+  "paper.church"
+  'church-mode
+  '(paredit-mode)
+  2816
+  '(2816 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/dearguments.scm"
+  "dearguments.scm"
+  'scheme-mode
+  '(paredit-mode)
+  13689
+  '(5336 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/inverse-inline.scm"
+  "inverse-inline.scm"
+  'scheme-mode
+  '(paredit-mode)
+  5312
+  '(210 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/program.scm"
+  "program.scm"
+  'scheme-mode
+  '(paredit-mode)
+  3987
+  '(688 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/tests/program-tests.scm"
+  "program-tests.scm"
+  'scheme-mode
+  '(paredit-mode)
+  2733
+  '(2689 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/tests/dearguments-tests.scm"
+  "dearguments-tests.scm"
+  'scheme-mode
+  '(paredit-mode)
+  7315
+  '(7965 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/util.ss"
+  "util.ss"
+  'scheme-mode
+  '(paredit-mode)
+  541
+  '(1 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ih/bpm/scheme/unification.ss"
+  "unification.ss"
+  'scheme-mode
+  '(paredit-mode)
+  2154
+  '(549 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
