@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.4.26)  1 JUL 2011 15:18
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2011.4.26)  1 JUL 2011 16:37
 entering extended mode
  %&-line parsing enabled.
 **\input tech_reportv5.tex
@@ -229,34 +229,33 @@ File: expressionTree.pdf Graphic file (type pdf)
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (29.86334pt too wide) in paragraph at lines 467--468
+Overfull \hbox (29.86334pt too wide) in paragraph at lines 462--463
 []\OT1/cmr/m/n/10 Anti-unification pro-ceeds by re-cur-sively com-par-ing two e
 x-pres-sions, A and B (per-formed by \OT1/cmtt/m/n/10 build-pattern\OT1/cmr/m/n
 /10 ).
  []
 
 [12 <./csrExample.pdf> <./csrDecompose1.pdf> <./csrDecompose2.pdf>] [13 <./expr
-essionTree.pdf>] [14] [15]
-Overfull \hbox (0.36343pt too wide) in paragraph at lines 582--583
+essionTree.pdf>] [14]
+Overfull \hbox (0.36343pt too wide) in paragraph at lines 577--578
 \OT1/cmr/m/n/10 The ex-am-ple listed ear-lier where the func-tion F is \OT1/cmt
 t/m/n/10 (define (F1 V1 V2) (+ V1 V2)) \OT1/cmr/m/n/10 and the s-expression
  []
 
-[16] [17] [18] <noisyNumberProgram.pdf, id=130, 436.63126pt x 49.18375pt>
+[15] [16] [17] [18] <noisyNumberProgram.pdf, id=130, 436.63126pt x 49.18375pt>
 File: noisyNumberProgram.pdf Graphic file (type pdf)
 
 <use noisyNumberProgram.pdf>
-Overfull \hbox (46.55888pt too wide) in paragraph at lines 750--751
+Overfull \hbox (46.55888pt too wide) in paragraph at lines 745--746
 \OT1/cmr/m/n/10 The whole pro-gram is now ad-justed to in-cor-po-rate the new v
 er-sion of \OT1/cmtt/m/n/10 flower \OT1/cmr/m/n/10 us-ing \OT1/cmtt/m/n/10 remo
 ve-application-argument\OT1/cmr/m/n/10 .
  []
 
-[19 <./noisyNumberProgram.pdf>]
-<noisyNumberTrans1.pdf, id=139, 436.63126pt x 49.18375pt>
+<noisyNumberTrans1.pdf, id=131, 436.63126pt x 49.18375pt>
 File: noisyNumberTrans1.pdf Graphic file (type pdf)
 
-<use noisyNumberTrans1.pdf>
+<use noisyNumberTrans1.pdf> [19 <./noisyNumberProgram.pdf>]
 <noisyNumberTrans2.pdf, id=140, 436.63126pt x 49.18375pt>
 File: noisyNumberTrans2.pdf Graphic file (type pdf)
 
@@ -267,17 +266,17 @@ File: sameVarTrans1.pdf Graphic file (type pdf)
 <use sameVarTrans1.pdf> <sameVarTrans2.pdf, id=153, 436.63126pt x 49.18375pt>
 File: sameVarTrans2.pdf Graphic file (type pdf)
 
-<use sameVarTrans2.pdf> [21 <./sameVarTrans1.pdf>]
-Overfull \hbox (13.44841pt too wide) in paragraph at lines 863--864
+<use sameVarTrans2.pdf>
+Overfull \hbox (13.44841pt too wide) in paragraph at lines 858--859
 \OT1/cmr/m/n/10 We il-lus-trate how re-cur-sive pat-terns can be dis-cov-ered u
 s-ing Dear-gu-men-ta-tion and a \OT1/cmtt/m/n/10 replacement-function
  []
 
-[22 <./sameVarTrans2.pdf>] <recBef.pdf, id=168, 331.2375pt x 58.2175pt>
+[21 <./sameVarTrans1.pdf> <./sameVarTrans2.pdf>] [22]
+<recBef.pdf, id=168, 331.2375pt x 58.2175pt>
 File: recBef.pdf Graphic file (type pdf)
-
-<use recBef.pdf>
-Overfull \hbox (57.83714pt too wide) in paragraph at lines 930--931
+ <use recBef.pdf>
+Overfull \hbox (57.83714pt too wide) in paragraph at lines 925--926
 \OT1/cmr/m/n/10 move the ar-gu-ment from F1 and any ap-pli-ca-tions of F1 re-su
 lt-ing in the pro-gram us-ing \OT1/cmtt/m/n/10 remove-application-argument\OT1/
 cmr/m/n/10 . 
@@ -293,29 +292,29 @@ File: single-color-data.pdf Graphic file (type pdf)
 <single-color-model.pdf, id=182, 858.20625pt x 49.18375pt>
 File: single-color-model.pdf Graphic file (type pdf)
 
-<use single-color-model.pdf> [24 <./single-color-data.pdf> <./single-color-mode
-l.pdf>] <paramPartsData.pdf, id=194, 436.63126pt x 49.18375pt>
+<use single-color-model.pdf>
+<paramPartsData.pdf, id=183, 436.63126pt x 49.18375pt>
 File: paramPartsData.pdf Graphic file (type pdf)
 
-<use paramPartsData.pdf>
-<paramPartsModelData.pdf, id=195, 858.20625pt x 49.18375pt>
+<use paramPartsData.pdf> [24 <./single-color-data.pdf> <./single-color-model.pd
+f>] <paramPartsModelData.pdf, id=195, 858.20625pt x 49.18375pt>
 File: paramPartsModelData.pdf Graphic file (type pdf)
 
 <use paramPartsModelData.pdf>
 <recursionData.pdf, id=196, 147.55125pt x 290.08376pt>
 File: recursionData.pdf Graphic file (type pdf)
  <use recursionData.pdf>
-[25 <./paramPartsData.pdf> <./paramPartsModelData.pdf> <./recursionData.pdf>]
-<recursionModel.pdf, id=213, 547.04375pt x 522.95375pt>
+<recursionModel.pdf, id=197, 547.04375pt x 522.95375pt>
 File: recursionModel.pdf Graphic file (type pdf)
 
-<use recursionModel.pdf> <vineData.pdf, id=214, 146.5475pt x 198.7425pt>
+<use recursionModel.pdf> [25 <./paramPartsData.pdf> <./paramPartsModelData.pdf>
+ <./recursionData.pdf>] <vineData.pdf, id=214, 146.5475pt x 198.7425pt>
 File: vineData.pdf Graphic file (type pdf)
 
-<use vineData.pdf> [26 <./recursionModel.pdf> <./vineData.pdf>]
-<vineModel.pdf, id=226, 1807.75375pt x 398.48875pt>
+<use vineData.pdf> <vineModel.pdf, id=215, 1807.75375pt x 398.48875pt>
 File: vineModel.pdf Graphic file (type pdf)
- <use vineModel.pdf>
+
+<use vineModel.pdf> [26 <./recursionModel.pdf> <./vineData.pdf>]
 <treeData.pdf, id=227, 159.59625pt x 168.63pt>
 File: treeData.pdf Graphic file (type pdf)
  <use treeData.pdf> [27 <./vineModel.pdf> <./treeData.pdf>] <treeModel.pdf, id=
@@ -336,10 +335,10 @@ File: learnnoise-output.pdf Graphic file (type pdf)
 <use learnnoise-output.pdf> (./tech_reportv5.bbl [30 <./learnnoise-output.pdf>]
 ) [31] (./tech_reportv5.aux) ) 
 Here is how much of TeX's memory you used:
- 3856 strings out of 495061
- 51983 string characters out of 1182621
- 200665 words of memory out of 3000000
- 6988 multiletter control sequences out of 15000+50000
+ 3853 strings out of 495061
+ 51963 string characters out of 1182621
+ 194665 words of memory out of 3000000
+ 6985 multiletter control sequences out of 15000+50000
  11485 words of font info for 43 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  27i,8n,40p,1931b,1519s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -362,7 +361,7 @@ texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf-texli
 ve/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/share/texmf-texlive/fonts/typ
 e1/public/amsfonts/cm/cmtt9.pfb></usr/share/texmf-texlive/fonts/type1/public/am
 sfonts/latxfont/lcircle1.pfb>
-Output written on tech_reportv5.pdf (31 pages, 800781 bytes).
+Output written on tech_reportv5.pdf (31 pages, 799378 bytes).
 PDF statistics:
  337 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

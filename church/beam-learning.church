@@ -154,14 +154,19 @@
       (log (normal-pdf (first original-attribute) (gaussian->mean parameterized-attribute) (gaussian->variance parameterized-attribute)))
       (if (= (first original-attribute) (first parameterized-attribute)) 0 -inf.0)))
 
-(define (compute-topology-scores+evaluate model tree popsize)
+(define (create-smc-core-args model tree popsize)
   (let* ([lazified-tree (list->lazy-list tree)]
-         [samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-tree)))) popsize LAG
-                            (lambda (depth)
-                              (lambda ()
-                                (let ((s (model)))
-                                  (pair (lazy-topology-equal? s lazified-tree depth)
-                                        (lambda () (first (lazy-list->list s depth))))))))]
+         [depths (map list (iota (+ 1 (lazy-list-size  lazified-tree))))]
+         [nfqp-creator (lambda (depth)
+                         (lambda ()
+                           (let ((s (model)))
+                             (pair (lazy-topology-equal? s lazified-tree depth)
+                                   (lambda () (first (lazy-list->list s depth)))))))])
+    (list depths popsize LAG nfqp-creator)))
+
+(define (compute-topology-scores+evaluate model tree popsize)
+  (let* ([smc-core-arguments (create-smc-core-args model tree popsize)]
+         [samples (apply smc-core smc-core-arguments)]
          [repeat-symbol (find-repeat-symbol samples)]
          ;;[da (pretty-print (list "all samples " (length samples)))]
          ;;remove duplicates in order to do selective model averaging:

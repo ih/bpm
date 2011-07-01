@@ -297,21 +297,16 @@ We take advantage of the fact we can directly compute the probability of a sampl
 
 (define (thunkify sexpr) `(lambda () ,sexpr))
 \end{lstlisting}
-The modified program is evaluated several times to generate trees whose topology (node structure) matches the observed tree and has the parameters for the Gaussian used to generate a color.  During the evaluation of the modified program we also capture the probability for the choices made in generating the topology of the tree.  The references to laziness are related to the implementation of the sequential Monte Carlo procedure (\texttt{smc-core}) and the details are beyond the scope of this report.
+The modified program is evaluated several times to generate trees whose topology (node structure) matches the observed tree and has the parameters for the Gaussian used to generate a color.  During the evaluation of the modified program we also capture the probability for the choices made in generating the topology of the tree.  
 \begin{lstlisting}[frame=trBL]
 (define (compute-topology-scores+evaluate model tree popsize)
-  (let* ([lazified-tree (list->lazy-list tree)]
-         [samples (smc-core (map list (iota (+ 1 (lazy-list-size  lazified-tree)))) popsize 20
-                            (lambda (depth)
-                              (lambda ()
-                                (let ((s (model)))
-                                  (pair (lazy-topology-equal? s lazified-tree depth)
-                                        (lambda () (first (lazy-list->list s depth))))))))]
-         ;;remove duplicates in order to do selective model averaging:
+  (let* ([smc-core-arguments (create-smc-core-args model tree popsize)]
+         [samples (apply smc-core smc-core-arguments)]
+         [repeat-symbol (find-repeat-symbol samples)]
          [samples
           (fold (lambda (s a)
-                  (if (member (mcmc-state->addrval s)
-                              (map (lambda (x) (mcmc-state->addrval x)) a))
+                  (if (member (mcmc-state->addrval s repeat-symbol)
+                              (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a))
                       a (pair s a))) '() samples)]
          [topology-scores (map mcmc-state->score samples)]
          [generated-trees (map mcmc-state->query-value samples)])
