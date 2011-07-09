@@ -12,9 +12,14 @@
 \date{}
 \maketitle
 \begin{abstract}
-This report outlines an approach for representing generative models with probabilistic programs and learning these programs from data.  The main advantage of using probabilistic programs as generative models is the ability to capture interesting patterns in a concise manner that is amenable to inference.  Formulating model learning in terms of program induction also leads us to explore the idea of understanding pattern as repeated computation within a generative process.  This idea provides a unifying theme for the program transformations used in searching the space of generative models, which is framed in a Bayesian model merging-like way.  There are two main types of program transformations we consider: the first is based on merging common subexpressions within a program and the second focuses on reducing the number of parameters for functions in the program.  We demonstrate this approach on a simple domain of list structured data.
+
+This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two main types of program transformations: the first is based on merging common subexpressions within a program and the second focuses on reducing the number of parameters for functions in the program. We demonstrate that this approach finds interesting patterns in a simple list-structured domain.
+
 \end{abstract}
 \section{Introduction}
+
+%% more intro here
+
 What do you see when you look at figure \ref{fig:plants}? What kinds of patterns are there in the image? 
 \begin{figure}[h]
 \begin{center}
@@ -24,33 +29,37 @@ What do you see when you look at figure \ref{fig:plants}? What kinds of patterns
 \label{fig:plants}
 \end{figure}
 
-You might describe the image as a series of trees where each tree has a large base and a number of branches of variable length with each branch ending in a flower that is either red or purple.  Each part of this description corresponds to a different pattern detected in the image.  The large base for each individual plant, the variable length branches, branches end in red flowers, etc.  Recognizing patterns like these is an important aspect of intelligence and it would be useful if we could automate this process.  One possible way to approach this problem is in terms of learning generative models represented as probabilistic programs.  In this document, we build on the notion of representing patterns or concepts as probabilistic programs \cite{A.Stuhlmueller:2010:6d11a} and begin to explore a family of algorithms for learning such programs.
+You might describe the image as a series of trees where each tree has a large base and a number of branches of variable length with each branch ending in a flower that is either red or purple. Each part of this description corresponds to a different pattern detected in the image.  Recognizing patterns like these is an important aspect of intelligence and it would be useful if we could automate this process.  One possible way to approach this problem is in terms of learning generative models represented as probabilistic programs.  In this document, we build on the notion of representing patterns or concepts as probabilistic programs \cite{A.Stuhlmueller:2010:6d11a} and begin to explore a family of algorithms for learning such programs.
 
-One of the major difficulties with identifying regularities in data is the many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.   We propose approaching this problem by performing a ``reduction'' by first transforming data (whatever its type) into a canonical form (an expression in a programming language) and then defining pattern as repeated computation in such a program.  The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using a Bayesian posterior probability, and creating search moves based on detecting repeated computation.  The general algorithm can be summarized as (1) turn the data into a large program (2) identify repeated computation in the large program and extract these patterns by merging program structure (3) determine which merge moves to apply based on the posterior probability distribution of the program given the data.  The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference.  We illustrate these ideas on list-structured data.  
+A difficulty with the identification of regularities in data is that there are many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.  We will approach this problem by first transforming data (whatever its type) into a canonical form (an expression in a programming language) and then defining pattern as repeated computation in this program.  The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using a Bayesian posterior probability, and creating search moves based on detecting repeated computation.  The general algorithm can be summarized as (1) turn the data into a large program (2) identify repeated computation in the large program and extract these patterns by merging program structure (3) determine which merge moves to apply based on the posterior probability distribution of the program given the data.  The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference. We illustrate these ideas on list-structured data.
 
-Generative models play a prominent role in modern machine learning and understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying patterns from very small amounts of data.  
+Generative models play a prominent role in modern machine learning and understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying patterns from very small amounts of data.
 
-We examine a class of generative models that are represented as programs in a probabilistic programming language.  These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and demonstrate the class' ability to capture interesting patterns in the list data domain.
+We examine a class of generative models that are represented as programs in a probabilistic programming language. A probabilistic program represents a probability distribution, and each evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
 
-Data is generated from such a model by evaluating the program.  Another way to view it is each program represents some probability distribution and each 
-evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
+These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and demonstrate that this approach can find interesting patterns in the list data domain.
 
 
 \subsection{Bayesian Model Merging}
-Bayesian model merging is a framework for searching through a space of generative models in order to find one that accurately generates the desired data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ as a criteria for selecting transformations, here $M$ is the model and $D$ is the training data.  The method works by creating an initial model that has a uniform distribution over the training set by explicitly incorporating each training example into the model (details are model class specific), this process is called data incorporation.  While the initial model has a good likelihood $P(D|M)$, it will never generate points outside the training set, in other words it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (again specific details are dependent on the model class) and the result may have better generalization properties.  This technique has been successfully applied to learning artificial probabilistic grammars where the grammars were represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}.  Our work also uses the posterior distribution as a search criteria and merging model structure to achieve generalization.  Our work differs in that we use a significantly richer model class of probabilistic programs.  This allows for more complex patterns to be represented as well as allowing for more types of transformations that lead to interesting generalization of the model, which can be thought of as lossy compression.   The use of programs as generative models also lends itself to a deeper understanding of the relationship between pattern, computation, and intelligence.
+
+Bayesian model merging is a framework for searching through a space of generative models in order to find one that accurately generates the desired data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ of model $M$ given data $D$ as a criterion for selecting transformations.
+
+We create the initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it will never generate points outside the training set--it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (with specific details being dependent on the model class), and the resulting program often has better generalization properties.  
+
+This technique has been successfully applied to learning artificial probabilistic grammars where the grammars were represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}. Our work differs in that we use a significantly richer model class of probabilistic programs.  This allows for more complex patterns to be represented as well as allowing for more types of transformations, including transformations that correspond to lossy compression of the data.
 
 \section{Overview}
 The main parts of Bayesian program merging are as follows:
 \begin{description}
-\item[Data and Language] Data is represented in terms of some algebraic data type, which gives us a way to form initial programs using the type constructors.  Programs are written in a formal language that consists of type constructors and additional operators.
+\item[Data and Language] Data is represented in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors.  Programs are written in a formal language that consists of type constructors and additional operators.
 \item[Probabilistic Programs]  Distributions over data can be represented with probabilistic programs and the structure of the programs corresponds to regularities in the data.
-\item[Search] Search is based on identifying programs with a high posterior probability and then applying transformations to those programs to continue exploration.
-\item[Merge Operations] Transformations on programs merge program structure, which can increase generalization of the model as well as the prior probability.
+\item[Search] Search is based on identifying programs with a high posterior probability and then applying transformations to these programs to continue exploration.
+\item[Merge Operations] Transformations on programs merge program structure, which can increase generalization of the model as well as its prior probability.
 \end{description}
 \section{Data Representation, Algebraic Data Types, and Language}
-We assume the data we deal with can be modeled with an algebraic data type whose constructors are known to us.  This assumption gives us a starting point for program induction since any data can be directly translated into a program which is a derivation (sequence of constructor operations) of the data from the type specification. 
+We assume that the data we deal with can be modeled with an algebraic data type whose constructors are known to us.  This assumption gives us a starting point for program induction, since any data can be directly translated into a program which is a derivation (sequence of constructor operations) of the data from the type specification. 
 \subsection{Lists Example}
-Looking back to figure \ref{fig:plants} we can model the trees in terms of lists or s-expressions.  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.  This follows the classic recursive definition of a list below.   
+We can model the trees shown in figure \ref{fig:plants} in terms of lists or s-expressions.  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.
 \begin{grammar}
 <tree> ::= nil
 
@@ -73,7 +82,7 @@ The following is an example of a tree expression along with a graphical represen
  $\includegraphics[scale=1.0]{tree.pdf}$ 
 \end{lstlisting}
 
-We now have a way of representing data as rudimentary programs.  In order to capture interesting patterns we need a more expressive language.  We use the following subset of Church.  The grammar below lists language constructs available for Bayesian program merging in the tree domain:
+We now have a way of representing data as rudimentary programs.  In order to capture interesting patterns, we need a more expressive language.  We use the following subset of Church for Bayesian program merging in the tree domain:
 \begin{grammar}
 <expr> ::= (begin <expr> <expr> ... ) 
 \alt (lambda (<var> ...) <expr>)
@@ -89,7 +98,8 @@ We now have a way of representing data as rudimentary programs.  In order to cap
 \end{grammar}
 
 \subsection{Data Incorporation}
-The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to it (in terms of the algebraic data type constructors).  These programs are combined into a single expression that draws uniformly over them.  We assume Gaussian noise in the color attribute for simplicity's sake, but discuss a possible direction for learning such a property later in the report.
+The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to this example (in terms of the algebraic data type constructors).  These programs are combined into a single expression that draws uniformly from this list. 
+% We assume Gaussian noise in the color attribute for simplicity's sake, but discuss a possible direction for learning such a property later in the report.
 \begin{lstlisting}[frame=trBLsingle]
 (define (incorporate-data trees)
   `(lambda () (uniform-choice ,@(map tree->expression trees))))
@@ -104,7 +114,7 @@ The first step of Bayesian program merging is data incorporation.  Data incorpor
   `(data (color (gaussian ,(first (second lst)) 25)) 
 	 (size ,(first (third lst)))))
 \end{lstlisting}
-In the implementation the data are unannotated s-expressions (an example being (((1) (2)))), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is (node (data (color 1) (size 2)))).  In the report we assume data is already a tree expression for readability.  An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors.  If we give \texttt{incorporate-data} the input: 
+In the implementation the data are unannotated s-expressions (an example being \texttt{(((1) (2)))}), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is \texttt{(node (data (color 1) (size 2)))}).  In the report we assume data is already a tree expression for readability.  An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors.  If we give \texttt{incorporate-data} the input: 
 \begin{lstlisting}[mathescape=true]
 ((node (data (color 70) (size 1))
        (node (data (color 37) (size 0.3))
@@ -1219,9 +1229,17 @@ Bayesian program merging with the above modifications results in a compressed pr
 $\includegraphics[scale=.6]{learnnoise-output.pdf}$
 \end{lstlisting}
 
-The above discussion hints at the benefits of using probabilistic data constructors and probabilistic programs in general with respect to representation, but understanding the full implications of such a design decision and its impact on program induction are left as future work.
+The discussion above hints at the benefits of using probabilistic data constructors and probabilistic programs in general with respect to representation, but understanding the full implications of such a design decision and its impact on program induction are left as future work.
+
 \subsection{Future Directions}
-Future improvements for the current system include using search strategies more sophisticated than beam search, looking at better ways to compute the likelihood, and developing a more robust method for identifying recursion.  Another direction would be to examine how this style of probabilistic program induction can be adapted to an online setting, which could lead to more insight on how abstractions are reused.  It is also interesting to ask whether the idea of regularity in data as repeated computation in the generative process can be used to identify other useful program transformations or be applied in a more systematic fashion than motivating a collection of disparate search moves.  A different and important question is what happens when the data incorporation step is not so easy and training data is not directly computed in terms of some algebraic data type and whether one can impose some semblance of structure on unstructured data in order to use these methods for learning.  There are many other barriers to overcome before probabilistic program induction can compete with state-of-the-art machine learning algorithms on real world problems, but the increased potential for capturing rich patterns and less dependence on human engineering make research in the subject a worthy pursuit.
+
+Future improvements of the system described in this paper include more sophisticated search strategies, more efficient ways of computing the likelihood, and the development of a more robust method for identifying recursive patterns.  Another direction is adaptation of this style of probabilistic program induction to the online setting.  
+
+More generally, we can ask whether the idea of regularity in data as repeated computation in the generative process can be used to identify other useful program transformations or, whether it can be applied in a more systematic fashion than motivating a collection of disparate search moves.  
+
+A different and important question is what happens when the data incorporation step is less immediate and training data is not directly computed in terms of some algebraic data type and whether one can impose some semblance of structure on unstructured data in order to use these methods for learning.  
+
+There are many other barriers to overcome before probabilistic program induction can compete with state-of-the-art machine learning algorithms on real world problems, but the increased potential for capturing rich patterns and less dependence on human engineering make research in the subject a worthy pursuit.
 \bibliographystyle{plain}
 \bibliography{myBib}
 \end{document}

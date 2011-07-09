@@ -8,3 +8,7 @@
 *.pos
 *.radblob
 *.png
+*.aux
+*.log
+*.blg
+*.DS_Store
