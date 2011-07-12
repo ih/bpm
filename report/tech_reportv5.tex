@@ -137,7 +137,7 @@ The first step of Bayesian program merging is data incorporation.  Data incorpor
   `(data (color (gaussian ,(first (second lst)) 25)) 
 	 (size ,(first (third lst)))))
 \end{lstlisting}
-In the implementation the data are unannotated s-expressions (an example being \texttt{(((1) (2)))}), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is \texttt{(node (data (color 1) (size 2)))}).  In the report we assume data is already a tree expression for readability.  An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors.  If we give \texttt{incorporate-data} the input: 
+In the implementation the data are unannotated s-expressions (an example being \texttt{(((1) (2)))}), which can be trivially converted into an expression in terms of the tree type constructors (the tree expression for the above example is \texttt{(node (data (color 1) (size 2)))}).  In this report, we assume for readability that all data is given in tree expression form. An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors.  If we give \texttt{incorporate-data} the input: 
 \begin{lstlisting}[mathescape=true]
 ((node (data (color 70) (size 1))
        (node (data (color 37) (size 0.3))
@@ -174,15 +174,14 @@ $\includegraphics[scale=.7]{initProgram.pdf}$
 
 \newpage
 \section{Probabilistic programs}
-A generative model is a probability distribution over data.  We can represent probability distributions as programs in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}. The structure of such a program, i.e., the decomposition into functions and the flow of control, can capture regularities in the data. We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants}. Different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
+A generative model is a joint probability distribution over latent states and observed data. We can represent such a joint distribution as a program in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}. The structure of the program, i.e., the decomposition into functions and the flow of control, can capture regularities in the data. We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants}. Different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
 \begin{lstlisting}[mathescape=true]
-(define tree
-  (lambda ()
-    (uniform-choice
-     (node (body) (branch))
-     (node (body) (branch) (branch))
-     (node (body) (branch) (branch) (branch))
-     (node (body) (branch) (branch) (branch) (branch)))))
+(define (tree)
+  (uniform-choice
+   (node (body) (branch))
+   (node (body) (branch) (branch))
+   (node (body) (branch) (branch) (branch))
+   (node (body) (branch) (branch) (branch) (branch))))
 
 (define (body) 
   (data (color (gaussian 50 25)) (size 1)))
