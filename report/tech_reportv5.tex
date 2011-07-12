@@ -5,6 +5,15 @@
 \usepackage{url}
 \usepackage{syntax}
 \usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
 \begin{document}
 
 \title{Inducing Probabilistic Programs by Bayesian Program Merging}
@@ -13,12 +22,16 @@
 \maketitle
 \begin{abstract}
 
-This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two main types of program transformations: the first is based on merging common subexpressions within a program and the second focuses on reducing the number of parameters for functions in the program. We demonstrate that this approach finds interesting patterns in a simple list-structured domain.
+This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two main types of program transformations: The first, inverse inlining, is based on merging common subexpressions within a program. The second, deargumentation, simplifies programs by reducing the number of function parameters. We demonstrate that this approach finds interesting patterns in the domain of nested lists.
 
 \end{abstract}
+
+
+%% \tableofcontents
+
 \section{Introduction}
 
-%% more intro here
+%% FIXME: more intro here
 
 What do you see when you look at figure \ref{fig:plants}? What kinds of patterns are there in the image? 
 \begin{figure}[h]
@@ -40,26 +53,34 @@ We examine a class of generative models that are represented as programs in a pr
 These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and demonstrate that this approach can find interesting patterns in the list data domain.
 
 
-\subsection{Bayesian Model Merging}
+\subsection{Bayesian model merging}
 
-Bayesian model merging is a framework for searching through a space of generative models in order to find one that accurately generates the desired data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ of model $M$ given data $D$ as a criterion for selecting transformations.
+Bayesian model merging is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ of model $M$ given data $D$ as a criterion for selecting transformations.
 
-We create the initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it will never generate points outside the training set--it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (with specific details being dependent on the model class), and the resulting program often has better generalization properties.  
+We create an initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it will never generate points outside the training set--it severely overfits the initial data.  Alternative model hypotheses are explored by transforming the initial model with merge operations.  Merge operations collapse the structure of a model (with specific details depending on the model class), and the resulting program often has better generalization properties.  
 
 This technique has been successfully applied to learning artificial probabilistic grammars where the grammars were represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}. Our work differs in that we use a significantly richer model class of probabilistic programs.  This allows for more complex patterns to be represented as well as allowing for more types of transformations, including transformations that correspond to lossy compression of the data.
 
-\section{Overview}
-The main parts of Bayesian program merging are as follows:
+
+\subsection{Bayesian program merging}
+
+%% FIXME: could improve decomposition
+
+In order to use Bayesian program merging, we need to specify the following parts:
+
 \begin{description}
-\item[Data and Language] Data is represented in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors.  Programs are written in a formal language that consists of type constructors and additional operators.
-\item[Probabilistic Programs]  Distributions over data can be represented with probabilistic programs and the structure of the programs corresponds to regularities in the data.
+\item[Data and language] Data is represented in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors.  Programs are written in a formal language that consists of type constructors and additional operators.
+\item[Probabilistic programs]  Distributions over data can be represented with probabilistic programs and the structure of the programs corresponds to regularities in the data.
 \item[Search] Search is based on identifying programs with a high posterior probability and then applying transformations to these programs to continue exploration.
-\item[Merge Operations] Transformations on programs merge program structure, which can increase generalization of the model as well as its prior probability.
+\item[Merge operations] Transformations on programs merge program structure, which can increase generalization of the model as well as its prior probability.
 \end{description}
-\section{Data Representation, Algebraic Data Types, and Language}
+
+
+\newpage
+\section{Data representation, algebraic data types, and language}
 We assume that the data we deal with can be modeled with an algebraic data type whose constructors are known to us.  This assumption gives us a starting point for program induction, since any data can be directly translated into a program which is a derivation (sequence of constructor operations) of the data from the type specification. 
-\subsection{Lists Example}
-We can model the trees shown in figure \ref{fig:plants} in terms of lists or s-expressions.  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.
+\subsection{Example: Data and programs in the domain of nested lists}
+We can model the trees shown in figure \ref{fig:plants} in terms of nested lists (s-expressions).  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.
 \begin{grammar}
 <tree> ::= nil
 
@@ -97,7 +118,7 @@ We now have a way of representing data as rudimentary programs.  In order to cap
 <primitve> ::= uniform-choice | list | node | data | color | size | [number]
 \end{grammar}
 
-\subsection{Data Incorporation}
+\subsection{Data incorporation}
 The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to this example (in terms of the algebraic data type constructors).  These programs are combined into a single expression that draws uniformly from this list. 
 % We assume Gaussian noise in the color attribute for simplicity's sake, but discuss a possible direction for learning such a property later in the report.
 \begin{lstlisting}[frame=trBLsingle]
@@ -148,7 +169,9 @@ We get the program
 $\includegraphics[scale=.7]{initProgram.pdf}$
 \end{lstlisting}
 
-\section{Probabilistic Programs}
+
+\newpage
+\section{Probabilistic programs}
 A generative model is a probability distribution over data.  We can represent probability distributions as programs in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}.  One reason this is interesting is the structure of a program (i.e., the decomposition into functions and the flow of control) can capture different regularities in the data.    We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants} and see how different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
 \begin{lstlisting}[mathescape=true]
 (define tree
@@ -182,7 +205,7 @@ $\includegraphics[scale=.35]{trees2.pdf}$
 \end{lstlisting}
 We can think programs as a combination of data constructor operations with some additional control flow operations and lambda abstractions.  The above tree program begins by determining the number of branches the tree will have and then creates a large body node that connects these branches.  Each branch function recursively connects a series of small nodes together and ends in a call to the flower function, passing it one of two colors.  The flower function creates a node with three ``petal'' nodes each of the same color.  Looking at this program we see how patterns such as a flower having three petals and the body having a large base are reflected in the program structure.  The compositionality of the language also captures relational patterns such as branches end in flowers.  Now that we know many different patterns can be represented within a probabilistic program, the main question becomes how do we change the structure of our initial data incorporated program to reflect such patterns.
 
-\subsection{Data Abstractions}
+\subsection{Data abstractions}
 We use data abstractions for programs and functions created by merge operations on programs.  A function created by a merge operation is called an abstraction (after lambda abstraction).  It consists of a name, variables, and a pattern, i.e., the s-expression that makes up the body of the function.  
 \begin{lstlisting}[frame=trBL]
 (define (make-abstraction body variables)
@@ -224,7 +247,7 @@ We use a wrapper around the programs to keep track of additional program informa
 \end{lstlisting}
 
 
-\subsection{Posterior Probability}
+\subsection{Posterior probability}
 An important aspect of using probabilistic programs is they represent computable probability distributions or generative models.  This means we can talk about the posterior probability distribution of a program, which is defined by Bayes theorem as 
 \begin{equation}P(M|D)\propto P(D|M)P(M)\end{equation}
 Where $P(D|M)$ is the probability of data $D$ being generated by program $M$, also known as the likelihood, and $P(M)$ is the probability of a program, also known as the prior.
@@ -249,7 +272,7 @@ This prior effectively biases the search towards smaller programs.  Increasing t
     (+ abstraction-sizes body-size)))
 \end{lstlisting}
 The computation of the likelihood is the difficult part in estimating the posterior.  Intuitively we can think of it as way to say how good a particular program is at producing a set of target data.  This is important in search because it can give information on whether and/or how to adjust our hypothesis.  In a deterministic setting where the programs do not have randomness we can often have an intuitive sense of whether a program is good or bad based on some metric we make up on the space of outputs and the data.  Working in the probabilistic setting allows us to have a more standard way of deciding whether a program is good or bad.  The main idea being a probabilistic program is a generative process and represents a distribution over possible data.  Given the ``right'' random choices during the execution of the program the output will be the observed data.  By knowing the probabilities of these choices, we can combine them based on the rules of probability to get a score for how likely our program is to generate the observed data and this gives us a sense of whether the program is good or bad.  There may be many possible settings for the random choices of a program and this can make determining which choices lead to the observed data difficult.  There is an additional difficulty in that there could be many possible settings that lead to the observed data and we need to take take all of them into account.  We give an example of one possible way to approximate this computation for list-type data in the example below.
-\subsubsection{Estimating Likelihood for List Programs}
+\subsubsection{Estimating likelihood for list programs}
 In the case of programs that generate list structured data we can estimate the likelihood by splitting the data into the discrete topology of the list and its continuous items.  We begin by factoring the problem in the following way:
 \begin{eqnarray}
 P(ts|p) &=& \prod_{ts}P(t|p)
@@ -343,10 +366,12 @@ We can use the Gaussian parameters for each node's color to determine the probab
 (define gaussian->variance third)
 \end{lstlisting}
 
-\section{Bayesian Search}
+
+\newpage
+\section{Bayesian search}
 The search over program space uses beam search as a guiding heuristic like in Bayesian model merging.  There is much that can be done in the way of employing this objective function in complex search strategies, but for simplicity we use a straight-forward beam search.  
 
-\subsection{Beam Search}
+\subsection{Beam search}
 We use a basic beam search to explore the space of generative models.  The posterior is used as the heuristic function in guiding search.
 \begin{lstlisting}[frame=trBL]
 (define (beam-search data init-program beam-size depth)
@@ -404,10 +429,13 @@ The posterior distribution is estimated by combining an estimate of the likeliho
          [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
     (my-list-sort posteriors> new-programs+)))
 \end{lstlisting}
-\section{Merge Operations}
+
+
+\newpage
+\section{Merge operations}
 We described earlier how patterns in the program representation of data can be viewed as repeated computation.  Here we describe how this idea manifests itself as concrete program transformations used in exploring the search space.
 
-\subsection{Inverse Inlining}
+\subsection{Inverse inlining}
 Inlining is the process of replacing function calls in a program with the body of the function called.  Inverse Inlining creates new functions based on syntactic patterns in a program and replaces these patterns with calls to the newly created functions.  We can think of this process as creating lambda abstractions that potentially compress the program by removing duplication in the code and acts as a proxy for recognizing repeated computation.  The following code fragment outlines this procedure where compressions finds the different (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program).  Duplicate abstractions are filtered out then transformed programs are created by Inverse Inlining function calls for each of the abstractions.  
 
 \begin{lstlisting}[frame=trBL]
@@ -535,7 +563,7 @@ Finding and replacing pattern matches of an abstraction F in an expression E pro
               (map (lambda (var) (replace-matches (rest (assq var unified-vars)) abstraction))
                    (abstraction->vars abstraction))))))
 \end{lstlisting}
-\subsubsection{Refactoring Program Example}
+\subsubsection{Example: Refactoring programs}
 In the case of \texttt{(+ (+ 2 2) (- 2 5))} the partial match resulting from anti-unification between the subexpressions \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} is \texttt{(+ V1 V2)}.  We refactor the original expression \texttt{(+ (+ 2 2) (- 2 5))} in terms of \texttt{(+ V1 V2)} by creating a function \texttt{(define (F1 V1 V2) (+ V1 V2))} and applying it in the expression.  For example one application could be \texttt{(F1 (+ 2 2) (- 2 5))} and another could be \texttt{(+ (F1 2 2) (- 2 5))}.  In general, we apply the function everywhere possible and get a refactored program such as:
 \begin{lstlisting}
 (+ (+ 2 2) (- 2 5))
@@ -583,7 +611,7 @@ The input to unification is a function F, and an expression E.  Unification occu
                    #f
                    (check/remove-repeated (apply append assignments))))]))))
 \end{lstlisting}
-\subsubsection{Unification Example}
+\subsubsection{Example: Unification}
 The example listed earlier where the function F is \texttt{(define (F1 V1 V2) (+ V1 V2))} and the s-expression being refactored is \texttt{(+ (+ 2 2) (- 2 5))} is used to illustrate unification.  Since \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ V1 V2)} are the same length unification is applied to the subexpression pairs \texttt{[+,+], [(+ 2 2), V1], [(- 2 5), V2]}.
 
 Unification between + and + returns nothing since neither is a variable and they match.  Unification between \texttt{(+ 2 2)} and V1 returns the assignment of \texttt{(+ 2 2)} to V1 and likewise for \texttt{(- 2 5)} and V2.  So the function F1 matches the s-expression \texttt{(+ (+ 2 2) (- 2 5))} with variable assignments \texttt{V1:=(+ 2 2)} and \texttt{V2:=(- 2 5)}.
@@ -718,7 +746,7 @@ After the abstraction has been adjusted, any place it was used (i.e., the functi
 \end{lstlisting}
 In the following, we demonstrate that this transformation is useful for generalizing a program to have recursive structure as well as dealing with continuous data types that may be distorted with noise, for example the color data of the tree examples.
 
-\subsubsection{Noisy data example}
+\subsubsection{Compactly representing noisy data}
 One issue with Inverse Inlining is that anything other than perfect equality results in the creation of a variable when matching two expressions.  So if we have an expression such as \texttt{(+ 2 2)} and \texttt{(+ 2 2.01)} and we know there is some noise in the system then we may want to treat these expressions as if they were the same, i.e., inverse-inline them to \texttt{(define (F1) (+ 2 2))} or \texttt{(define (F1) (+ 2 2.01))} rather than \texttt{(define (F1 x) (+ 2 x))}.  We can do this using a Deargumentation transformation along with a \texttt{replacment-function} called \texttt{noisy-number-replacment} that replaces the variable with the mean of its instances.  
 \begin{lstlisting}[frame=trBL]
 (define (noisy-number-replacement program abstraction variable variable-instances)
@@ -796,7 +824,7 @@ Now if we had applied the Deargumentation transform to the \texttt{flower} funct
   (flower 220 224 207))
 $\includegraphics[scale=.6]{noisyNumberTrans2.pdf}$
 \end{lstlisting}
-\subsubsection{Same Variable example}
+\subsubsection{Merging identical variables}
 An Inverse Inlining transformation creates an abstraction with variables where the variables represent parts of an expression that differ between specific abstraction instances.  It might be the case that variables with different names in the abstraction really ought to be treated as the same variable, i.e., we would like to allow a variable to occur in multiple places within an abstract expression.  We can address this with a Deargumentation transform that uses the the following replacement function.  This function basically checks that all variable instances are equal or have the same type if they are numbers to allow for some flexibility.
 \begin{lstlisting}[frame=trBL]
 (define (same-variable-replacement program abstraction variable variable-instances)
@@ -864,7 +892,7 @@ If the variable does not match a petal, e.g. \texttt{V1}, then we get a program 
 $\includegraphics[scale=.6]{sameVarTrans2.pdf}$
 \end{lstlisting}
 
-\subsubsection{Recursion example}
+\subsubsection{Inducing recursive functions}
 We illustrate how recursive patterns can be discovered using Deargumentation and a \texttt{replacement-function} called \texttt{recursion-replacement} that redefines a variable as a choice between a recursive call and a non-recursive call.  The basic idea is to check whether variable instances are calls to the function being deargumented.  If they are then there is a recursion.  The probability of recursing is a function of how many variable instances are recursive function calls.  We also check to see whether this transformation creates an infinite loop.  This approach is admittedly very limited in what it can capture, but we use it as a starting point to illustrate how recursion might be identified.
 \begin{lstlisting}[frame=trBL]
 (define (recursion-replacement program abstraction variable variable-instances)
@@ -941,10 +969,16 @@ Here the instances of x (i.e., what was passed into the function F1) are \texttt
 $\includegraphics[scale=.25]{recAft.pdf}$
 \end{lstlisting}
 
-\subsubsection{Deargumentation and Program Induction}
-In some sense the problem we are trying to address with the Deargumentation is program induction itself.  We can view the values for each variable as data generated by some process we would like to identify, i.e., there is some sort of common computation between variable values that we would like to represent as a program.  In the case of the noisy-number transformation we can view the generation of values for a single variable as coming from the same process, here we restrict the program representing this process to a Gaussian.  Similarly, in the case of the recursive transformation we can view the generation of values for a single variable as coming from a the same process, but we restrict the program representing this process to be the function being deargumented.  In the case of the same variable transformation we can view the generation of values for multiple variables as coming from the same process and we implicitly use the program for one variable as the generating process for the other.  It seems natural to ask whether we could reformulate the Deargumentation transform as recursive calls to the Bayesian program merging procedure in an attempt to find programs for generating the values of the variables.  One can think of this as recursively squeezing out the randomness in the data where the abstractions created by Inverse Inlining create a separation between the ``structured'' parts of the data (the fixed common sub-expressions) and the random parts of the data (the variables in the expression patterns).  As an abstraction is applied one gets more data for the random parts and could conceivably attempt to learn a program to generate this data, i.e., separate out even more structure.
-\section{Bayesian Program Merging Examples}
-\subsection{Single Color Flower}
+\subsubsection{Deargumentation as program induction}
+
+In some sense the problem we are trying to address with the Deargumentation is program induction itself.  We can view the values for each variable as data generated by some process we would like to identify, i.e., there is some sort of common computation between variable values that we would like to represent as a program.  In the case of the noisy-number transformation we can view the generation of values for a single variable as coming from the same process, here we restrict the program representing this process to a Gaussian.  Similarly, in the case of the recursive transformation we can view the generation of values for a single variable as coming from a the same process, but we restrict the program representing this process to be the function being deargumented.  In the case of the same variable transformation we can view the generation of values for multiple variables as coming from the same process and we implicitly use the program for one variable as the generating process for the other.  
+
+Hence, it is natural to ask whether we could reformulate the Deargumentation transform as recursive calls to the Bayesian program merging procedure in an attempt to find programs for generating the values of the variables.  One can think of this as recursively squeezing out the randomness in the data where the abstractions created by Inverse Inlining create a separation between the ``structured'' parts of the data (the fixed common sub-expressions) and the random parts of the data (the variables in the expression patterns).  As an abstraction is applied one gets more data for the random parts and could conceivably attempt to learn a program to generate this data, i.e., separate out even more structure.
+
+
+\newpage
+\section{Examples of Bayesian program merging}
+\subsection{Single color flower}
 We use the program below to generate ten instances of flower that have the same color.  
 \begin{lstlisting}[mathescape=true]
 (define (flower shade)
@@ -983,7 +1017,7 @@ An expression for these ten flowers was created using data incorporation and thi
 
 $\includegraphics[scale=.35]{single-color-model.pdf}$
 \end{lstlisting}
-\subsection{Multiple Color Flower}
+\subsection{Multiple color flower}
 Here we use a similar program to generate ten instances of flower that have alternating colors.  
 \begin{lstlisting}[mathescape=true]
 (define (flower shade)
@@ -1135,10 +1169,13 @@ Bayesian model merging produces a program with a similar structure to the origin
                      (F3 36.0))))
 $\includegraphics[scale=.25]{treeModel.pdf}$
 \end{lstlisting}
+
+
+\newpage
 \section{Discussion}
 We presented an approach to creating generative models from data called Bayesian program merging.  The main ideas were to represent data as a program and then frame finding regularities in the transformed data as identifying repeated computation in the program.   Finding repeated computation was performed through program transformations that merged the structure of a program.  The sequences of transformations made while searching were guided using the posterior of the program.  
 
-\subsection{Noise and Representation}
+\subsection{Noise and representation}
 We generated colors for our trees using Gaussians and one motivation for this would be to model the random processes in the environment.  There is another, more subtle, reason to introduce a noise process into our programs related to representation.  Randomness in data constructors (such as \texttt{color}) can potentially allow for compact representations of patterns in the presence of noise.  To get a sense of this idea look at figure \ref{fig:noiseCons}. 
 \begin{figure}[h]
 \begin{center}
@@ -1231,7 +1268,7 @@ $\includegraphics[scale=.6]{learnnoise-output.pdf}$
 
 The discussion above hints at the benefits of using probabilistic data constructors and probabilistic programs in general with respect to representation, but understanding the full implications of such a design decision and its impact on program induction are left as future work.
 
-\subsection{Future Directions}
+\subsection{Future directions}
 
 Future improvements of the system described in this paper include more sophisticated search strategies, more efficient ways of computing the likelihood, and the development of a more robust method for identifying recursive patterns.  Another direction is adaptation of this style of probabilistic program induction to the online setting.  
 
