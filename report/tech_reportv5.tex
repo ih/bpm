@@ -22,7 +22,7 @@
 \maketitle
 \begin{abstract}
 
-This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two main types of program transformations: The first, inverse inlining, is based on merging common subexpressions within a program. The second, deargumentation, simplifies programs by reducing the number of function parameters. We demonstrate that this approach finds interesting patterns in the domain of nested lists.
+This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two types of program transformations: The first, inverse inlining, is based on merging common subexpressions within a program. The second, deargumentation, simplifies programs by reducing the number of function parameters. We demonstrate that this approach finds interesting patterns in the domain of nested lists.
 
 \end{abstract}
 
@@ -369,10 +369,9 @@ We can use the Gaussian parameters for each node's color to determine the probab
 
 \newpage
 \section{Bayesian search}
-The search over program space uses beam search as a guiding heuristic like in Bayesian model merging.  There is much that can be done in the way of employing this objective function in complex search strategies, but for simplicity we use a straight-forward beam search.  
 
-\subsection{Beam search}
-We use a basic beam search to explore the space of generative models.  The posterior is used as the heuristic function in guiding search.
+We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
+
 \begin{lstlisting}[frame=trBL]
 (define (beam-search data init-program beam-size depth)
   (let* ([top-transformations 
