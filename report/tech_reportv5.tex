@@ -24,7 +24,11 @@
 \vspace*{-2em}
 \begin{abstract}
 
-This report outlines an approach to representing generative models as probabilistic programs and describes how such programs can be learend from data.  Expressing models as programs allows us to capture patterns in data concisely.  Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. We consider two types of program transformations: The first, inverse inlining, is based on merging common subexpressions within a program. The second, deargumentation, simplifies programs by reducing the number of function parameters. We demonstrate that this approach finds interesting patterns in the domain of nested lists.
+This report outlines an approach to learning generative models from data, when those models are represented as probabilistic programs. Expressing models as programs captures abstract patterns contained in the examples, such as stochastic recursion and parametrized sub-parts. Yet we don’t sacrifice concreteness: by choosing our language for programs to be an extension of the algebraic data type of the examples, we can begin with a program that generates all and only the examples, introducing greater abstraction, and generalization, incrementally to the extent that it is explanatory. 
+Motivated by previous approaches to model merging and program induction, we search for such explanatory abstractions using program transformations.
+%Formulating model learning in terms of program induction suggests that we can understand patterns as repeated computations within these programs. 
+%This idea provides a unifying theme for searching the space of generative models, suggesting search moves that, in the spirit of Bayesian model merging, are based on program transformations. 
+We consider two types of program transformation: The first is based on merging common subexpressions within a program into new function abstractions (anti-unification). The second simplifies functions by reducing the number of arguments. We demonstrate that this approach finds key patterns in the domain of nested lists, including: parametrized sub-functions and stochastic recursion.
 
 \end{abstract}
 
@@ -35,7 +39,7 @@ This report outlines an approach to representing generative models as probabilis
 
 %% FIXME: more intro here
 
-What do you see when you look at figure \ref{fig:plants}? What kinds of patterns are there in the image? 
+What do you see when you look at figure \ref{fig:plants}? What kinds of patterns are in the image? 
 \begin{figure}[h]
 \begin{center}
 \includegraphics[scale=.60]{trees.pdf}
@@ -44,16 +48,28 @@ What do you see when you look at figure \ref{fig:plants}? What kinds of patterns
 \label{fig:plants}
 \end{figure}
 
-You might describe the image as a series of trees where each tree has a large base and a number of branches of variable length with each branch ending in a flower that is either red or purple. Each part of this description corresponds to a different pattern detected in the image.  Recognizing patterns like these is an important aspect of intelligence and it would be useful if we could automate this process.  One possible way to approach this problem is in terms of learning generative models represented as probabilistic programs.  In this document, we build on the notion of representing patterns or concepts as probabilistic programs \cite{A.Stuhlmueller:2010:6d11a} and begin to explore a family of algorithms for learning such programs.
+You might describe the image as a series of trees where each tree has a large base and a number of branches of variable length with each branch ending in a flower that is either red or purple. Each part of this description corresponds to a different pattern detected in the image.  Recognizing patterns like these is an important aspect of intelligence; understanding algorithms that can identify such patterns will contribute to understanding human intelligence and extending the scope of machine intelligence.  
+One way to approach this problem is as learning generative models for observed examples: we wish to find a description of the process that could have given rise to a set of examples, and will form this description in a rich language for generative processes---a probabilistic programming language. 
+In this document, we build on the representation in \cite{A.Stuhlmueller:2010:6d11a} and explore a family of algorithms for learning probabilistic programs.
 
-A difficulty with the identification of regularities in data is that there are many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.  We will approach this problem by first transforming data (whatever its type) into a canonical form (an expression in a programming language) and then defining pattern as repeated computation in this program.  The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using a Bayesian posterior probability, and creating search moves based on detecting repeated computation.  The general algorithm can be summarized as (1) turn the data into a large program (2) identify repeated computation in the large program and extract these patterns by merging program structure (3) determine which merge moves to apply based on the posterior probability distribution of the program given the data.  The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference. We illustrate these ideas on list-structured data.
+%A difficulty with the identification of regularities in data is that there are many notions of what it means to be a pattern and how this can vary with the types of data being analyzed.  We will approach this problem by first transforming data (whatever its type) into a canonical form (an expression in a programming language) and then defining pattern as repeated computation in this program.  
 
-Generative models play a prominent role in modern machine learning and understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying patterns from very small amounts of data.
 
-We examine a class of generative models that are represented as programs in a probabilistic programming language. A probabilistic program represents a probability distribution, and each evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
+%some high-level discussion here, about what kinds of patterns are important to find, and needing a language that spans from very concrete to fully abstract?
 
+The main components of our approach are as follows: representation of data in terms of algebraic data types, representation of patterns in data as probabilistic programs, guiding search through program space using the Bayesian posterior probability, and creating search moves by detecting repeated computation.  The general algorithm can be summarized as 
+(1) turn the data into a large program that generates all and only the examples 
+(2) identify (approximately) repeated structure in the large program and transform the program to make sharing explicit   %does this describe dearg well?
+(3) continue, accepting transformations that increase the posterior probability of the program given the data.  
+The probabilistic programs learned in such a manner can be understood as generative models and reasoning about such models can be formulated in terms of probabilistic inference. We illustrate these ideas on list-structured data.
+
+Generative models play a prominent role in modern machine learning and understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in a very expressive class of models with a focus on identifying abstract patterns from very small amounts of data.
+
+In particular, we examine a class of generative models that are represented as programs in a probabilistic programming language. A probabilistic program represents a probability distribution, and each evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
 These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and demonstrate that this approach can find interesting patterns in the list data domain.
 
+Before we proceed, a note about what this report is and is not: This report \emph{is} a status update on our working system, containing detailed code and illustrative examples. It documents some progress we have made that we believe can be useful more generally.
+This report \emph{is not} a completed academic work. In particular, it does little to situate our work within the context of previous work (some of which has  directly inspired us), provides little high-level discussion, and aims for illustrative examples rather than compelling applications.
 
 \subsection{Bayesian model merging}
 
