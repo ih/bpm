@@ -1,15 +1,15 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}
 \contentsline {subsection}{\numberline {1.1}Bayesian model merging}{3}{subsection.1.1}
 \contentsline {subsection}{\numberline {1.2}Bayesian program merging}{3}{subsection.1.2}
-\contentsline {section}{\numberline {2}Data representation, algebraic data types, and language}{4}{section.2}
+\contentsline {section}{\numberline {2}Data representation and program language}{4}{section.2}
 \contentsline {subsection}{\numberline {2.1}Representation of data and programs in the domain of nested lists}{4}{subsection.2.1}
 \contentsline {subsection}{\numberline {2.2}Data incorporation}{4}{subsection.2.2}
-\contentsline {section}{\numberline {3}Probabilistic programs}{6}{section.3}
-\contentsline {subsection}{\numberline {3.1}Data abstractions}{6}{subsection.3.1}
+\contentsline {section}{\numberline {3}Objective: Posterior probability of probabilistic programs}{6}{section.3}
+\contentsline {subsection}{\numberline {3.1}Abstract syntax utilities}{6}{subsection.3.1}
 \contentsline {subsection}{\numberline {3.2}Posterior probability}{7}{subsection.3.2}
 \contentsline {subsection}{\numberline {3.3}Likelihood estimation in the list domain}{8}{subsection.3.3}
-\contentsline {section}{\numberline {4}Bayesian search}{11}{section.4}
-\contentsline {section}{\numberline {5}Merge operations}{13}{section.5}
+\contentsline {section}{\numberline {4}Search over program space}{11}{section.4}
+\contentsline {section}{\numberline {5}Program transformations}{13}{section.5}
 \contentsline {subsection}{\numberline {5.1}Inverse inlining}{13}{subsection.5.1}
 \contentsline {subsubsection}{\numberline {5.1.1}Anti-unification}{14}{subsubsection.5.1.1}
 \contentsline {subsubsection}{\numberline {5.1.2}Refactoring programs}{15}{subsubsection.5.1.2}

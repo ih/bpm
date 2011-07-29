@@ -95,7 +95,7 @@ In order to use Bayesian program merging, we need to specify the following parts
 
 
 \newpage
-\section{Data representation, algebraic data types, and language}
+\section{Data representation and program language}
 We assume that the data we deal with can be modeled with an algebraic data type whose constructors are known to us.  This assumption gives us a starting point for program induction, since any data can be directly translated into a program which is a derivation (sequence of constructor operations) of the data from the type specification. 
 \subsection{Representation of data and programs in the domain of nested lists}
 We can model the trees shown in figure \ref{fig:plants} in terms of nested lists (s-expressions).  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.
@@ -189,7 +189,7 @@ $\includegraphics[scale=.7]{initProgram.pdf}$
 
 
 \newpage
-\section{Probabilistic programs}
+\section{Objective: Posterior probability of probabilistic programs}
 A generative model is a joint probability distribution over latent states and observed data. We can represent such a joint distribution as a program in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}. The structure of the program, i.e., the decomposition into functions and the flow of control, can capture regularities in the data. We illustrate this idea by looking at a probabilistic program that generates the images in figure \ref{fig:plants}. Different parts of the program correspond to the different patterns we described earlier (functions and variables are given semantically meaningful names for readability, but can easily be replaced by F[number] and V[number] to fit the grammar specified earlier).  
 \begin{lstlisting}[mathescape=true]
 (define (tree)
@@ -222,7 +222,7 @@ $\includegraphics[scale=.35]{trees2.pdf}$
 \end{lstlisting}
 We can think programs as a combination of data constructor operations with some additional control flow operations and lambda abstractions.  The above tree program begins by determining the number of branches the tree will have and then creates a large body node that connects these branches.  Each branch function recursively connects a series of small nodes together and ends in a call to the flower function, passing it one of two colors.  The flower function creates a node with three ``petal'' nodes each of the same color.  Looking at this program we see how patterns such as a flower having three petals and the body having a large base are reflected in the program structure.  The compositionality of the language also captures relational patterns such as branches end in flowers.  Now that we know many different patterns can be represented within a probabilistic program, the main question becomes how do we change the structure of our initial data incorporated program to reflect such patterns.
 
-\subsection{Data abstractions}
+\subsection{Abstract syntax utilities}
 We use data abstractions for programs and functions created by merge operations on programs.  A function created by a merge operation is called an abstraction (after lambda abstraction).  It consists of a name, variables, and a pattern, i.e., the s-expression that makes up the body of the function.  
 \begin{lstlisting}[frame=trBL]
 (define (make-abstraction body variables)
@@ -385,7 +385,7 @@ We can use the Gaussian parameters for each node's color to determine the probab
 
 
 \newpage
-\section{Bayesian search}
+\section{Search over program space}
 
 We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
 
@@ -448,7 +448,7 @@ The posterior distribution is estimated by combining an estimate of the likeliho
 
 
 \newpage
-\section{Merge operations}
+\section{Program transformations}
 We described earlier how patterns in the program representation of data can be viewed as repeated computation.  Here we describe how this idea manifests itself as concrete program transformations used in exploring the search space.
 
 \subsection{Inverse inlining}
