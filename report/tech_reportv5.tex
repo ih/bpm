@@ -129,7 +129,7 @@ We now have a way of representing data as rudimentary programs.  In order to cap
 \subsection{Data incorporation}
 The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to this example (in terms of the algebraic data type constructors).  We combine these programs into a single expression that draws uniformly from this list.
 % We assume Gaussian noise in the color attribute for simplicity's sake, but discuss a possible direction for learning such a property later in the report.
-\begin{lstlisting}[frame=trBLsingle]
+\begin{lstlisting}[frame=trblsingle]
 (define (incorporate-data trees)
   `(lambda () (uniform-choice ,@(map tree->expression trees))))
 
@@ -215,7 +215,7 @@ Our programs are a combination of data constructors, control flow operations, an
 
 \subsection{Abstract syntax utilities}
 Some program transformations generate new functions. We call such functions {\em abstractions}. We represent them using a name, argument variables, and a pattern, i.e., the s-expression that makes up the body of the function. In the following code snippet, we use the \texttt{sym} function that creates readable unique symbols for function and variable names.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (make-abstraction body variables)
   (make-named-abstraction (sym FUNC-SYMBOL) body variables))
 (define (make-named-abstraction name body variables)
@@ -227,7 +227,7 @@ Some program transformations generate new functions. We call such functions {\em
 \end{lstlisting}
 
 {\em Programs} represent the generative models we search over. They consist of a list of abstractions and a body.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (make-program abstractions body)
   (list 'program abstractions body))
 (define program->abstractions second)
@@ -235,7 +235,7 @@ Some program transformations generate new functions. We call such functions {\em
 \end{lstlisting}  
 
 We wrap programs into another data type to keep track of additional information during search. We motivate this in the section on search in more detail. The basic idea is to avoid recomputation of a program's likelihood (an expensive computation) when transformations do not affect a program's semantics.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (make-program+ program posterior log-likelihood log-prior semantics-preserved)
   (list 'program+ program posterior log-likelihood log-prior 
         semantics-preserved))
@@ -259,12 +259,12 @@ Probabilistic programs correspond to probability distributions on observed data,
 \begin{equation}P(M|D)\propto P(D|M)P(M)\end{equation}
 Here, $P(D|M)$ is the probability that program $M$ generates data $D$, the likelihood, and $P(M)$ is the prior probability of program $M$. We use a prior based on program length:
 \begin{equation}P(M)\propto e^{-\alpha \mathit{size}(M)}\end{equation}
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (log-prior program)
   (- (* alpha (program-size program))))
 \end{lstlisting}
 This prior biases the search towards smaller programs. Increasing the constant $\alpha$ gives the prior more weight when calculating the posterior, which means that minimizing program size is a more important criterion. A program's size is the number of symbols in the function bodies as well as in the main body.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (sexpr-size sexpr)
   (if (list? sexpr)
       (apply + (map sexpr-size sexpr))
@@ -282,18 +282,17 @@ Computing the likelihood is the difficult part of the posterior probability comp
 
 \subsection{Likelihood estimation in the list domain}
 
-In the case of programs that generate list-structured data, we can estimate the likelihood using a sequential Monte Carlo method (\texttt{smc}) that splits the data generation process into generation of the discrete list topology and the continuous value topology.
-We begin by factoring the problem of generating the data set into the problem of generating each of the data points:
+In the case of programs that generate list-structured data, we can estimate the likelihood by (1) generating samples using a sequential Monte Carlo method (\texttt{smc}) that splits the data generation process into generation of the discrete list topology and the continuous value topology and (2) applying selective model averaging to these samples. We begin by factoring the problem of generating the data set into the problem of generating each of the data points:
 \begin{eqnarray}
 P(T|M) &=& \prod_{t \in M}P(t|M)
 \end{eqnarray}
 Here, $T$ is the observed set of trees, $t$ a single tree, and $M$ the generative model (program).
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (log-likelihood trees prog sample-size)
   (apply + (map (lambda (tree) (single-log-likelihood prog sample-size tree)) trees)))
 \end{lstlisting}
-We will estimate the likelihood of a single tree, $P(t|M)$, by evaluating the program many times, restricting the computation to result in the target tree each time. The product of the probabilities of all random choices made during a single evaluation corresponds to the probability of a single possible way of generating the tree. Since there may be multiple ways for a program to generate a given tree, we average these probabilities.
-\begin{lstlisting}[frame=trBL]
+We will estimate the likelihood of a single tree, $P(t|M)$, by evaluating the program many times, restricting the computation to result in the target tree each time. The product of the probabilities of all random choices made during a single evaluation corresponds to the probability of a single possible way of generating the tree. Since there may be multiple ways for a program to generate a given tree, we sum up the probability of each {\em distinct} parse to compute a lower bound on the true likelihood (selective model averaging).
+\begin{lstlisting}[frame=trbl]
 (define (single-log-likelihood program popsize tree)
   (let* ([new-program (replace-gaussian (desugar program))]
          [model (eval (program->sexpr new-program))]
@@ -307,8 +306,8 @@ We will estimate the likelihood of a single tree, $P(t|M)$, by evaluating the pr
                      (apply log-sum-exp scores))])
     score))
 \end{lstlisting}
-We take advantage of the fact we can directly compute the probability of a sample from a Gaussian given the parameters.  We therefore modify the Gaussian functions in the program to output the mean and variance for a particular node instead of sampling a value from the distribution.  The code below also changes the uniform-choice syntactic construct into a uniform-draw, which current Church implementations provide.
-\begin{lstlisting}[frame=trBL]
+We take advantage of the fact we can directly compute the probability of a sample from a Gaussian given the parameters.  We therefore modify the Gaussian functions in the program to output the mean and variance for a particular node instead of sampling a value from the distribution.  The code below also changes the \texttt{uniform-choice} syntactic construct into a \texttt{uniform-draw}, which current Church implementations provide.
+\begin{lstlisting}[frame=trbl]
 (define (replace-gaussian program)
   (define (gaussian? sexpr)
     (tagged-list? sexpr 'gaussian))
@@ -339,26 +338,23 @@ We take advantage of the fact we can directly compute the probability of a sampl
 
 (define (thunkify sexpr) `(lambda () ,sexpr))
 \end{lstlisting}
-We evaluate the modified program multiple times to generate trees whose topology (node structure) matches the observed tree and which provide mean and variance of the Gaussians used to generate colors.  During the evaluation of the modified programs, we capture the probability for the choices made in generating the topology of the tree.
-
 In the code below, \texttt{smc-core} forces the program to generate the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report. In short, the method is an incremental forward sampler; for this reason, we separate out the continuous choices, since forward sampling has probability $0$ of generating the observed values.
-
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (compute-topology-scores+evaluate model tree popsize)
   (let* ([smc-core-arguments (create-smc-core-args model tree popsize)]
          [samples (apply smc-core smc-core-arguments)]
          [repeat-symbol (find-repeat-symbol samples)]
-         [samples
+         [unique-samples
           (fold (lambda (s a)
                   (if (member (mcmc-state->addrval s repeat-symbol)
                               (map (lambda (x) (mcmc-state->addrval x repeat-symbol)) a))
                       a (pair s a))) '() samples)]
-         [topology-scores (map mcmc-state->score samples)]
-         [generated-trees (map mcmc-state->query-value samples)])
+         [topology-scores (map mcmc-state->score unique-samples)]
+         [generated-trees (map mcmc-state->query-value unique-samples)])
     (list topology-scores generated-trees)))
 \end{lstlisting}
 We use the Gaussian parameters for each node's color to determine the probability of the observed color values of a tree:
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (compute-data-score tree tree-with-parameters)
     (if (null? tree)
         0
@@ -384,7 +380,7 @@ We use the Gaussian parameters for each node's color to determine the probabilit
 
 We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
 
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (beam-search data init-program beam-size depth)
   (let* ([top-transformations 
           (sort-by-posterior
@@ -402,7 +398,7 @@ We are interested in programs with high posterior probability. Many different se
   (max-take (sort-by-posterior data programs+) n))
 \end{lstlisting}
 The main part of the search is performed by \texttt{depth-iterated-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (depth-iterated-transformations cfilter program+ depth)
   (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
     (delete '()  (append transformed-programs+
@@ -411,7 +407,7 @@ The main part of the search is performed by \texttt{depth-iterated-transformatio
                                             transformed-programs+))))))
 \end{lstlisting}
 We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse likelihood for a program that was created by a semantics preserving transformation.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (apply-and-filter-transformations depth cfilter program+)
   (if (= depth 0)
       '()
@@ -426,7 +422,7 @@ We reduce the amount of computation required when choosing the best programs at 
     transformed-programs+))
 \end{lstlisting}
 The posterior distribution is estimated by combining an estimate of the likelihood with the computation of the prior.  
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (sort-by-posterior data programs+)
   (let* ([programs (map program+->program programs+)]
          [semantics-flags (map program+->semantics-preserved programs+)]
@@ -449,7 +445,7 @@ We described earlier how patterns in the program representation of data can be v
 \subsection{Abstraction}
 Abstraction is the process of replacing function calls in a program with the body of the function called. Abstraction creates new functions based on syntactic patterns in a program and replaces these patterns with calls to the newly created functions.  We can think of this process as creating lambda abstractions that potentially compress the program by removing duplication in the code and acts as a proxy for recognizing repeated computation.  The following code fragment outlines this procedure where \texttt{compressions} finds the different (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program).  Duplicate abstractions are filtered out, then function calls for each of the abstractions are created.
 
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (compressions program . nofilter)
   (let* ([condensed-program (condense-program program)]
          [abstractions (possible-abstractions condensed-program)]
@@ -509,7 +505,7 @@ The process of finding a partial match between two expressions is called anti-un
 
 Anti-unification proceeds by recursively comparing two expressions, A and B (performed by \texttt{build-pattern}).  If A and B are the same primitive that primitive is returned.  If A and B are lists $(a_1,\ldots,a_n)$ and $(b_1,\ldots,b_n)$ of the same length then a list C $(c_1,\ldots,c_n)$ where each element $c_i$ is the anti-unification $a_i$ and $b_i$ is returned.  For all other cases when A and B do not match a variable is returned.
 
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define anti-unify
   (lambda (expr1 expr2)
     (begin
@@ -544,7 +540,7 @@ In the final comparison of \texttt{(- 2 5)} and 4 we check can see there is no m
 
 \subsubsection{Refactoring programs}
 Now that we have created lambda abstractions from the partial matches between two subexpressions of some program, P, we can use these abstractions to refactor P, possibly compressing it.  The idea will be to take the pattern of the abstraction (the body of the lambda abstraction) and replace any subexpressions of P that fit the pattern.  A subexpression that fits the pattern is replaced by an application of the lambda abstraction.  We first do this replacement for each of the functions in P and then the body, resulting in a program P'.  After all the replacements are made, the lambda abstraction is inserted into the set of functions for P' and this is our refactored program.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (compress-program program abstraction)
   (let* ([compressed-abstractions (map (curry compress-abstraction abstraction) (program->abstractions program))]
          [compressed-body (replace-matches (program->body program) abstraction)])
@@ -558,7 +554,7 @@ Now that we have created lambda abstractions from the partial matches between tw
 \end{lstlisting}
 Finding and replacing pattern matches of an abstraction F in an expression E proceeds recursively by taking the body of F and trying to match it to the expression on E.  A match between the body of the abstraction and the expression is determined by unification. If a match exists, then the application of F is returned where the arguments to F are refactored (if F has arguments).  If the match does not hold then E is returned with each of its subexpressions refactored.  If E is a primitive and not a match it is returned.
 
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (replace-matches s abstraction)
   (let ([unified-vars (unify s
                              (abstraction->body abstraction)
@@ -595,7 +591,7 @@ Determining whether there is a match between a function body and an expression i
 
 The input to unification is a function F, and an expression E.  Unification occurs recursively by checking whether the body of F and E are lists of the same size.  If they are the same size then unification returns the unification of each of the subexpressions.  If they are not the same size or only one of them is a list unification returns false.  In the case where both expressions being unified are primitives true is returned if they are equal and false otherwise.  In the case where the function expression of the unification is a variable an assignment is returned, i.e., the variable along with the other expression passed to unification.  At the end a check is made to see if any unifications have returned false, in which case unification of F and E returns false.  There is also a check that any variable that is repeated in F has the same value assigned to it for each place it appears.  If this is not the case unification returns false. If unification is not false then an assignment for each unique variable of F is returned.
 
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define unify
   (lambda (s sv vars)
     (begin
@@ -673,7 +669,7 @@ The following are the programs compressed using these abstractions the first bei
 The last abstraction captures the flower pattern we mentioned earlier.  Intuitively, it seems like we can capture even more structure and replace the variables for the petal colors with a fixed value since they are all similar.  Instead of explaining the data as being drawn from several Gaussians with slightly different means, we would like to say the data comes from only one Gaussian with a single mean.  We address this issue in the next section with another type of program transformation.
 \subsection{Deargumentation}
 Deargumentation is a program transformation that takes a function in a program and removes one of its arguments.  The variable that is removed is redefined inside the function in terms of all the values it has been assigned (i.e., the values passed to the function for that variable during an application).  We can create different program transformations by allowing multiple schemes for redefining a variable, via \texttt{replacement-function},  as a function of its instantiations.  
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (deargument replacement-function program abstraction variable)
   (let* ([new-abstraction (remove-abstraction-variable replacement-function program abstraction variable)])
     (if (null? new-abstraction)
@@ -683,7 +679,7 @@ Deargumentation is a program transformation that takes a function in a program a
           new-program))))
 \end{lstlisting}
 The abstraction whose variable is being removed keeps the same body, but the variable removed is now assigned a value  within the body instead of having its value passed in as an argument.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (remove-abstraction-variable replacement-function program abstraction variable)
   (let* ([variable-instances (find-variable-instances program abstraction variable)]
          [variable-definition (replacement-function program abstraction variable variable-instances)])
@@ -724,7 +720,7 @@ The abstraction whose variable is being removed keeps the same body, but the var
 
 \end{lstlisting}
 After the abstraction has been adjusted, any place it was used (i.e., the function was applied) needs to be changed so that no values are passed in to the variable that was removed.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (remove-application-argument program abstraction variable)
   (define (abstraction-application? sexpr)
     (if (non-empty-list? sexpr)
@@ -757,7 +753,7 @@ In the following, we demonstrate that this transformation is useful for generali
 
 \subsubsection{Compactly representing noisy data}
 One issue with abstraction is that anything other than perfect equality results in the creation of a variable when matching two expressions.  So if we have an expression such as \texttt{(+ 2 2)} and \texttt{(+ 2 2.01)} and we know there is some noise in the system then we may want to treat these expressions as if they were the same, i.e., inverse-inline them to \texttt{(define (F1) (+ 2 2))} or \texttt{(define (F1) (+ 2 2.01))} rather than \texttt{(define (F1 x) (+ 2 x))}.  We can do this using a Deargumentation transformation along with a \texttt{replacment-function} called \texttt{noisy-number-replacment} that replaces the variable with the mean of its instances.  
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (noisy-number-replacement program abstraction variable variable-instances)
   (if (all (map number? variable-instances))
       (my-mean variable-instances)
@@ -835,7 +831,7 @@ $\includegraphics[scale=.6]{noisyNumberTrans2.pdf}$
 \end{lstlisting}
 \subsubsection{Merging identical variables}
 The abstraction transformation creates a function with variables where the variables represent parts of an expression that differ between specific abstraction instances.  It might be the case that variables with different names in the abstraction really ought to be treated as the same variable, i.e., we would like to allow a variable to occur in multiple places within an abstract expression.  We can address this with a Deargumentation transform that uses the the following replacement function.  This function basically checks that all variable instances are equal or have the same type if they are numbers to allow for some flexibility.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (same-variable-replacement program abstraction variable variable-instances)
   (let* ([possible-match-variables (delete variable (abstraction->vars abstraction))])
     (find-matching-variable program abstraction variable-instances possible-match-variables)))
@@ -903,7 +899,7 @@ $\includegraphics[scale=.6]{sameVarTrans2.pdf}$
 
 \subsubsection{Inducing recursive functions}
 We illustrate how recursive patterns can be discovered using Deargumentation and a \texttt{replacement-function} called \texttt{recursion-replacement} that redefines a variable as a choice between a recursive call and a non-recursive call.  The basic idea is to check whether variable instances are calls to the function being deargumented.  If they are then there is a recursion.  The probability of recursing is a function of how many variable instances are recursive function calls.  We also check to see whether this transformation creates an infinite loop.  This approach is admittedly very limited in what it can capture, but we use it as a starting point to illustrate how recursion might be identified.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (recursion-replacement program abstraction variable variable-instances)
   (let* ([valid-variable-instances (remove has-variable? variable-instances)]
          [recursive-calls (filter (curry abstraction-application? abstraction) valid-variable-instances)]
@@ -1002,25 +998,25 @@ This seems like a big penalty as far as model representation size goes since the
 The use of the noisy color constructor in our programs was built into the \texttt{incorporate-data} function as noted earlier.  Here we give an example of how the compactness of noisy constructors might be used to ``learn'' them from data.
 
 We make the following minor adjustments to \texttt{incorporate-data} and \texttt{noisy-number-replacement}. The first is to not have \texttt{incorporate-data} automatically add a call to \texttt{gaussian}.
-\begin{lstlisting}[frame=trBLsingle]
+\begin{lstlisting}[frame=trblsingle]
 (define (node-data->expression lst)
   `(data (color (gaussian ,(first (second lst)) 25))
 	 (size ,(first (third lst)))))
 \end{lstlisting}
 becomes
-\begin{lstlisting}[frame=trBLsingle]
+\begin{lstlisting}[frame=trblsingle]
 (define (node-data->expression lst)
   `(data (color ,(first (second lst))) (size ,(first (third lst)))))
 \end{lstlisting}
 Instead of having \texttt{noisy-number-replacement} return the sample mean in a deargument move we have it return a call to the \texttt{gaussian} function and use the sample mean and variance as parameters.
-\begin{lstlisting}[frame=trBL]
+\begin{lstlisting}[frame=trbl]
 (define (noisy-number-replacement program abstraction variable variable-instances)
   (if (all (map number? variable-instances))
       (my-mean variable-instances)
       NO-REPLACEMENT))
 \end{lstlisting}
 becomes
-\begin{lstlisting}[frame=trBLsingle]
+\begin{lstlisting}[frame=trblsingle]
 (define (noisy-number-replacement program abstraction variable variable-instances)
   (if (all (map number? variable-instances))
       (let* ([instances-mean (my-mean variable-instances)]
