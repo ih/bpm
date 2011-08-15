@@ -67,7 +67,7 @@ This report \emph{is not} a completed academic work. In particular, it does litt
 
 Bayesian model merging is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ of model $M$ given data $D$ as a criterion for selecting transformations.
 
-We create an initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it never generates points outside the training set--it severely overfits the initial data.  We generate alternative model hypotheses using program transformations that collapse model structure and that often result in better generalizations.
+We create an initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it never generates points outside the training set---it severely overfits the initial data.  We generate alternative model hypotheses using program transformations that collapse model structure and that often result in better generalizations.
 
 This technique has been successfully applied to learning artificial probabilistic grammars represented as hidden Markov models, n-grams, and probabilistic context-free grammars \cite{Stolcke:1994:IPG:645515.658235}. Our work differs in that we use the richer model class of probabilistic programs.  This allows us to represent more complex patterns and to use more types of transformations, including transformations that correspond to lossy data compression.
 
