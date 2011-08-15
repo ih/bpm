@@ -2,7 +2,7 @@
 \BOOKMARK [2][-]{subsection.1.1}{Bayesian model merging}{section.1}
 \BOOKMARK [2][-]{subsection.1.2}{Bayesian program merging}{section.1}
 \BOOKMARK [1][-]{section.2}{Data representation and program language}{}
-\BOOKMARK [2][-]{subsection.2.1}{Representation of data and programs in the domain of nested lists}{section.2}
+\BOOKMARK [2][-]{subsection.2.1}{Data and program representation in the list domain}{section.2}
 \BOOKMARK [2][-]{subsection.2.2}{Data incorporation}{section.2}
 \BOOKMARK [1][-]{section.3}{Objective: Posterior probability of probabilistic programs}{}
 \BOOKMARK [2][-]{subsection.3.1}{Abstract syntax utilities}{section.3}
@@ -10,7 +10,7 @@
 \BOOKMARK [2][-]{subsection.3.3}{Likelihood estimation in the list domain}{section.3}
 \BOOKMARK [1][-]{section.4}{Search over program space}{}
 \BOOKMARK [1][-]{section.5}{Program transformations}{}
-\BOOKMARK [2][-]{subsection.5.1}{Inverse inlining}{section.5}
+\BOOKMARK [2][-]{subsection.5.1}{Abstraction}{section.5}
 \BOOKMARK [3][-]{subsubsection.5.1.1}{Anti-unification}{subsection.5.1}
 \BOOKMARK [3][-]{subsubsection.5.1.2}{Refactoring programs}{subsection.5.1}
 \BOOKMARK [3][-]{subsubsection.5.1.3}{Unification}{subsection.5.1}
