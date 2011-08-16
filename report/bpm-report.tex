@@ -474,19 +474,26 @@ Anti-unification proceeds by recursively comparing two expressions, $A$ and $B$ 
         (list pattern (reverse variables))))))
 \end{lstlisting}
 
-We illustrate the process of anti-unification using the expressions \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ (- 2 3) 4)}.
-We first compare the root of the trees and make sure that we have lists of the same size. In this case, they are both of size three, therefore we have matching roots and a partial match of \texttt{(* * *)} where the \texttt{*}s are yet to be determined.
-Now we recursively attempt to match the three subexpressions \texttt{+} with \texttt{+}, \texttt{(+ 2 2)} with \texttt{(- 2 3)}, and \texttt{(- 2 5)} with \texttt{4}.
-Since \texttt{+} and \texttt{+} are identical primitives, they match, and our partial match is now \texttt{(+ * *)}.
-Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)}, we see that they are both lists of size 3 and therefore they match, giving us a total partial match of \texttt{(+ (* * *) *)}.
-Again, we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., \texttt{+} against \texttt{-}, \texttt{2} against \texttt{2}, and \texttt{2} against \texttt{3}.
-Since \texttt{+} and \texttt{-} are primitives that do not match, we replace them with a variable. Our partial match is now \texttt{(+ (V1 * *) *)}.
-After comparing \texttt{2} to \texttt{2} and \texttt{2} to \texttt{3}, we have \texttt{(+ (V1 2 V2) *)}.
-In the final comparison of \texttt{(- 2 5)} and \texttt{4}, we find that there is no match since \texttt{(- 2 5)} is a list and \texttt{4} is a primitive. Therefore, the final result of our anti-unification is \texttt{(+ (V1 2 V2) V3)}.
+We now illustrate the process of anti-unification using the expressions \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ (- 2 3) 4)}:
+\begin{enumerate}
+\item We first compare the root of the trees and make sure that we have lists of the same size. In this case, they are both of size $3$, therefore we have matching roots. \\
+  Partial match: \texttt{(* * *)}
+\item We recursively attempt to match the three subexpressions: \texttt{+} against \texttt{+}, \texttt{(+ 2 2)} against \texttt{(- 2 3)}, and \texttt{(- 2 )} with \texttt{4}. Since \texttt{+} and \texttt{+} are identical primitives, they match. \\
+  Partial match: \texttt{(+ * *)}
+\item Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)}, we see that they are both lists of size 3 and therefore they match. \\
+  Partial match: \texttt{(+ (* * *) *)}
+\item Again, we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., \texttt{+} against \texttt{-}, \texttt{2} against \texttt{2}, and \texttt{2} against \texttt{3}. Since \texttt{+} and \texttt{-} are primitives that do not match, we replace them with a variable. \\
+  Partial match: \texttt{(+ (V1 * *) *)}
+\item We compare \texttt{2} to \texttt{2} and \texttt{2} to \texttt{3}. \\
+  Partial match: \texttt{(+ (V1 2 V2) *)}
+\item We compare \texttt{(- 2 5)} and \texttt{4} and find that there is no match since \texttt{(- 2 5)} is a list and \texttt{4} is a primitive. \\
+  Final match: \texttt{(+ (V1 2 V2) V3)}.
+\end{itemize}
 
 
 \subsubsection{Refactoring programs}
 Now that we have created lambda abstractions from the partial matches between two subexpressions of some program, P, we can use these abstractions to refactor P, possibly compressing it.  The idea will be to take the pattern of the abstraction (the body of the lambda abstraction) and replace any subexpressions of P that fit the pattern.  A subexpression that fits the pattern is replaced by an application of the lambda abstraction.  We first do this replacement for each of the functions in P and then the body, resulting in a program P'.  After all the replacements are made, the lambda abstraction is inserted into the set of functions for P' and this is our refactored program.
+
 \begin{lstlisting}[frame=trbl]
 (define (compress-program program abstraction)
   (let* ([compressed-abstractions (map (curry compress-abstraction abstraction) (program->abstractions program))]
