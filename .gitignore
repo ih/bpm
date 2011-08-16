@@ -12,3 +12,6 @@
 *.log
 *.blg
 *.DS_Store
+report/*.bbl
+report/*.pdf
+report/*.toc
