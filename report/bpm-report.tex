@@ -380,10 +380,16 @@ We use the Gaussian parameters for each node's color to determine the probabilit
 
 \newpage
 \section{Search moves: Program transformations}
-We described earlier how patterns in the program representation of data can be viewed as repeated computation.  Here we describe how this idea manifests itself as concrete program transformations used in exploring the search space.
+
+Given a program that we generated using data incorporation, we want to propose changes to the program such that its posterior probability improves. We will achieve this mainly using program transformations that compress patterns in the program, thereby increasing its prior probability. In the following, we describe two such transformations, abstraction and deargumentation.
 
 \subsection{Abstraction}
-Abstraction is the process of replacing function calls in a program with the body of the function called. Abstraction creates new functions based on syntactic patterns in a program and replaces these patterns with calls to the newly created functions.  We can think of this process as creating lambda abstractions that potentially compress the program by removing duplication in the code and acts as a proxy for recognizing repeated computation.  The following code fragment outlines this procedure where \texttt{compressions} finds the different (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program).  Duplicate abstractions are filtered out, then function calls for each of the abstractions are created.
+
+By abstraction, we denote the idea of creating new functions based on syntactic patterns in a program and replacing these patterns with calls to the newly created functions.
+This removes duplication in the code and acts as a proxy for recognizing repeated computation.
+In terms of Bayesian model merging, this transformation merges the structure of the model, which potentially leads to models with better generalization properties \cite{Stolcke:1994:IPG:645515.658235}. We can also interpret this process as finding partial symmetries as in the work of Bokeloh et al. \cite{DBLP:journals/tog/BokelohWS10}, which was successful in the domain of inverse-procedural modeling.
+
+The following code fragment implements this procedure. The function \texttt{compressions} finds all (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program). We filter out duplicate abstractions and then create compressed programs by replacing occurrences of the abstraction bodies in the original program.
 
 \begin{lstlisting}[frame=trbl]
 (define (compressions program . nofilter)
@@ -394,8 +400,9 @@ Abstraction is the process of replacing function calls in a program with the bod
          [valid-compressed-programs
           (if (not (null? nofilter))
               compressed-programs
-              (filter (lambda (cp) (<= (program-size cp)
-                                  (+ prog-size 1)))
+              (filter (lambda (cp)
+                        (<= (program-size cp)
+                            (+ prog-size 1)))
                       compressed-programs))])
     valid-compressed-programs))
 
@@ -409,9 +416,7 @@ Abstraction is the process of replacing function calls in a program with the bod
     (filter-abstractions  abstractions)))
 \end{lstlisting}
 
-Aside from the obvious correspondence between repetition in program syntax and repetition in computation, there are two other reasons to believe that this is a useful transformation. In terms of Bayesian model merging we are merging the structure of the model, which potentially leads to models with better generalization properties \cite{Stolcke:1994:IPG:645515.658235}. The abstraction transformation can also also be interpreted as finding partial symmetries like in the work of Bokeloh et al. \cite{DBLP:journals/tog/BokelohWS10}, which was successful in the domain of inverse-procedural modeling.
-
-The following example illustrates the abstraction transformation on a language slightly different from the tree example.
+The following example illustrates the abstraction transformation on a language that slightly differs from the tree example.
 \begin{lstlisting}[mathescape=true]
 (uniform-choice 
  (node
@@ -419,7 +424,7 @@ The following example illustrates the abstraction transformation on a language s
   (node a (node a (node c) (node c)))))
 $\includegraphics[scale=.40]{../figures/csrExample.pdf}$
 \end{lstlisting}
-a possible result of this transformation would be
+A transformed version of this program looks like this:
 \begin{lstlisting}[mathescape=true]
 (begin
   (define (F1 V1 V2)
@@ -428,14 +433,16 @@ a possible result of this transformation would be
 $\includegraphics[scale=.40]{../figures/csrDecompose1.pdf}\\
 \includegraphics[scale=.40]{../figures/csrDecompose2.pdf}$
 \end{lstlisting}
-The first thing to note is both programs have the same behavior, i.e., this transformation is semantics preserving.  Both programs return either \texttt{(a (a (b) (b)))} or \texttt{(a (a (c) (c)))} with equal probability.
+Both programs have the same behavior, i.e., this transformation preserves semantics. Both programs return \texttt{(a (a (b) (b)))} and \texttt{(a (a (c) (c)))} with equal probability.
 
-  The transformation can be described as refactoring subexpressions that partially match in a program with a function whose body is the common parts of the matching subexpressions.  In the above example the subexpressions that partially match are \texttt{(node a (node a (node b) (node b)))} and \texttt{(node a (node a (node c) (node c)))}.  The common subexpression is \texttt{(node a (node a (node x) (node y)))}, the function created using this common subexpression is \texttt{F1} and the original subexpressions are refactored as \texttt{(F1 b b)} and \texttt{(F1 c c)}.
+This transformation refactors a program with subexpressions that partially match into a program with a function which contains the common parts of the matching subexpressions as its body.  In the example shown above, the subexpressions that partially match are \texttt{(node a (node a (node b) (node b)))} and \texttt{(node a (node a (node c) (node c)))}.  The common subexpression is \texttt{(node a (node a (node x) (node y)))}. The function created using this common subexpression is \texttt{F1} and the original subexpressions are replaced with \texttt{(F1 b b)} and \texttt{(F1 c c)}. (There is further potential for compression here, which we will address using the deargumentation transformation.)
 
-An abstraction transformation can be created for each pair of subexpressions that have a partial match.  In the case of \texttt{(+ (+ 2 2) (- 2 5))} the following pairs of subexpressions have a partial match: \texttt{[2,2], [(+ 2 2), (- 2 5)], [(+ 2 2), (+ (+ 2 2) (- 2 5))]}.
 \subsubsection{Anti-unification}
-The process of finding a partial match between two expressions is called anti-unification.  One way to understand the process is in terms of the syntax trees for the expressions.  Every s-expression can be thought of as a tree where the lists and sublists of the s-expression make up the interior nodes and the primitive elements of the lists (e.g., symbols, numbers) are the leaves.  The tree in figure \ref{expressionTree} corresponds to the expression \texttt{(+ (+ 2 2) (- 2 5))}.  Finding a partial match between two expressions can be thought of as finding a common subtree between their tree representations.
-\begin{figure}[h]
+
+There exists an abstraction transformation for each pair of subexpressions that have a partial match.  In the case of \texttt{(+ (+ 2 2) (- 2 5))} the following pairs of subexpressions have a partial match: \texttt{[2,2], [(+ 2 2), (- 2 5)], [(+ 2 2), (+ (+ 2 2) (- 2 5))]}. The process of finding a partial match between two expressions is called anti-unification.
+
+One way to understand the process is in terms of the syntax trees for the expressions.  Every s-expression is a tree where the lists and sublists of the s-expression make up the interior nodes and the primitive elements of the lists (e.g., symbols, numbers) are the leaves.  The tree in figure \ref{expressionTree} corresponds to the expression \texttt{(+ (+ 2 2) (- 2 5))}. We can find a partial match between two expressions by finding a common subtree between their tree representations.
+\begin{figure}[b]
 \begin{center}
 \includegraphics[scale=.40]{../figures/expressionTree.pdf}
 \caption{An expression represented as a tree.}
@@ -443,7 +450,7 @@ The process of finding a partial match between two expressions is called anti-un
 \end{center}
 \end{figure}
 
-Anti-unification proceeds by recursively comparing two expressions, A and B (performed by \texttt{build-pattern}).  If A and B are the same primitive that primitive is returned.  If A and B are lists $(a_1,\ldots,a_n)$ and $(b_1,\ldots,b_n)$ of the same length then a list C $(c_1,\ldots,c_n)$ where each element $c_i$ is the anti-unification $a_i$ and $b_i$ is returned.  For all other cases when A and B do not match a variable is returned.
+Anti-unification proceeds by recursively comparing two expressions, $A$ and $B$ (using the function \texttt{build-pattern}).  If $A$ and $B$ are the same primitive, this primitive is returned.  If $A$ and $B$ are lists $(a_1,\ldots,a_n)$ and $(b_1,\ldots,b_n)$ of the same length, a list $(c_1,\ldots,c_n)$ is returned, with each element $c_i$ being the anti-unification of $a_i$ and $b_i$.  Otherwise, a variable is returned.
 
 \begin{lstlisting}[frame=trbl]
 (define anti-unify
@@ -467,15 +474,15 @@ Anti-unification proceeds by recursively comparing two expressions, A and B (per
         (list pattern (reverse variables))))))
 \end{lstlisting}
 
-{\bf Example} We illustrate the process of anti-unification on the expressions \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ (- 2 3) 4)}
-The first step is to compare the root of the trees and make sure we have lists of the same size, in this case they are both of size three so we have a matching roots and a partial match of \texttt{(* * *)} where the *'s are yet to be determined.
-Now we recursively attempt to match the three subexpressions + with +, \texttt{(+ 2 2)} with \texttt{(- 2 3)}, and \texttt{(- 2 5)} with 4.
-Since + and + are both primitives that are the same they match, and our partial match is now \texttt{(+ * *)}.
-Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)} we see that they are both lists of size 3 and so they match giving us a total partial match of \texttt{(+ (* * *) *)}.
-Again we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., + to -, 2 to 2, and 2 to 3.
-Since + and - are primitives that do not match we replace them with a variable to get a total partial match of \texttt{(+ (V1 * *) *)}
-Likewise after comparing 2 to 2 and 2 to 3 we get \texttt{(+ (V1 2 V2) *)} as our partial match.
-In the final comparison of \texttt{(- 2 5)} and 4 we check can see there is no match because one \texttt{(- 2 5)} is a list and 4 is a primitive so the final result of our anti-unification is \texttt{(+ (V1 2 V2) V3)}.
+We illustrate the process of anti-unification using the expressions \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ (- 2 3) 4)}.
+We first compare the root of the trees and make sure that we have lists of the same size. In this case, they are both of size three, therefore we have matching roots and a partial match of \texttt{(* * *)} where the \texttt{*}s are yet to be determined.
+Now we recursively attempt to match the three subexpressions \texttt{+} with \texttt{+}, \texttt{(+ 2 2)} with \texttt{(- 2 3)}, and \texttt{(- 2 5)} with \texttt{4}.
+Since \texttt{+} and \texttt{+} are identical primitives, they match, and our partial match is now \texttt{(+ * *)}.
+Comparing \texttt{(+ 2 2)} and \texttt{(- 2 3)}, we see that they are both lists of size 3 and therefore they match, giving us a total partial match of \texttt{(+ (* * *) *)}.
+Again, we recursively match subexpressions of \texttt{(+ 2 2)} and \texttt{(- 2 3)}, i.e., \texttt{+} against \texttt{-}, \texttt{2} against \texttt{2}, and \texttt{2} against \texttt{3}.
+Since \texttt{+} and \texttt{-} are primitives that do not match, we replace them with a variable. Our partial match is now \texttt{(+ (V1 * *) *)}.
+After comparing \texttt{2} to \texttt{2} and \texttt{2} to \texttt{3}, we have \texttt{(+ (V1 2 V2) *)}.
+In the final comparison of \texttt{(- 2 5)} and \texttt{4}, we find that there is no match since \texttt{(- 2 5)} is a list and \texttt{4} is a primitive. Therefore, the final result of our anti-unification is \texttt{(+ (V1 2 V2) V3)}.
 
 
 \subsubsection{Refactoring programs}
