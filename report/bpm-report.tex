@@ -79,11 +79,11 @@ We extend Bayesian model merging to models expressed in the rich class of probab
 \begin{description}
 \item[Data representation and program language]  \hfill \\
   We represent data in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors. Our language for programs consists of type constructors and additional operators. This language is probabilistic, hence programs correspond to distributions on observations. Program structure corresponds to regularities in the observations.
-\item[Objective: Posterior probability of probabilistic programs]  \hfill \\
-  The objective for our search through program space is the posterior probability of any given program given the observed data. This posterior decomposes into a prior based on program length and into a likelihood that we estimate using selective model averaging.
-\item[Search over program space]  \hfill \\
+\item[Search objective: Posterior probability of probabilistic programs]  \hfill \\
+  The objective for our search through program space is the posterior probability of a program given the observed data. This posterior decomposes into a prior based on program length and into a likelihood that we estimate using selective model averaging.
+\item[Search strategy: Beam search]  \hfill \\
   Given a space of programs, an objective function, and search moves between programs (transformations), we still need to specify a search strategy. We use beam search.
-\item[Program transformations]  \hfill \\
+\item[Search moves: Program transformations]  \hfill \\
   We describe two program transformations that we use as search moves, abstraction and deargumentation. Both transformations collapse program structure, which often increases prior probability of the program and improves generalization to unobserved data.
 \end{description}
 
@@ -379,7 +379,7 @@ We use the Gaussian parameters for each node's color to determine the probabilit
 
 
 \newpage
-\section{Search over program space}
+\section{Search strategy: Beam search}
 
 We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
 
