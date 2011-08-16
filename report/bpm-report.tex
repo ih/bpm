@@ -57,7 +57,7 @@ The probabilistic programs learned in this manner can be understood as generativ
 
 Generative models play a prominent role in modern machine learning and in understanding different classes of models, e.g., Hidden Markov models and probabilistic context-free grammars, and have led to a wide variety of applications.  There is a trade-off between the variety of patterns a model class is able to capture and the feasibility of learning models in that class \cite{Russell2003}.  Much of machine learning has focused on studying classes of models with limited expressiveness in order to develop tractable algorithms for modeling large data sets.  Our investigation takes a different approach and explores how learning might proceed in an expressive class of models with a focus on identifying abstract patterns from small amounts of data.
 
-In particular, we represent generative models as programs in a probabilistic programming language. A probabilistic program represents a probability distribution, and each evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
+We represent generative models as programs in a probabilistic programming language. A probabilistic program represents a probability distribution, and each evaluation of the program results in a sample from the distribution. We implement these programs in a subset of the probabilistic programming language Church \cite{N.D.Goodman:2008:f2a0d}.  
 These programs can have parameterized functions and recursion, which allow for natural representation of ``long-range'' dependencies and recursive patterns.  We will frame searching this space of models in terms of Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} and we demonstrate that this approach can find interesting patterns in the list data domain.
 
 Before we proceed, a note about what this report is and is not: This report \emph{is} a status update on our working system, containing detailed code and illustrative examples. It documents some progress we have made that we believe can be useful more generally.
@@ -81,10 +81,10 @@ We extend Bayesian model merging to models expressed in the rich class of probab
   We represent data in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors. Our language for programs consists of type constructors and additional operators. This language is probabilistic, hence programs correspond to distributions on observations. Program structure corresponds to regularities in the observations.
 \item[Search objective: Posterior probability of probabilistic programs]  \hfill \\
   The objective for our search through program space is the posterior probability of a program given the observed data. This posterior decomposes into a prior based on program length and into a likelihood that we estimate using selective model averaging.
-\item[Search strategy: Beam search]  \hfill \\
-  Given a space of programs, an objective function, and search moves between programs (transformations), we still need to specify a search strategy. We use beam search.
 \item[Search moves: Program transformations]  \hfill \\
   We describe two program transformations that we use as search moves, abstraction and deargumentation. Both transformations collapse program structure, which often increases prior probability of the program and improves generalization to unobserved data.
+  \item[Search strategy: Beam search]  \hfill \\
+  Given a space of programs, an objective function, and search moves between programs (transformations), we still need to specify a search strategy. We use beam search.
 \end{description}
 
 \newpage
@@ -183,7 +183,7 @@ $\includegraphics[scale=.7]{../figures/initProgram.pdf}$
 
 
 \newpage
-\section{Objective: Posterior probability of probabilistic programs}
+\section{Search objective: Posterior probability of probabilistic programs}
 A generative model is a joint probability distribution over latent states and observed data. We can represent such a joint distribution as a program in a probabilistic programming language like Church \cite{N.D.Goodman:2008:f2a0d}. The structure of the program, i.e., the decomposition into functions and the flow of control, can capture regularities in the data. We illustrate this idea using a probabilistic program that generates the images in figure \ref{fig:plants}. Different parts of the program correspond to the different patterns we described earlier (to improve readability, we use semantically meaningful function and variable names instead of \texttt{F[number]} and \texttt{V[number]} as specified in our grammar).  
 \begin{lstlisting}[mathescape=true]
 (define (tree)
@@ -379,70 +379,7 @@ We use the Gaussian parameters for each node's color to determine the probabilit
 
 
 \newpage
-\section{Search strategy: Beam search}
-
-We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
-
-\begin{lstlisting}[frame=trbl]
-(define (beam-search data init-program beam-size depth)
-  (let* ([top-transformations 
-          (sort-by-posterior
-           data 
-           (beam-learn-search-transformations data init-program beam-size depth))])
-    (if (null? top-transformations)
-        init-program
-        (program+->program (first top-transformations)))))
-
-(define (beam-search-transformations data program beam-size depth)
-  (let ([init-program+ (make-program+ program 0 (log-likelihood data program 10) (log-prior program) #f)])
-    (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
-
-(define (best-n data programs+ n)
-  (max-take (sort-by-posterior data programs+) n))
-\end{lstlisting}
-The main part of the search is performed by \texttt{depth-iterated-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
-\begin{lstlisting}[frame=trbl]
-(define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
-    (delete '()  (append transformed-programs+
-                         (apply append (map (lambda (prog) 
-                                              (depth-iterated-transformations cfilter prog (- depth 1))) 
-                                            transformed-programs+))))))
-\end{lstlisting}
-We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse likelihood for a program that was created by a semantics preserving transformation.
-\begin{lstlisting}[frame=trbl]
-(define (apply-and-filter-transformations depth cfilter program+)
-  (if (= depth 0)
-      '()
-      (let* ([semantics-preserved-programs+ (apply-transformations program+ semantic-preserving-transformations #t)]
-             [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)])
-        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
-
-(define (apply-transformations program+ transformations semantics-preserving)
-  (let* ([program (program+->program program+)]
-         [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program #t)) transformations)))]
-         [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
-    transformed-programs+))
-\end{lstlisting}
-The posterior distribution is estimated by combining an estimate of the likelihood with the computation of the prior.  
-\begin{lstlisting}[frame=trbl]
-(define (sort-by-posterior data programs+)
-  (let* ([programs (map program+->program programs+)]
-         [semantics-flags (map program+->semantics-preserved programs+)]
-         [log-priors (map log-prior programs)]
-         [log-likelihoods (map (lambda (prog+ semantics-flag)
-                                 (if semantics-flag
-                                     (program+->log-likelihood prog+)
-                                     (log-likelihood data (program+->program prog+) 10))) programs+ semantics-flags)]
-         [posteriors (map + log-priors log-likelihoods)] 
-         [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
-         [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
-    (my-list-sort posteriors> new-programs+)))
-\end{lstlisting}
-
-
-\newpage
-\section{Program transformations}
+\section{Search moves: Program transformations}
 We described earlier how patterns in the program representation of data can be viewed as repeated computation.  Here we describe how this idea manifests itself as concrete program transformations used in exploring the search space.
 
 \subsection{Abstraction}
@@ -1076,6 +1013,69 @@ The discussion above hints at the benefits of using probabilistic data construct
 In some sense the problem we are trying to address with the Deargumentation is program induction itself.  We can view the values for each variable as data generated by some process we would like to identify, i.e., there is some sort of common computation between variable values that we would like to represent as a program.  In the case of the noisy-number transformation we can view the generation of values for a single variable as coming from the same process, here we restrict the program representing this process to a Gaussian.  Similarly, in the case of the recursive transformation we can view the generation of values for a single variable as coming from a the same process, but we restrict the program representing this process to be the function being deargumented.  In the case of the same variable transformation we can view the generation of values for multiple variables as coming from the same process and we implicitly use the program for one variable as the generating process for the other.  
 
 Hence, it is natural to ask whether we could reformulate the Deargumentation transform as recursive calls to the Bayesian program merging procedure in an attempt to find programs for generating the values of the variables.  One can think of this as recursively squeezing out the randomness in the data where the invented abstractions create a separation between the ``structured'' parts of the data (the fixed common sub-expressions) and the random parts of the data (the variables in the expression patterns).  As an abstraction is applied one gets more data for the random parts and could conceivably attempt to learn a program to generate this data, i.e., separate out even more structure.
+
+
+\newpage
+\section{Search strategy: Beam search}
+
+We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
+
+\begin{lstlisting}[frame=trbl]
+(define (beam-search data init-program beam-size depth)
+  (let* ([top-transformations 
+          (sort-by-posterior
+           data 
+           (beam-learn-search-transformations data init-program beam-size depth))])
+    (if (null? top-transformations)
+        init-program
+        (program+->program (first top-transformations)))))
+
+(define (beam-search-transformations data program beam-size depth)
+  (let ([init-program+ (make-program+ program 0 (log-likelihood data program 10) (log-prior program) #f)])
+    (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
+
+(define (best-n data programs+ n)
+  (max-take (sort-by-posterior data programs+) n))
+\end{lstlisting}
+The main part of the search is performed by \texttt{depth-iterated-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
+\begin{lstlisting}[frame=trbl]
+(define (depth-iterated-transformations cfilter program+ depth)
+  (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
+    (delete '()  (append transformed-programs+
+                         (apply append (map (lambda (prog) 
+                                              (depth-iterated-transformations cfilter prog (- depth 1))) 
+                                            transformed-programs+))))))
+\end{lstlisting}
+We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse likelihood for a program that was created by a semantics preserving transformation.
+\begin{lstlisting}[frame=trbl]
+(define (apply-and-filter-transformations depth cfilter program+)
+  (if (= depth 0)
+      '()
+      (let* ([semantics-preserved-programs+ (apply-transformations program+ semantic-preserving-transformations #t)]
+             [semantics-changed-programs+ (apply-transformations program+ semantic-changing-transformations #f)])
+        (cfilter (append semantics-preserved-programs+ semantics-changed-programs+)))))
+
+(define (apply-transformations program+ transformations semantics-preserving)
+  (let* ([program (program+->program program+)]
+         [transformed-programs (delete '() (concatenate (map (lambda (transform) (transform program #t)) transformations)))]
+         [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
+    transformed-programs+))
+\end{lstlisting}
+The posterior distribution is estimated by combining an estimate of the likelihood with the computation of the prior.  
+\begin{lstlisting}[frame=trbl]
+(define (sort-by-posterior data programs+)
+  (let* ([programs (map program+->program programs+)]
+         [semantics-flags (map program+->semantics-preserved programs+)]
+         [log-priors (map log-prior programs)]
+         [log-likelihoods (map (lambda (prog+ semantics-flag)
+                                 (if semantics-flag
+                                     (program+->log-likelihood prog+)
+                                     (log-likelihood data (program+->program prog+) 10))) programs+ semantics-flags)]
+         [posteriors (map + log-priors log-likelihoods)] 
+         [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
+         [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
+    (my-list-sort posteriors> new-programs+)))
+\end{lstlisting}
 
 
 \newpage
