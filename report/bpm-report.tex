@@ -7,6 +7,7 @@
 \usepackage{syntax}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{subfig}
 \usepackage[strict]{changepage}
 \hypersetup{
     colorlinks,
@@ -147,23 +148,18 @@ The first step of Bayesian program merging is data incorporation.  Data incorpor
   `(data (color (gaussian ,(first (second lst)) 25)) 
 	 (size ,(first (third lst)))))
 \end{lstlisting}
-In our implementation, the data are unannotated s-expressions (e.g., \texttt{((1) (2))}), which can easily be converted into expressions in terms of the tree type constructors (the tree expression for the above example is \texttt{(node (data (color 1) (size 2)))}).  In this report, we assume for readability that all data is in tree expression form. An important question we leave for future work is how to perform data incorporation when the data is less structured, e.g., feature vectors. Calling \texttt{incorporate-data} on
-\begin{lstlisting}[mathescape=true]
-((node (data (color 70) (size 1))
-       (node (data (color 37) (size 0.3))
-             (node (data (color 213) (size 0.3)))
-             (node (data (color 207) (size 0.3)))
-             (node (data (color 211) (size 0.3)))))
- (node (data (color 43) (size 1))
-       (node (data (color 47 25)) (size 0.1))
-             (node (data (color 33) (size 0.3))
-                   (node (data (color 220) (size 0.3)))
-                   (node (data (color 224) (size 0.3)))
-                   (node (data (color 207) (size 0.3)))))))
-$\includegraphics[scale=.7]{../figures/initData.pdf}$
-\end{lstlisting}
 
-results in the program 
+\begin{figure}[t]
+  \subfloat{\lstinputlisting[boxpos=b]{treedata.ss}}
+  \hspace{40pt} %
+  \subfloat{
+    \includegraphics[scale=1.2]{../figures/initData.pdf}
+  }
+\caption{A small set of tree observations.}
+\label{fig:tree-obs}
+\end{figure}
+
+In our implementation, the data are unannotated s-expressions (e.g., \texttt{((1) (2))}), which can easily be converted into expressions in terms of the tree type constructors (the tree expression for the above example is \texttt{(node (data (color 1) (size 2)))}).  In this report, we assume for readability that all data is in tree expression form. An important question we leave for future work is how to perform data incorporation when the data is less structured and, for example, given in terms of feature vectors. Calling \texttt{incorporate-data} on the program shown in figure \ref{fig:tree-obs} results in the program 
 \begin{lstlisting}[mathescape=true]
 (lambda ()
   (uniform-choice
@@ -488,11 +484,11 @@ We now illustrate the process of anti-unification using the expressions \texttt{
   Partial match: \texttt{(+ (V1 2 V2) *)}
 \item We compare \texttt{(- 2 5)} and \texttt{4} and find that there is no match since \texttt{(- 2 5)} is a list and \texttt{4} is a primitive. \\
   Final match: \texttt{(+ (V1 2 V2) V3)}.
-\end{itemize}
+\end{enumerate}
 
 
 \subsubsection{Refactoring programs}
-Now that we have created lambda abstractions from the partial matches between two subexpressions of some program, P, we can use these abstractions to refactor P, possibly compressing it.  The idea will be to take the pattern of the abstraction (the body of the lambda abstraction) and replace any subexpressions of P that fit the pattern.  A subexpression that fits the pattern is replaced by an application of the lambda abstraction.  We first do this replacement for each of the functions in P and then the body, resulting in a program P'.  After all the replacements are made, the lambda abstraction is inserted into the set of functions for P' and this is our refactored program.
+Using the lambda abstractions we created from the partial matches between two subexpressions of some program $P$, we now attempt to refactor the program, possibly compressing it. For a given abstraction, we take the abstraction body and replace all subexpressions of $P$ that match this pattern by a function call.  We apply this replacement to all functions in $P$ as well as to the body of $P$ and insert the definition of our abstraction into the body of $P$ to generate a refactored program $P'$.
 
 \begin{lstlisting}[frame=trbl]
 (define (compress-program program abstraction)
@@ -506,7 +502,7 @@ Now that we have created lambda abstractions from the partial matches between tw
                           (replace-matches (abstraction->body compressee) compressor)
                           (abstraction->vars compressee)))                           
 \end{lstlisting}
-Finding and replacing pattern matches of an abstraction F in an expression E proceeds recursively by taking the body of F and trying to match it to the expression on E.  A match between the body of the abstraction and the expression is determined by unification. If a match exists, then the application of F is returned where the arguments to F are refactored (if F has arguments).  If the match does not hold then E is returned with each of its subexpressions refactored.  If E is a primitive and not a match it is returned.
+We find and replace pattern matches of an abstraction $F$ in an expression $E$ by recursively matching the body of $F$ against $E$ using unification. If a match exists, then we return a function call to $F$. If there is no match, we return $E$ with matches replaced in each of its subexpressions. If $E$ is a non-matching primitive, we return $E$.
 
 \begin{lstlisting}[frame=trbl]
 (define (replace-matches s abstraction)
@@ -521,8 +517,7 @@ Finding and replacing pattern matches of an abstraction F in an expression E pro
               (map (lambda (var) (replace-matches (rest (assq var unified-vars)) abstraction))
                    (abstraction->vars abstraction))))))
 \end{lstlisting}
-
-{\bf Example} In the case of \texttt{(+ (+ 2 2) (- 2 5))} the partial match resulting from anti-unification between the subexpressions \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} is \texttt{(+ V1 V2)}.  We refactor the original expression \texttt{(+ (+ 2 2) (- 2 5))} in terms of \texttt{(+ V1 V2)} by creating a function \texttt{(define (F1 V1 V2) (+ V1 V2))} and applying it in the expression.  For example one application could be \texttt{(F1 (+ 2 2) (- 2 5))} and another could be \texttt{(+ (F1 2 2) (- 2 5))}.  In general, we apply the function everywhere possible and get a refactored program such as:
+We illustrate refactoring using the expression \texttt{(+ (+ 2 2) (- 2 5))}. The partial match resulting from anti-unification between the subexpressions \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} is \texttt{(+ V1 V2)}.  We refactor the original expression \texttt{(+ (+ 2 2) (- 2 5))} in terms of \texttt{(+ V1 V2)} by creating a function \texttt{(define (F1 V1 V2) (+ V1 V2))} and replacing occurrences of its body in the original expression.  For example, one such replacement is \texttt{(F1 (+ 2 2) (- 2 5))}, another is \texttt{(+ (F1 2 2) (- 2 5))}.  In general, we apply the function wherever possible and get a refactored program such as:
 \begin{lstlisting}
 (+ (+ 2 2) (- 2 5))
 =>
@@ -530,20 +525,22 @@ Finding and replacing pattern matches of an abstraction F in an expression E pro
   (define (F1 V1 V2) (+ V1 V2))
   (F1 (F1 2 2) (- 2 5)))
 \end{lstlisting}
-The input to the refactoring procedure is a function, F, created from anti-unification and an expression, E, which will be refactored in terms of F.  In the example above F was \texttt{(define (F1 V1 V2) (+ V1 V2))}, E would be \texttt{(+ (+ 2 2) (- 2 5))}, and the result of refactoring was 
+The input to the refactoring procedure is a function $F$ created from anti-unification and an expression $E$ which will be refactored in terms of $F$.  In the example above, $F$ is \texttt{(define (F1 V1 V2) (+ V1 V2))}, $E$ is \texttt{(+ (+ 2 2) (- 2 5))}, and the result of refactoring is
 \begin{lstlisting}
 (begin
   (define (F1 V1 V2) (+ V1 V2))
   (F1 (F1 2 2) (- 2 5)))
 \end{lstlisting}
 
-In the example \texttt{(+ (+ 2 2) (- 2 5))} matches \texttt{(+ V1 V2)} so an application of F1 to refactored arguments \texttt{(+ 2 2)} and \texttt{(- 2 5)} is returned resulting in \texttt{(F1 (F1 2 2) (- 2 5))}\footnote{Observe the function \texttt{F1} is basically the addition function between two numbers and so refactoring the program in terms of this function does compress the original expression at all.  An example where refactoring can compress an expression would be if the abstraction between \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} had been \texttt{(define (F1 V1) (+ V1 V1))}, then the refactored expression would be \texttt{(+ (F1 2) (- 2 5))}, which is one character smaller than \texttt{(+ (+ 2 2) (- 2 5))}.}.  
+In the example, \texttt{(+ (+ 2 2) (- 2 5))} matches \texttt{(+ V1 V2)}, therefore we return an application of \texttt{F1} to arguments \texttt{(+ 2 2)} and \texttt{(- 2 5)}, resulting in \texttt{(F1 (F1 2 2) (- 2 5))}\footnote{The function \texttt{F1} is equivalent to the addition function between two numbers, therefore refactoring the program in terms of this function does not compress the original expression at all.  An example where refactoring can compress an expression is the expression \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} with the abstraction \texttt{(define (F1 V1) (+ V1 V1))}. Here, the refactored expression is \texttt{(+ (F1 2) (- 2 5))}, which is shorter than \texttt{(+ (+ 2 2) (- 2 5))}.}.  
 
 
 \subsubsection{Unification}
-Determining whether there is a match between a function body and an expression is known as unification \cite{Robinson:1965:MLB:321250.321253}.  Earlier we described anti-unification which can be thought of as a process to create a pattern from two expressions, unification can be viewed as the opposite process of seeing if and how a given pattern fits onto an expression.  The return value of unification is a list of assignments for the variables of the function that would make the function the same as the expression.
 
-The input to unification is a function F, and an expression E.  Unification occurs recursively by checking whether the body of F and E are lists of the same size.  If they are the same size then unification returns the unification of each of the subexpressions.  If they are not the same size or only one of them is a list unification returns false.  In the case where both expressions being unified are primitives true is returned if they are equal and false otherwise.  In the case where the function expression of the unification is a variable an assignment is returned, i.e., the variable along with the other expression passed to unification.  At the end a check is made to see if any unifications have returned false, in which case unification of F and E returns false.  There is also a check that any variable that is repeated in F has the same value assigned to it for each place it appears.  If this is not the case unification returns false. If unification is not false then an assignment for each unique variable of F is returned.
+The problem of determining whether there is a match between an expression $E$ and an abstraction $F$ is known as unification \cite{Robinson:1965:MLB:321250.321253}. We have described anti-unification, the process of creating an abstraction given an expression. Unification is the opposite of this process.  The return value of successful unification is a list of assignments for the arguments of $F$ such that $F$ applied to these arguments results in $E$.
+
+The unification algorithm recursively checks whether the body of $F$ and $E$ are lists of the same size.  If they are, then unification returns a list containing the unification of each of the subexpressions.  If they are not the same size or only one of them is a list, unification returns \texttt{false}.  If both expressions are primitives, unification returns true if they are equal, false otherwise.  In the case where the function expression of the unification is a variable, we return an assignment, i.e., the variable along with the expression passed to unification. If any subunifications have returned \texttt{false}, we return \texttt{false}. If a variable that repeatedly occurs in $F$ is assigned to different values in different places, we also return \texttt{false}.
+Otherwise, unification succeeds and we return the assignment of each unique variable of $F$.
 
 \begin{lstlisting}[frame=trbl]
 (define unify
@@ -570,18 +567,24 @@ The input to unification is a function F, and an expression E.  Unification occu
                    (check/remove-repeated (apply append assignments))))]))))
 \end{lstlisting}
 
-{\bf Example}
-The example listed earlier where the function F is \texttt{(define (F1 V1 V2) (+ V1 V2))} and the s-expression being refactored is \texttt{(+ (+ 2 2) (- 2 5))} is used to illustrate unification.  Since \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ V1 V2)} are the same length unification is applied to the subexpression pairs \texttt{[+,+], [(+ 2 2), V1], [(- 2 5), V2]}.
+We illustrate unification using the abstraction \texttt{(define (F1 V1 V2) (+ V1 V2))} and the expression \texttt{(+ (+ 2 2) (- 2 5))}.
 
-Unification between + and + returns nothing since neither is a variable and they match.  Unification between \texttt{(+ 2 2)} and V1 returns the assignment of \texttt{(+ 2 2)} to V1 and likewise for \texttt{(- 2 5)} and V2.  So the function F1 matches the s-expression \texttt{(+ (+ 2 2) (- 2 5))} with variable assignments \texttt{V1:=(+ 2 2)} and \texttt{V2:=(- 2 5)}.
+\begin{enumerate}
+  \item Since \texttt{(+ (+ 2 2) (- 2 5))} and \texttt{(+ V1 V2)} are of the same length, we apply unification to the subexpression pairs \texttt{[+,+], [(+ 2 2), V1], [(- 2 5), V2]}.
+  \item Unification between \texttt{+} and \texttt{+} returns the empty assignment list since neither is a variable and they match.
+  \item Unification between \texttt{(+ 2 2)} and \texttt{V1} returns the assignment of \texttt{(+ 2 2)} to \texttt{V1} and likewise for \texttt{(- 2 5)} and \texttt{V2}.
+  \item It follows that the function \texttt{F1} matches the expression \texttt{(+ (+ 2 2) (- 2 5))} with variable assignments \texttt{V1:=(+ 2 2)} and \texttt{V2:=(- 2 5)}.
+\end{enumerate}
 
-If the expression being unified with F1 had been \texttt{(- (+ 2 2) (- 2 5))} then unification between the outer - of the expression and the + of F1 would have returned false and the unification would have failed.
+If the expression had been \texttt{(- (+ 2 2) (- 2 5))}, then unification between the outer \texttt{-} of the expression and the \texttt{+} of \texttt{F1} would have returned \texttt{false} and unification would have failed.
 
 \subsubsection{Summary}
-Abstraction is a program transformation that identifies repeated computation in a program by finding patterns in its syntax.  These patterns in syntax correspond to patterns in the data.  We can interpret this in terms of repeated computation by recognizing that repeated syntax corresponds to repeated sequences of operations.  This might seem like a limited notion of pattern, but it is worth contemplating the role of lambda abstraction in the lambda calculus and the expressiveness of this language despite (or perhaps because of) its simplicity.
 
-The process of abstraction follows two main steps (1) create abstractions from common subexpressions in a program via anti-unification (2) compress the program with the abstractions by replacing instances of the abstraction with a function application via unification.  Going back to our tree example we illustrate the process on the program in the data incorporation section.
-Anti-unification found seventeen possible matches or abstractions.  The abstractions that produce the smallest compressed program and the fifth smallest are 
+Abstraction is a program transformation that identifies repeated computation in a program by finding syntactic patterns. If the program has been generated using data incorporation, syntactic patterns directly correspond to patterns in the observed data. While this formalization of the notion of a pattern may seem limited at first, it is worth contemplating the central role of lambda abstraction in the lambda calculus and the expressiveness of this language.
+
+The abstraction process has two steps: First, create abstractions from common subexpressions in a program using anti-unification. Second, compress the program using these abstractions by replacing instances of the abstractions with function calls via unification.
+We now illustrate this process using the tree example that we first used in the section on data incorporation (figure \ref{fig:tree-obs}).
+For this program, anti-unification finds $17$ possible abstractions. As examples, we show both the abstraction that results in the best compression (smallest program) and the abstraction that results in the 5th smallest program:
 \begin{lstlisting}
 (abstraction F1 (V1 V2)
              (data (color (gaussian V1 25)) (size V2)))
@@ -592,7 +595,7 @@ Anti-unification found seventeen possible matches or abstractions.  The abstract
                    (node (data (color (gaussian V3 25)) (size 0.3)))
                    (node (data (color (gaussian V4 25)) (size 0.3)))))
 \end{lstlisting}
-The following are the programs compressed using these abstractions the first being of size 55 and the second being 66.
+The programs compressed using these abstractions look like this (size $55$ and $66$):
 \begin{lstlisting}
 (program
  ((abstraction F1 (V1 V2)
@@ -620,7 +623,7 @@ The following are the programs compressed using these abstractions the first bei
         (data (color (gaussian 47 25)) (size 0.1))
         (F1 33 220 224 207))))
 \end{lstlisting}
-The last abstraction captures the flower pattern we mentioned earlier.  Intuitively, it seems like we can capture even more structure and replace the variables for the petal colors with a fixed value since they are all similar.  Instead of explaining the data as being drawn from several Gaussians with slightly different means, we would like to say the data comes from only one Gaussian with a single mean.  We address this issue in the next section with another type of program transformation.
+The second abstraction captures corresponds to a ``flower''-like pattern. In this pattern, we could capture even more structure by replacing the variables for the petal colors with a fixed value, since they are similar. Instead of explaining the data as being drawn from multiple Gaussians with slightly different means, we could explain the data as generated by a single Gaussian. Our second program transformation, deargumentation, addresses this issue.
 \subsection{Deargumentation}
 Deargumentation is a program transformation that takes a function in a program and removes one of its arguments.  The variable that is removed is redefined inside the function in terms of all the values it has been assigned (i.e., the values passed to the function for that variable during an application).  We can create different program transformations by allowing multiple schemes for redefining a variable, via \texttt{replacement-function},  as a function of its instantiations.  
 \begin{lstlisting}[frame=trbl]
