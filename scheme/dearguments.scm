@@ -175,7 +175,7 @@
            (let* ([new-abstraction (remove-abstraction-variable replacement-function program abstraction variable)])
              (if (null? new-abstraction)
                  '()
-                 (let* ([program-with-new-abstraction (program->replace-abstraction program new-abstraction)]
+                 (let* ([program-with-new-abstraction (update-abstraction program new-abstraction)]
                         [new-program (remove-application-argument program-with-new-abstraction abstraction variable)])
                    new-program))))
 

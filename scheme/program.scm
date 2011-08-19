@@ -1,5 +1,5 @@
 (library (program)
-         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions program->replace-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->log-prior program+->semantics-preserved program+->program-transform has-variable? abstraction-application? program->abstraction-pattern any-abstraction-application?)
+         (export func-symbol var-symbol program-size var? func? make-abstraction make-named-abstraction abstraction->name abstraction->vars abstraction->pattern abstraction->define abstraction->variable-position make-program program->abstractions update-abstraction capture-free-variables program->sexpr sexpr->program pretty-print-program program->body program->abstraction-applications define->abstraction set-indices-floor! make-program+ program+->program program+->posterior program+->log-likelihood program+->log-prior program+->semantics-preserved program+->program-transform has-variable? abstraction-application? program->abstraction-pattern any-abstraction-application?)
          (import (except (rnrs) string-hash string-ci-hash)
                  (church readable-scheme)
                  (sym)
@@ -133,7 +133,7 @@
 
          ;;assumes the new-abstraction has the same name as the abstraction it is replacing in program
          ;;assumes a particular abstraction is only defined once in the program
-         (define (program->replace-abstraction program new-abstraction)
+         (define (update-abstraction program new-abstraction)
            (define (replace-abstraction abstractions new-abstraction)
              (if (null? abstractions)
                  '()
