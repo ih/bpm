@@ -222,7 +222,7 @@
                (map change-recursive-arguments ith-removed)))
            (let* ([variable-position (abstraction->variable-position abstraction variable)]
                   [program-sexpr (program->sexpr program)]
-                  [changed-sexpr (sexp-search abstraction-application? (curry change-application variable-position) program-sexpr)]
+                  [changed-sexpr (transform-sexp abstraction-application? (curry change-application variable-position) program-sexpr)]
                   [new-program (sexpr->program changed-sexpr)])
              new-program))
 

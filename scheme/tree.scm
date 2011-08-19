@@ -33,7 +33,7 @@
            (define tests+replacements (zip (list uniform-choice?) (list uniform-draw-conversion)))
            (define (apply-transforms sexpr)
              (fold (lambda (test+replacement expr)
-                     (sexp-search (first test+replacement) (second test+replacement) expr))
+                     (transform-sexp (first test+replacement) (second test+replacement) expr))
                    sexpr
                    tests+replacements))
            (define (desugar-abstraction abstraction)
@@ -48,9 +48,9 @@
            (define (return-parameters sexpr)
              `(list 'gaussian-parameters ,(second sexpr) ,(third sexpr)))
            (define (replace-in-abstraction abstraction)
-             (make-named-abstraction (abstraction->name abstraction) (sexp-search gaussian? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
+             (make-named-abstraction (abstraction->name abstraction) (transform-sexp gaussian? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
            (let* ([converted-abstractions (map replace-in-abstraction (program->abstractions program))]
-                  [converted-body (sexp-search gaussian? return-parameters (program->body program))])
+                  [converted-body (transform-sexp gaussian? return-parameters (program->body program))])
              (make-program converted-abstractions converted-body)))
 
          (define gaussian->mean second)

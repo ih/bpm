@@ -86,7 +86,7 @@
                   [free '()]
                   [free-var? (lambda (x) (and (var? x) (not (member x non-free))))]
                   [add-to-free! (lambda (x) (set! free (pair x free)))])
-             (sexp-search free-var? add-to-free! pattern)
+             (transform-sexp free-var? add-to-free! pattern)
              free))
 
 ;;free variables can occur when the pattern for an abstraction contains variables that were part of the matched expressions e.g. if the expression was (+ v1 v1 a) (+ v1 v1 b) then the pattern would be (+ v1 v1 v2)

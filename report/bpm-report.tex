@@ -310,9 +310,9 @@ We take advantage of the fact we can directly compute the probability of a sampl
   (define (return-parameters sexpr)
     `(list 'gaussian-parameters ,(second sexpr) ,(third sexpr)))
   (define (replace-in-abstraction abstraction)
-    (make-named-abstraction (abstraction->name abstraction) (sexp-search gaussian? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
+    (make-named-abstraction (abstraction->name abstraction) (transform-sexp gaussian? return-parameters (abstraction->pattern abstraction)) (abstraction->vars abstraction)))
   (let* ([converted-abstractions (map replace-in-abstraction (program->abstractions program))]
-	 [converted-body (sexp-search gaussian? return-parameters (program->body program))])
+	 [converted-body (transform-sexp gaussian? return-parameters (program->body program))])
     (make-program converted-abstractions converted-body)))
 
 (define (desugar program)
@@ -323,7 +323,7 @@ We take advantage of the fact we can directly compute the probability of a sampl
   (define tests+replacements (zip (list uniform-choice?) (list uniform-draw-conversion)))
   (define (apply-transforms sexpr)
     (fold (lambda (test+replacement expr)
-	    (sexp-search (first test+replacement) (second test+replacement) expr))
+	    (transform-sexp (first test+replacement) (second test+replacement) expr))
 	  sexpr
 	  tests+replacements))
   (define (desugar-abstraction abstraction)
@@ -691,18 +691,18 @@ After the abstraction for function $F$ has been adjusted, we change all applicat
       (map change-recursive-arguments ith-removed)))
   (let* ([variable-position (abstraction->variable-position abstraction variable)]
          [program-sexpr (program->sexpr program)]
-         [changed-sexpr (sexp-search abstraction-application? (curry change-application variable-position) program-sexpr)]
+         [changed-sexpr (transform-sexp abstraction-application? (curry change-application variable-position) program-sexpr)]
          [program* (sexpr->program changed-sexpr)])
     program*))
 
 (define (remove-ith-argument i function-application)
   (append (take function-application (+ i 1)) (drop function-application (+ i 2))))
 
-(define (sexp-search pred? func sexp)
+(define (transform-sexp pred? func sexp)
   (if (pred? sexp)
       (func sexp)
       (if (list? sexp)
-          (map (curry sexp-search pred? func) sexp)
+          (map (curry transform-sexp pred? func) sexp)
           sexp)))
 \end{lstlisting}
 In the following, we demonstrate that this transformation is useful for compactly representing continuous values that may have been distorted by noise and for inducing recursive structure.
