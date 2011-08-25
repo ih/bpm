@@ -335,7 +335,7 @@ We take advantage of the fact we can directly compute the probability of a sampl
 
 (define (thunkify sexpr) `(lambda () ,sexpr))
 \end{lstlisting}
-In the code below, \texttt{smc-core} forces the program to generate the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report. In short, the method is an incremental forward sampler; for this reason, we separate out the continuous choices, since forward sampling has probability $0$ of generating the observed values.
+In the code below, \texttt{smc-core} forces the program to generate the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report. In short, the method is an incremental forward sampler (with re-sampling); for this reason, we separate out the continuous choices, since forward sampling has probability $0$ of generating the observed values.
 \begin{lstlisting}[frame=trbl]
 (define (compute-topology-scores+evaluate model tree popsize)
   (let* ([smc-core-arguments (create-smc-core-args model tree popsize)]
@@ -410,7 +410,7 @@ The following code fragment implements this procedure. The function \texttt{comp
     (filter-abstractions  abstractions)))
 \end{lstlisting}
 
-The following example illustrates the abstraction transformation on a language that slightly differs from the tree example.
+The following example illustrates the abstraction transformation on a language slightly simpler than the tree example (no sizes or continuous properties).
 \begin{lstlisting}[mathescape=true]
 (uniform-choice 
  (node
@@ -429,7 +429,7 @@ $\includegraphics[scale=.40]{../figures/csrDecompose1.pdf}\\
 \end{lstlisting}
 Both programs have the same behavior, i.e., this transformation preserves semantics. Both programs return \texttt{(a (a (b) (b)))} and \texttt{(a (a (c) (c)))} with equal probability.
 
-This transformation refactors a program with subexpressions that partially match into a program with a function which contains the common parts of the matching subexpressions as its body.  In the example shown above, the subexpressions that partially match are \texttt{(node a (node a (node b) (node b)))} and \texttt{(node a (node a (node c) (node c)))}.  The common subexpression is \texttt{(node a (node a (node x) (node y)))}. The function created using this common subexpression is \texttt{F1} and the original subexpressions are replaced with \texttt{(F1 b b)} and \texttt{(F1 c c)}. (There is further potential for compression here, which we will address using the deargumentation transformation.)
+This transformation refactors a program with subexpressions that partially match into a program with a function which contains the common parts of the matching subexpressions as its body.  In the example shown above, the subexpressions that partially match are \texttt{(node a (node a (node b) (node b)))} and \texttt{(node a (node a (node c) (node c)))}.  The common subexpression is \texttt{(node a (node a (node x) (node y)))}. The function created using this common subexpression is \texttt{F1} and the original subexpressions are replaced with \texttt{(F1 b b)} and \texttt{(F1 c c)}. (There is further potential for compression here, due to the repeated arguments, which we will address using the deargumentation transformation.)
 
 \subsubsection{Anti-unification}
 
@@ -530,12 +530,15 @@ The input to the refactoring procedure is a function $F$ created from anti-unifi
   (F1 (F1 2 2) (- 2 5)))
 \end{lstlisting}
 
-In the example, \texttt{(+ (+ 2 2) (- 2 5))} matches \texttt{(+ V1 V2)}, therefore we return an application of \texttt{F1} to arguments \texttt{(+ 2 2)} and \texttt{(- 2 5)}, resulting in \texttt{(F1 (F1 2 2) (- 2 5))}\footnote{The function \texttt{F1} is equivalent to the addition function between two numbers, therefore refactoring the program in terms of this function does not compress the original expression at all.  An example where refactoring can compress an expression is the expression \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} with the abstraction \texttt{(define (F1 V1) (+ V1 V1))}. Here, the refactored expression is \texttt{(+ (F1 2) (- 2 5))}, which is shorter than \texttt{(+ (+ 2 2) (- 2 5))}.}.  
+In the example, \texttt{(+ (+ 2 2) (- 2 5))} matches \texttt{(+ V1 V2)}, therefore we return an application of \texttt{F1} to arguments \texttt{(+ 2 2)} and \texttt{(- 2 5)}, resulting in \texttt{(F1 (F1 2 2) (- 2 5))}\footnote{The function \texttt{F1} is equivalent to the addition function between two numbers, therefore refactoring the program in terms of this function does not compress the original expression at all.  An example where refactoring can compress an expression is the expression pair \texttt{[(+ (+ 2 2) (- 2 5)), (+ (+ 2 2) (- 2 6))]}.}.
+
+
+% \texttt{[(+ (+ 2 2) (- 2 5)), (+ 2 2)]} with the abstraction \texttt{(define (F1 V1) (+ V1 V1))}. Here, the refactored expression is \texttt{(+ (F1 2) (- 2 5))}, which is shorter than \texttt{(+ (+ 2 2) (- 2 5))}.}.  
 
 
 \subsubsection{Unification}
 
-The problem of determining whether there is a match between an expression $E$ and an abstraction $F$ is known as unification \cite{Robinson:1965:MLB:321250.321253}. We have described anti-unification, the process of creating an abstraction given an expression. Unification is the opposite of this process.  The return value of successful unification is a list of assignments for the arguments of $F$ such that $F$ applied to these arguments results in $E$.
+The problem of determining whether there is a match between an expression $E$ and an abstraction $F$ is known as unification \cite{Robinson:1965:MLB:321250.321253}. We have described anti-unification, the process of creating an abstraction given a pair of expressions. Unification is the opposite of this process.  The return value of successful unification is a list of assignments for the arguments of $F$ such that $F$ applied to these arguments results in $E$.
 
 The unification algorithm recursively checks whether the body of $F$ and $E$ are lists of the same size.  If they are, then unification returns a list containing the unification of each of the subexpressions.  If they are not the same size or only one of them is a list, unification returns \texttt{false}.  If both expressions are primitives, unification returns true if they are equal, false otherwise.  In the case where the function expression of the unification is a variable, we return an assignment, i.e., the variable along with the expression passed to unification. If any subunifications have returned \texttt{false}, we return \texttt{false}. If a variable that repeatedly occurs in $F$ is assigned to different values in different places, we also return \texttt{false}.
 Otherwise, unification succeeds and we return the assignment of each unique variable of $F$.
