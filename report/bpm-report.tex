@@ -63,7 +63,7 @@ This report \emph{is not} a completed academic work. In particular, it does litt
 
 \subsection{Bayesian model merging}
 
-Bayesian model merging is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of merge transformations and to use the posterior $P(M|D)$ of model $M$ given data $D$ as a criterion for selecting transformations.
+Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of `merge’ transformations, using the posterior $P(M|D)$ of model $M$ given data $D$ as the criterion for selecting transformations.
 
 We create an initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it never generates points outside the training set---it severely overfits the initial data. Therefore, we generate alternative model hypotheses using program transformations that collapse model structure and that often result in better generalizations.
 
@@ -72,15 +72,15 @@ This technique has been successfully applied to learning artificial probabilisti
 
 \subsection{Bayesian program merging}
 
-We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns and to use a wide range of transformations, including transformations that correspond to lossy data compression. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
+We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns that go beyond context free grammars (for instance, parametrized sub-functions) and to use a wide range of transformations, including transformations that result in `lossy’ compression of the input data. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
 
 \begin{description}
 \item[Data representation and program language]  \hfill \\
-  We represent data in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors. Our language for programs consists of type constructors and additional operators. This language is probabilistic, hence programs correspond to distributions on observations. Program structure corresponds to regularities in the observations.
+  We represent data in terms of an algebraic data type, which gives us a way to form initial programs using the type constructors. Our language for programs consists of type constructors, lambda abstraction, and additional operators. This language is probabilistic, hence programs correspond to distributions on observations. Program structure corresponds to regularities in the observations.
 \item[Search objective: Posterior probability of probabilistic programs]  \hfill \\
   The objective for our search through program space is the posterior probability of a program given the observed data. This posterior decomposes into a prior based on program length and into a likelihood that we estimate using selective model averaging.
 \item[Search moves: Program transformations]  \hfill \\
-  We describe two program transformations that we use as search moves, abstraction and deargumentation. Both transformations collapse program structure, which often increases prior probability of the program and improves generalization to unobserved data.
+  We describe two types of program transformation that we use as search moves: abstraction and deargumentation. Both transformations collapse program structure, which often increases prior probability of the program and improves generalization to unobserved data.
   \item[Search strategy: Beam search]  \hfill \\
   Given a space of programs, an objective function, and search moves between programs (transformations), we still need to specify a search strategy. We use beam search.
 \end{description}
@@ -89,7 +89,7 @@ We extend Bayesian model merging to models expressed in the rich class of probab
 \section{Data representation and program language}
 We assume that we can represent our data using an algebraic data type. This assumption gives us a starting point for program induction, since any data can be directly translated into a program which is a derivation (sequence of data constructor operations) of the data from the type specification. 
 \subsection{Data and program representation in the list domain}
-We can model the trees shown in figure \ref{fig:plants} in terms of nested lists (s-expressions).  Each tree consists of nodes, where each node has a size and color along with a list of child nodes.
+We can model the trees shown in figure \ref{fig:plants} in terms of nested lists (s-expressions).  Each tree consists of nodes, where each node has a size and color attributes along with a list of child nodes.
 \begin{grammar}
 <tree> ::= nil
 
@@ -126,9 +126,10 @@ We now have a way of representing data as rudimentary programs.  In order to cap
 
 <primitive> ::= uniform-choice | list | node | data | color | size | [number]
 \end{grammar}
+To apply the Bayesian program merging techniques to data specified in a different data type the only change would be to replace list, etc., with the constructors of the new data type.
 
 \subsection{Data incorporation}
-The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to this example (in terms of the algebraic data type constructors).  We combine these programs into a single expression that draws uniformly from this list.
+The first step of Bayesian program merging is data incorporation.  Data incorporation is the creation of an initial model by going through each example in the training set and creating an expression that evaluates to this example (in terms of the algebraic data type constructors).  We combine these programs into a single expression that draws uniformly from this list. (That is, we assume that the observations are i.i.d.) 
 % We assume Gaussian noise in the color attribute for simplicity's sake, but discuss a possible direction for learning such a property later in the report.
 \begin{lstlisting}[frame=trblsingle]
 (define (incorporate-data trees)
