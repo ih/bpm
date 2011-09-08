@@ -145,15 +145,34 @@
            (or (equal? pair1 pair2)
                (and (equal? (first pair1) (second pair2)) (equal? (second pair1) (first pair2)))))
 
+         ;; Faster way of selecting subsets of a list
+         ;; From http://okmij.org/ftp/Scheme/subsets-size-n-part1.txt
+         ;; http://okmij.org/ftp/Algorithms.html#subsets-n
+         (define (select-k-subsets n l)
+           (let loop ((l l) (ln (length l)) (n n) (prev-els '()) (accum '()))
+             (cond
+               ((<= n 0) (cons prev-els accum))
+               ((< ln n) accum)
+               ((= ln n) (cons (append l prev-els) accum))
+               ((= ln (+ 1 n)) 
+                (let fold ((l l) (seen prev-els) (accum accum))
+                  (if (null? l) accum
+                    (fold (cdr l) (cons (car l) seen)
+                          (cons
+                            (append (cdr l) seen)
+                            accum)))))
+               ((= n 1)
+                (let fold ((l l) (accum accum))
+                  (if (null? l) accum
+                    (fold (cdr l) (cons (cons (car l) prev-els) accum)))))
+               (else
+                 (loop (cdr l) (- ln 1) n prev-els
+                       ; new accum
+                       (loop (cdr l) (- ln 1) (- n 1) (cons (car l) prev-els) accum))))))
+
          ;; there are ways to speed this up by preprocessing lst
          (define (unique-commutative-pairs lst func)
-           (define (pairing-recursion lst1 lst2)
-             (if (null? lst2)
-                 '()
-                 (let ((from1 (first lst1)))
-                   (append (map (lambda (from2) (func from1 from2)) lst2)
-                           (pairing-recursion (rest lst1) (rest lst2))))))
-           (delete-duplicates (pairing-recursion lst (rest lst)) commutative-pair-equal))
+           (delete-duplicates (select-k-subsets 2 lst) commutative-pair-equal))
 
          (define (list-unique-commutative-pairs lst)
            (unique-commutative-pairs lst list))
