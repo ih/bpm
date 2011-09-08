@@ -797,9 +797,9 @@ Abstraction creates functions whose arguments represent expression parts that di
     (find-matching-variable program abstraction variable-instances possible-match-variables)))
 
 (define (find-matching-variable program abstraction variable-instances possible-match-variables)
-  (define (my-equal? a b) 
+  (define (equal? a b) 
     (if (and (pair? a) (pair? b)) 
-        (and (my-equal? (car a) (car b)) (my-equal? (cdr a) (cdr b))) 
+        (and (equal? (car a) (car b)) (equal? (cdr a) (cdr b))) 
         (if (and (number? a) (number? b))
             #t
             (eq? a b)))) 
@@ -807,7 +807,7 @@ Abstraction creates functions whose arguments represent expression parts that di
       NO-REPLACEMENT
       (let* ([hypothesis-variable (uniform-draw possible-match-variables)]
              [hypothesis-instances (find-variable-instances program abstraction hypothesis-variable)])
-        (if (my-equal? hypothesis-instances variable-instances)
+        (if (equal? hypothesis-instances variable-instances)
             hypothesis-variable
             (find-matching-variable program abstraction variable-instances (delete hypothesis-variable possible-match-variables))))))
 \end{lstlisting}
@@ -1051,21 +1051,30 @@ This suggests a reformulation of the deargumentation transform in terms of recur
 \newpage
 \section{Search strategy: Beam search}
 
-We are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
+In our search through program space, we are interested in programs with high posterior probability. Many different search strategies are possible, but in this report, we limit ourselves to beam search using the posterior probability as a search heuristic.
 
 \begin{lstlisting}[frame=trbl]
 (define (beam-search data init-program beam-size depth)
-  (let* ([top-transformations 
-          (sort-by-posterior
-           data 
-           (beam-learn-search-transformations data init-program beam-size depth))])
+  (let* ([all-transformations
+          (beam-learn-search-transformations data 
+                                             init-program
+                                             beam-size
+                                             depth)]
+         [top-transformations (sort-by-posterior data all-transformations)])
     (if (null? top-transformations)
         init-program
         (program+->program (first top-transformations)))))
 
 (define (beam-search-transformations data program beam-size depth)
-  (let ([init-program+ (make-program+ program 0 (log-likelihood data program 10) (log-prior program) #f)])
-    (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
+  (let ([init-program+ (make-program+ program
+                                      0
+                                      (log-likelihood data program 10)
+                                      (log-prior program)
+                                      #f)])
+    (depth-iterated-transformations (lambda (programs+)
+                                      (best-n data programs+ beam-size))
+                                    init-program+
+                                    depth)))
 
 (define (best-n data programs+ n)
   (max-take (sort-by-posterior data programs+) n))
@@ -1073,13 +1082,18 @@ We are interested in programs with high posterior probability. Many different se
 The main part of the search is performed by \texttt{depth-iterated-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
 \begin{lstlisting}[frame=trbl]
 (define (depth-iterated-transformations cfilter program+ depth)
-  (let* ([transformed-programs+ (apply-and-filter-transformations depth cfilter program+)])
-    (delete '()  (append transformed-programs+
-                         (apply append (map (lambda (prog) 
-                                              (depth-iterated-transformations cfilter prog (- depth 1))) 
-                                            transformed-programs+))))))
+  (let* ([transformed-programs+
+          (apply-and-filter-transformations depth cfilter program+)])
+    (delete '()
+            (append transformed-programs+
+                    (apply append
+                           (map (lambda (prog) 
+                                  (depth-iterated-transformations cfilter
+                                                                  prog
+                                                                  (- depth 1))) 
+                                transformed-programs+))))))
 \end{lstlisting}
-We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse likelihood for a program that was created by a semantics preserving transformation.
+We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse previously computed likelihoods for programs that were created by a semantics preserving transformation.
 \begin{lstlisting}[frame=trbl]
 (define (apply-and-filter-transformations depth cfilter program+)
   (if (= depth 0)
@@ -1094,7 +1108,7 @@ We reduce the amount of computation required when choosing the best programs at 
          [transformed-programs+ (map (lambda (program) (program+->program-transform semantics-preserving program+ program)) transformed-programs)])
     transformed-programs+))
 \end{lstlisting}
-The posterior distribution is estimated by combining an estimate of the likelihood with the computation of the prior.  
+We compute an estimate of the posterior probability of each program by combining an estimate of the likelihood with the length prior:
 \begin{lstlisting}[frame=trbl]
 (define (sort-by-posterior data programs+)
   (let* ([programs (map program+->program programs+)]
@@ -1107,7 +1121,7 @@ The posterior distribution is estimated by combining an estimate of the likeliho
          [posteriors (map + log-priors log-likelihoods)] 
          [new-programs+ (map make-program+ programs posteriors log-likelihoods log-priors semantics-flags)]
          [posteriors> (lambda (a b) (> (program+->posterior a) (program+->posterior b)))])
-    (my-list-sort posteriors> new-programs+)))
+    (list-sort posteriors> new-programs+)))
 \end{lstlisting}
 
 
