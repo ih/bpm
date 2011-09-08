@@ -73,7 +73,7 @@ This report \emph{is not} a completed academic work. In particular, it does litt
 
 \subsection{Bayesian model merging}
 
-Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of `mergeÕ transformations, using the posterior $P(M|D)$ of model $M$ given data $D$ as the criterion for selecting transformations.
+Bayesian model merging \cite{Stolcke:1994:IPG:645515.658235} is a framework for searching through a space of generative models in order to find a model that accurately generates the observed data.  The main idea is to search model space through a series of ``merge'' transformations, using the posterior $P(M|D)$ of model $M$ given data $D$ as the criterion for selecting transformations.
 
 We create an initial model by building a program that has a uniform distribution over the training set ({\em data incorporation}).  While this initial model has high likelihood $P(D|M)$, it never generates points outside the training set---it severely overfits the initial data. Therefore, we generate alternative model hypotheses using program transformations that collapse model structure and that often result in better generalizations.
 
@@ -82,7 +82,7 @@ This technique has been successfully applied to learning artificial probabilisti
 
 \subsection{Bayesian program merging}
 
-We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns that go beyond context free grammars (for instance, parametrized sub-functions) and to use a wide range of transformations, including transformations that result in ``lossy'' compression of the input data. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
+We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns that go beyond context free grammars (for instance, parameterized sub-functions) and to use a wide range of transformations, including transformations that result in ``lossy'' compression of the input data. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
 
 \begin{description}
 \item[Data representation and program language]  \hfill \\
@@ -285,7 +285,7 @@ This prior biases the search towards smaller programs. Increasing the constant $
          [body-size (sexpr-size (program->body program))])
     (+ abstraction-sizes body-size)))
 \end{lstlisting}
-Computing the likelihood is the difficult part of the posterior probability computation. Intuitively, we can think of the likelihood as tracking how good a particular program is at producing a set of target data.  This is important in search, since it gives precise, quantitative information on whether and how to adjust our hypothesis program. However, since there may be a large number of possible settings for the random choices of a program, this can make determining which choices lead to the observed data difficult. Furthermore, for any given data point, there could be multiple settings that generate this data point; to correctly compute the likelihood, we need to take into account all of them. Often, we cannot compute this quantity exactly. In the following, we describee a way to approximate this computation for list data.
+Computing the likelihood is the difficult part of the posterior probability computation. Intuitively, we can think of the likelihood as tracking how good a particular program is at producing a set of target data.  This is important in search, since it gives precise, quantitative information on whether and how to adjust our hypothesis program. However, since there may be a large number of possible settings for the random choices of a program, this can make determining which choices lead to the observed data difficult. Furthermore, for any given data point, there could be multiple settings that generate this data point; to correctly compute the likelihood, we need to take into account all of them. Often, we cannot compute this quantity exactly. In the following, we describe a way to approximate this computation for list data.
 
 \subsection{Likelihood estimation in the list domain}
 
@@ -417,7 +417,7 @@ The following code fragment implements this procedure. The function \texttt{comp
 (define (possible-abstractions expr)
   (let* ([subexpr-pairs (list-unique-commutative-pairs (all-subexprs expr))]
          [abstractions (map-apply (curry anti-unify-abstraction expr) subexpr-pairs)])
-    (filter-abstractions  abstractions)))
+    (filter-abstractions abstractions)))
 \end{lstlisting}
 
 The following example illustrates the abstraction transformation on a language slightly simpler than the tree example (no sizes or continuous properties).
@@ -723,7 +723,7 @@ In the following, we demonstrate that this transformation is useful for compactl
 
 \subsubsection{Compactly representing noisy data}
 
-When we unify two expressions to create abstractions, all places where the expressions do not exactly match result in the creation of a variable. For example, given \texttt{(+ 2 1.99)} and \texttt{(+ 2 2.01)}, we unify to \texttt{(+ 2 V)}. If we know that the system we are modeling is noisy, we may want to treat these two expressions as essentially identical, i.e., unifying to \texttt{(+ 2 2)} instead. We achieve this effect by using the deargumentation transform with a \texttt{replacment-function} called \texttt{noisy-number-replacment}. This function replaces a variable within an abstraction with the mean of the values of all its instances.
+When we unify two expressions to create abstractions, all places where the expressions do not exactly match result in the creation of a variable. For example, given \texttt{(+ 2 1.99)} and \texttt{(+ 2 2.01)}, we unify to \texttt{(+ 2 V)}. If we know that the system we are modeling is noisy, we may want to treat these two expressions as essentially identical, i.e., unifying to \texttt{(+ 2 2)} instead. We achieve this effect by using the deargumentation transform with a \texttt{replacement-function} called \texttt{noisy-number-replacement}. This function replaces a variable within an abstraction with the mean of the values of all its instances.
 
 \begin{lstlisting}[frame=trbl]
 (define (noisy-number-replacement program abstraction variable variable-instances)
@@ -746,7 +746,7 @@ Suppose that abstraction results in this program:
    (flower 33 220 224 207)))
 $\includegraphics[scale=.6]{../figures/noisyNumberProgram.pdf}$
 \end{lstlisting}
-If we apply the deargumentation transform to the \texttt{flower} function and variabe \texttt{V2}, we identify the two instances of \texttt{V2}, $213$ and $220$, and we are going to replace this variable by its mean, $216.5$.  The abstraction \texttt{flower} is then changed using \texttt{remove-abstraction-variable} to:
+If we apply the deargumentation transform to the \texttt{flower} function and variable \texttt{V2}, we identify the two instances of \texttt{V2}, $213$ and $220$, and we are going to replace this variable by its mean, $216.5$.  The abstraction \texttt{flower} is then changed using \texttt{remove-abstraction-variable} to:
 \begin{lstlisting}
 (define flower
   (lambda (V1 V3 V4)
@@ -1041,7 +1041,7 @@ While the discussion above hints at the representational benefits of using proba
 Deargumentation solves the following problem: Given all values that a function argument takes on in the course of running the overall generative process, we want to determine whether there is a compact stochastic program that can generate all of these values---if this is the case, we can remove the argument and use the definition of this compact program within our function. When phrased in these terms, it is clear that the problem addressed by deargumentation is itself a problem of program induction. We can rephrase the deargumentation moves we have presented as induction steps limited to particular sets of programs:
 
 \begin{enumerate}
-\item In the case of noisy-number deargumentation, we induce programs that generate all of the occuring number values, restricting our search to programs corresponding to one-dimensional Gaussian distributions.
+\item In the case of noisy-number deargumentation, we induce programs that generate all of the occurring number values, restricting our search to programs corresponding to one-dimensional Gaussian distributions.
 \item In the case of recursion deargumentation, we restrict the induced programs to stochastic recursions of the program being deargumented.
 \item In the case of the identical variable deargumentation, we assume that the generative process of the values for one variable is identical to the other, hence we ``induce'' the program for the other variable by simply referring to the first one.
 \end{enumerate}
@@ -1225,7 +1225,7 @@ With parameters $\alpha=1$, beam width 1, and depth 10, Bayesian program merging
      (list (F3) (F3) (F3) (F3) (lambda () (node (F2))))))))
 $\includegraphics[scale=.25]{../figures/recursionModel.pdf}$
 \end{lstlisting}
-Once the size of the observations generated by the original recursive program reaches a length threshold, the tradeoff between prior and likelihood favors recursive programs due to their small size. We can adjust where this threshold occurs using the size constant, $\alpha$, in the prior. 
+Once the size of the observations generated by the original recursive program reaches a length threshold, the trade-off between prior and likelihood favors recursive programs due to their small size. We can adjust where this threshold occurs using the size constant, $\alpha$, in the prior. 
 \subsection{Vine}
 In this example, we use Bayesian program merging to induce a model a vine with flowers from a single instance. This demonstrates multiple types of program transformations, all applying to the same data. System parameters: $\alpha=1$, beam width 1, depth 10.
 \begin{lstlisting}[mathescape=true]
@@ -1263,7 +1263,7 @@ In the induced code below, \texttt{F1} roughly corresponds to \texttt{vine} and 
 $\includegraphics[scale=.25]{../figures/vineModel.pdf}$
 \end{lstlisting}
 \subsection{Tree}
-This example demonstrates learning both a parameterized function and a recursion and applying these functions in multiple places within the same program. We use the functions shown below to generate flower-like patterns and a tree that consists of two branches, each of which ends in a flower of different color. We ran the system with $\alpha=3$, beam width $1$, and depth $10$.  Setting $\alpha=1$ results in a tradeoff between prior and likelihood that does not make introducing recursion worthwhile. We expect that the system could learn a similar program with $\alpha=1$ if we provide training examples with more branch instances, since this would increase the amount of program compression.
+This example demonstrates learning both a parameterized function and a recursion and applying these functions in multiple places within the same program. We use the functions shown below to generate flower-like patterns and a tree that consists of two branches, each of which ends in a flower of different color. We ran the system with $\alpha=3$, beam width $1$, and depth $10$.  Setting $\alpha=1$ results in a trade-off between prior and likelihood that does not make introducing recursion worthwhile. We expect that the system could learn a similar program with $\alpha=1$ if we provide training examples with more branch instances, since this would increase the amount of program compression.
 \begin{lstlisting}[mathescape=true]
 (define tree
   (lambda ()
