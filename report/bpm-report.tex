@@ -9,6 +9,10 @@
 \usepackage{hyperref}
 \usepackage{subfig}
 \usepackage[strict]{changepage}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage[titles, subfigure]{tocloft}
+
 \hypersetup{
     colorlinks,
     citecolor=black,
@@ -17,9 +21,15 @@
     urlcolor=black
 }
 
+\setlength{\cftbeforesecskip}{0.02in}
+
+\lstset{
+  language=Scheme
+}
+
 \begin{document}
 
-\title{\vspace{-1.7cm}Inducing Probabilistic Programs by Bayesian Program Merging}
+\title{Inducing Probabilistic Programs by Bayesian Program Merging}
 \author{Irvin Hwang\\Stanford University  \and Andreas Stuhlm\"{u}ller\\MIT \and Noah D. Goodman\\Stanford University}
 \date{}
 \maketitle
@@ -72,7 +82,7 @@ This technique has been successfully applied to learning artificial probabilisti
 
 \subsection{Bayesian program merging}
 
-We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns that go beyond context free grammars (for instance, parametrized sub-functions) and to use a wide range of transformations, including transformations that result in `lossy’ compression of the input data. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
+We extend Bayesian model merging to models expressed in the rich class of probabilistic programs.  This allows us to represent complex patterns that go beyond context free grammars (for instance, parametrized sub-functions) and to use a wide range of transformations, including transformations that result in ``lossy'' compression of the input data. In the remainder of this document, we will describe the following parts required to implement Bayesian program merging:
 
 \begin{description}
 \item[Data representation and program language]  \hfill \\
@@ -102,7 +112,7 @@ We can model the trees shown in figure \ref{fig:plants} in terms of nested lists
 <size> ::= (size [number])
 \end{grammar}
 The following is an example of a tree expression along with a graphical representation.
-\lstset{basicstyle=\small\ttfamily, frameround=fttt, breaklines=true, language=Lisp, showstringspaces=false, breakatwhitespace=true}
+
 \begin{lstlisting}[mathescape=true]
 (node (data (color 50) (size 1))
   (node (data (color 30) (size 0.3))
