@@ -1036,6 +1036,7 @@ While the discussion above hints at the representational benefits of using proba
 
 
 \subsubsection{Deargumentation as program induction}
+\label{sec:dearg-as-induction}
 
 Deargumentation solves the following problem: Given all values that a function argument takes on in the course of running the overall generative process, we want to determine whether there is a compact stochastic program that can generate all of these values---if this is the case, we can remove the argument and use the definition of this compact program within our function. When phrased in these terms, it is clear that the problem addressed by deargumentation is itself a problem of program induction. We can rephrase the deargumentation moves we have presented as induction steps limited to particular sets of programs:
 
@@ -1122,10 +1123,11 @@ We compute an estimate of the posterior probability of each program by combining
 \newpage
 \section{Examples}
 
-
+We illustrate our program induction method using small examples drawn from the domain of colored trees. All examples have the following shape: We present a probabilistic program, show observations (trees) sampled from this program, highlight the key patterns that are visible both in the original program and in the observed trees, and then show which patterns Bayesian program merging recovers.
 
 \subsection{Single color flower}
-We use the program below to generate ten instances of flower that have the same color.  
+
+The program below generates ten ``flower'' instances that have the same color.
 \begin{lstlisting}[mathescape=true]
 (define (flower shade)
   (node (data (color (gaussian shade 25)) (size .3))
@@ -1139,7 +1141,7 @@ We use the program below to generate ten instances of flower that have the same 
 (repeat 10 (lambda () (flower 20)))
 $\includegraphics[scale=.35]{../figures/single-color-data.pdf}$
 \end{lstlisting}
-An expression for these ten flowers was created using data incorporation and this expression was compressed into the program below.  The function \texttt{F1} is a function that takes no arguments and creates a flower with petals that are all the same color.  We ran the system with $\alpha=1$, beam width 1, and depth 10 for this example.
+We create an initial program that represents these ten flowers using data incorporation and then compress it (result shown below).  We learn a function \texttt{F1} that takes no arguments and creates a flower with petals that are all the same color. The system parameters were $\alpha=1$, beam width $1$, and depth $10$.
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F2
@@ -1164,7 +1166,7 @@ An expression for these ten flowers was created using data incorporation and thi
 $\includegraphics[scale=.35]{../figures/single-color-model.pdf}$
 \end{lstlisting}
 \subsection{Multiple color flower}
-Here we use a similar program to generate ten instances of flower that have alternating colors.  
+We use a program similar to the previous one to generate ten ``flower'' instances, some of which have red petals, some purple.
 \begin{lstlisting}[mathescape=true]
 (define (flower shade)
   (node (data (color (gaussian 0 25)) (size .3))
@@ -1178,7 +1180,7 @@ Here we use a similar program to generate ten instances of flower that have alte
 (repeat 10 (lambda () (flower (if (flip) 100 220))))
 $\includegraphics[scale=.35]{../figures/paramPartsData.pdf}$
 \end{lstlisting}
-Bayesian program merging results in the following program.  The abstraction \texttt{F2} corresponds to \texttt{petal} and \texttt{F1} corresponds to \texttt{flower}.  We ran the system with $\alpha=1$ for this example, beam width 1, and depth 10.
+Bayesian program merging results in the program shown below. The abstraction \texttt{F2} corresponds to \texttt{petal} and \texttt{F1} corresponds to \texttt{flower}.  System parameters: $\alpha=1$, beam width $1$, and depth $10$.
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F2
@@ -1200,15 +1202,15 @@ Bayesian program merging results in the following program.  The abstraction \tex
 $\includegraphics[scale=.35]{../figures/paramPartsModelData.pdf}$
 \end{lstlisting}
 \subsection{Recursion}
-We use the following program to generate a tree made of a single line of nodes.  We ran the system with $\alpha=1$ for this example, beam width 1, and depth 10.
+The next program generates a tree made of a single stem of nodes.
 \begin{lstlisting}[mathescape=true]
-(define (line)
+(define (stem)
   (if (flip .2)
       (node (data (color 200) (size .5)))
-      (node (data (color 200) (size .5)) (line))))
+      (node (data (color 200) (size .5)) (stem))))
 $\includegraphics[scale=.35]{../figures/recursionData.pdf}$
 \end{lstlisting}
-Bayesian program merging finds the following recursion.
+With parameters $\alpha=1$, beam width 1, and depth 10, Bayesian program merging finds the following recursion: \texttt{F1} recursively calls itself or stops at \texttt{F2}, thus building up a line of nodes.
 \begin{lstlisting}[mathescape=true]
 (begin 
   (define F3 (lambda () (lambda () (F1))))
@@ -1223,9 +1225,9 @@ Bayesian program merging finds the following recursion.
      (list (F3) (F3) (F3) (F3) (lambda () (node (F2))))))))
 $\includegraphics[scale=.25]{../figures/recursionModel.pdf}$
 \end{lstlisting}
-The recursions have to be of a certain length before the tradeoff between prior and likelihood favors the recursive programs, which are usually smaller.  We can adjust where this tradeoff happens using the size constant, $\alpha$, in the prior. 
+Once the size of the observations generated by the original recursive program reaches a length threshold, the tradeoff between prior and likelihood favors recursive programs due to their small size. We can adjust where this threshold occurs using the size constant, $\alpha$, in the prior. 
 \subsection{Vine}
-Here we use Bayesian program merging to model a vine with flowers from a single instance.  This example demonstrates multiple types of program transformations used on the same data.  We ran the system with $\alpha=1$ for this example, beam width 1, and depth 10.
+In this example, we use Bayesian program merging to induce a model a vine with flowers from a single instance. This demonstrates multiple types of program transformations, all applying to the same data. System parameters: $\alpha=1$, beam width 1, depth 10.
 \begin{lstlisting}[mathescape=true]
 (define (vine)
   (if (flip .1)
@@ -1239,9 +1241,9 @@ Here we use Bayesian program merging to model a vine with flowers from a single 
 
 (define (petal shade)
   (node (data (color (gaussian shade 25)) (size .3))))
-$\includegraphics[scale=.35]{../figures/vineData.pdf}$
+$\includegraphics[scale=.4]{../figures/vineData.pdf}$
 \end{lstlisting}
-Here we see \texttt{F1} corresponds roughly to \texttt{vine} and is passed a single color for the flower parts and the size has been fixed within \texttt{F1}, \texttt{F2} corresponds to the data part of the flower.
+In the induced code below, \texttt{F1} roughly corresponds to \texttt{vine} and is passed a single color for the flower parts. The size has been fixed within \texttt{F1}, \texttt{F2} corresponds to the data part of the flower.
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F3 (lambda () (F2 100 0.1)))
@@ -1261,7 +1263,7 @@ Here we see \texttt{F1} corresponds roughly to \texttt{vine} and is passed a sin
 $\includegraphics[scale=.25]{../figures/vineModel.pdf}$
 \end{lstlisting}
 \subsection{Tree}
-This example demonstrates learning both a parameterized function and a recursion and applying these functions in multiple places within a program.  The following functions were used to generate some flower patterns and a tree that consists of two branches each of which ends in a different color flower.  We ran the system with $\alpha=3$, beam width 1, and depth 10 for this example.  With $\alpha=1$ we do not get the right tradeoff between prior and likelihood to make introducing recursion worhtwhile although We expect the system could learn a similar program with $\alpha=1$ given training examples with more branch instances, since the amount of program compression would increase.
+This example demonstrates learning both a parameterized function and a recursion and applying these functions in multiple places within the same program. We use the functions shown below to generate flower-like patterns and a tree that consists of two branches, each of which ends in a flower of different color. We ran the system with $\alpha=3$, beam width $1$, and depth $10$.  Setting $\alpha=1$ results in a tradeoff between prior and likelihood that does not make introducing recursion worthwhile. We expect that the system could learn a similar program with $\alpha=1$ if we provide training examples with more branch instances, since this would increase the amount of program compression.
 \begin{lstlisting}[mathescape=true]
 (define tree
   (lambda ()
@@ -1288,7 +1290,7 @@ This example demonstrates learning both a parameterized function and a recursion
   (node (data (color (gaussian shade 25)) (size .3))))
 $\includegraphics[scale=.25]{../figures/treeData.pdf}$
 \end{lstlisting}
-Bayesian model merging produces a program with a similar structure to the original generating program.  \texttt{F3} plays a similar role to the \texttt{flower} function by taking a single color as argument and creating three nodes of size .3 with the passed in color.  \texttt{F2} is a function that creates a branch that ends in a flower with either blue petals or red petals.
+Bayesian model merging produces a program that has structure similar to the original generating program.  \texttt{F3} plays a similar role to the \texttt{flower} function by taking a single color as argument and creating three nodes of size $.3$ with the passed in color.  \texttt{F2} is a function that creates a branch that ends in a flower with either blue petals or red petals.
 \begin{lstlisting}[mathescape=true]
 (begin
    (define F4 (lambda (V9 V10) (node (F1 V9 0.1) V10)))
@@ -1319,15 +1321,15 @@ $\includegraphics[scale=.25]{../figures/treeModel.pdf}$
 
 \newpage
 \section{Conclusion}
-We presented Bayesian program merging, an approach to inducing generative models from data. The main idea of this approach is to directly translate the data into a program and to then compress this program by identifying repeated computations. We perform this compression of repeated computation using program transformations. We determine the sequence of transformations by using the posterior probability of the program as a search heuristic.
+We have presented Bayesian program merging, an approach to inducing generative models from data. The central idea of this approach is to first translate the data into a program without abstractions and to then compress this program by identifying repeated computations. We perform this compression of repeated computation using program transformations. The search heuristic that guides these transformations is the posterior probability of the program given the data.
 
-Future improvements of the system described in this paper include more sophisticated search strategies, more efficient ways of computing the likelihood, and the development of a more robust method for identifying recursive patterns.  Another direction is adaptation of this style of probabilistic program induction to the online setting.  
+Possible future improvements of the system described in this paper include more sophisticated search strategies, more efficient ways of computing the likelihood, and the development of a more robust method for identifying recursive patterns.
 
-More generally, we can ask whether the idea of regularity in data as repeated computation in the generative process can be used to identify other useful program transformations or, whether it can be applied in a more systematic fashion than motivating a collection of disparate search moves.  
+We will investigate which other program transformations we can identify based on the idea of viewing patterns in data as repeated computation in the generative process. Furthermore, considerations such as those in section \ref{sec:dearg-as-induction} suggest that a more systematic development of the general framework is possible, uniting the collection of individual search moves that we have proposed.
 
-A different and important question is what happens when the data incorporation step is less immediate and training data is not directly computed in terms of some algebraic data type and whether one can impose some semblance of structure on unstructured data in order to use these methods for learning.  
+Datasets that are not directly given in terms of a suitable algebraic data type pose another challenge. How can we initialize our learning method in situations where the data are much less structured than the trees we used in this work?
 
-There are many other barriers to overcome before probabilistic program induction can compete with state-of-the-art machine learning algorithms on real world problems, but the increased potential for capturing rich patterns and less dependence on human engineering make research in the subject a worthy pursuit.
+There are many barriers to overcome before probabilistic program induction can compete with state-of-the-art machine learning algorithms on real world problems. The potential for capturing rich patterns with only limited dependence on human engineering makes this a worthy pursuit.
 
 \newpage
 \bibliographystyle{plain}
