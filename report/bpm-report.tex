@@ -1056,41 +1056,35 @@ In our search through program space, we are interested in programs with high pos
 \begin{lstlisting}[frame=trbl]
 (define (beam-search data init-program beam-size depth)
   (let* ([all-transformations
-          (beam-learn-search-transformations data 
-                                             init-program
-                                             beam-size
-                                             depth)]
+          (beam-search-transformations data init-program beam-size depth)]
          [top-transformations (sort-by-posterior data all-transformations)])
     (if (null? top-transformations)
         init-program
         (program+->program (first top-transformations)))))
 
 (define (beam-search-transformations data program beam-size depth)
-  (let ([init-program+ (make-program+ program
-                                      0
-                                      (log-likelihood data program 10)
-                                      (log-prior program)
-                                      #f)])
-    (depth-iterated-transformations (lambda (programs+)
-                                      (best-n data programs+ beam-size))
-                                    init-program+
-                                    depth)))
+  (let* ([lp (log-prior program)]
+         [ll (log-likelihood data program 10)]
+         [init-program+ (make-program+ program 0 ll lp #f)])
+    (depth-iter-transformations (lambda (programs+)
+                                  (best-n data programs+ beam-size))
+                                init-program+
+                                depth)))
 
 (define (best-n data programs+ n)
   (max-take (sort-by-posterior data programs+) n))
 \end{lstlisting}
-The main part of the search is performed by \texttt{depth-iterated-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
+The main part of the search is performed by \texttt{depth-iter-transformations}, which recursively applies program transformations to the best programs at a given search depth and then filters the results to get the best programs for the next depth.
 \begin{lstlisting}[frame=trbl]
-(define (depth-iterated-transformations cfilter program+ depth)
+(define (depth-iter-transformations cfilter program+ depth)
   (let* ([transformed-programs+
-          (apply-and-filter-transformations depth cfilter program+)])
+          (apply-and-filter-transformations depth cfilter program+)]
+         [next-depth (lambda (prog)
+                       (depth-iter-transformations cfilter prog (- depth 1)))])
     (delete '()
             (append transformed-programs+
                     (apply append
-                           (map (lambda (prog) 
-                                  (depth-iterated-transformations cfilter
-                                                                  prog
-                                                                  (- depth 1))) 
+                           (map next-depth
                                 transformed-programs+))))))
 \end{lstlisting}
 We reduce the amount of computation required when choosing the best programs at each level of search by separating program transformations that preserve semantics from those that do not.  Marking programs based on their transformation type allows us to reuse previously computed likelihoods for programs that were created by a semantics preserving transformation.
@@ -1127,6 +1121,9 @@ We compute an estimate of the posterior probability of each program by combining
 
 \newpage
 \section{Examples}
+
+
+
 \subsection{Single color flower}
 We use the program below to generate ten instances of flower that have the same color.  
 \begin{lstlisting}[mathescape=true]

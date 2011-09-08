@@ -26,13 +26,13 @@
   (let* ([top-transformations 
           (sort-by-posterior
            data 
-           (beam-learn-search-transformations data init-program beam-size depth))]
+           (beam-search-transformations data init-program beam-size depth))]
          [db (pretty-print (list "top transformations" top-transformations))])
     (if (null? top-transformations)
         init-program
         (program+->program (first top-transformations)))))
 
-(define (beam-learn-search-transformations data program beam-size depth)
+(define (beam-search-transformations data program beam-size depth)
   (let ([init-program+ (make-program+ program 0 (log-likelihood data program POPSIZE) (log-prior program) #f)])
     (depth-iterated-transformations (lambda (programs+) (best-n data programs+ beam-size)) init-program+ depth)))
 
