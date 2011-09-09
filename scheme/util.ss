@@ -3,11 +3,43 @@
 ;;-adjust tree-apply-proc to not be dependent on * as a masking character
 ;;-use data abstraction for location in tree-apply-proc
 (library (util)
-         (export all-equal? all-assoc curry all max-take sexp-replace transform-sexp get/make-alist-entry rest pair random-from-range depth tree-apply-proc primitive? non-empty-list? all-subexprs deep-find-all map-apply more-than-one primitives list-unique-commutative-pairs unique-commutative-pairs my-mean my-variance thunkify normal-pdf deep-find display-all tagged-list? list-or)
+
+         (export all-equal?
+                 all-assoc
+                 curry
+                 all
+                 max-take
+                 sexp-replace
+                 transform-sexp
+                 get/make-alist-entry
+                 rest
+                 pair
+                 random-from-range
+                 depth
+                 tree-apply-proc
+                 primitive?
+                 non-empty-list?
+                 all-subexprs
+                 deep-find-all
+                 map-apply
+                 more-than-one
+                 primitives
+                 list-unique-commutative-pairs
+                 unique-commutative-pairs
+                 my-mean
+                 my-variance
+                 thunkify
+                 normal-pdf
+                 deep-find
+                 display-all
+                 tagged-list?
+                 list-or)
+
          (import (except (rnrs) string-hash string-ci-hash)
                  (_srfi :1)
                  (_srfi :69)
                  (church readable-scheme))
+         
          (define (display-all . args)
            (for-each display args))
          (define (thunkify sexpr) `(lambda () ,sexpr))
@@ -140,10 +172,6 @@
                  [else
                   (let ([location-mask (build-mask location (length (rest tree)))])
                     (pair (first tree) (map (curry tree-apply-proc proc) location-mask (rest tree))))]))
-                  ;;here pairs are lists of two items not scheme pairs
-         (define (commutative-pair-equal pair1 pair2)
-           (or (equal? pair1 pair2)
-               (and (equal? (first pair1) (second pair2)) (equal? (second pair1) (first pair2)))))
 
          ;; Faster way of selecting subsets of a list
          ;; From http://okmij.org/ftp/Scheme/subsets-size-n-part1.txt
@@ -170,12 +198,7 @@
                        ; new accum
                        (loop (cdr l) (- ln 1) (- n 1) (cons (car l) prev-els) accum))))))
 
-         ;; there are ways to speed this up by preprocessing lst
-         (define (unique-commutative-pairs lst func)
-           (delete-duplicates (select-k-subsets 2 lst) commutative-pair-equal))
-
-         (define (list-unique-commutative-pairs lst)
-           (unique-commutative-pairs lst list))
+         (define (list-unique-commutative-pairs lst) (select-k-subsets 2 lst))
 
          ;;from standard-preamble.church
          ;; @desc
