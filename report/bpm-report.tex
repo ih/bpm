@@ -790,7 +790,7 @@ The more applications of \texttt{flower} exist within the program, the bigger th
 $\includegraphics[scale=.6]{../figures/noisyNumberTrans2.pdf}$
 \end{lstlisting}
 \subsubsection{Merging identical variables}
-Abstraction creates functions whose arguments represent expression parts that differ between specific abstraction instances. When two different arguments take on the same set of values, we can compress the program by merging these arguments. We achieve this using the deargumentation transform with the following \texttt{replacement-function}:
+Abstraction creates functions whose arguments represent expression parts that differ between specific abstraction instances. When two different arguments take on the same values in each of their instantiations, we can compress the program by merging these arguments. We achieve this using the deargumentation transform with the following \texttt{replacement-function}:
 \begin{lstlisting}[frame=trbl]
 (define (same-variable-replacement program abstraction variable variable-instances)
   (let* ([possible-match-variables (delete variable (abstraction->vars abstraction))])
@@ -811,9 +811,10 @@ Abstraction creates functions whose arguments represent expression parts that di
             hypothesis-variable
             (find-matching-variable program abstraction variable-instances (delete hypothesis-variable possible-match-variables))))))
 \end{lstlisting}
-%% FIXME: Change code to do set comparison as described in the text
 
-If two variables take on the same value in all of their applications, we consider them identical. In order to allow for more compressive proposals, we also consider any two numbers to be equal. To detect matching variables, we first choose an abstraction, choose a variable for this abstraction, and then check whether any of the other variables of this abstraction have a matching set of instance values. If a variable matches, we return it as the new definition of the variable that is being removed\footnote{Alternatively, we could directly replace the variable name in the abstraction body and get slightly better compression. We chose to go the redefinition route in order to keep the interface within the class of deargumentation transforms.}.
+If two variables take on the same value in all of their applications, we consider them identical. In order to allow for more compressive proposals, we also consider any two numbers to be equal, relying on the resulting likelihood to filter out models that do not explain the data.
+
+To detect matching variables, we first choose an abstraction, choose a variable for this abstraction, and then check whether any of the other variables of this abstraction have a matching set of instance values. If a variable matches, we return it as the new definition of the variable that is being removed\footnote{Alternatively, we could directly replace the variable name in the abstraction body and get slightly better compression. We chose to go the redefinition route in order to keep the interface within the class of deargumentation transforms.}.
   
 Suppose again that we start with the following program:
 \begin{lstlisting}[mathescape=true]
