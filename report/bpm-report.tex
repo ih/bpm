@@ -289,7 +289,7 @@ Computing the likelihood is the difficult part of the posterior probability comp
 
 \subsection{Likelihood estimation in the list domain}
 
-In the case of programs that generate list-structured data, we can estimate the likelihood by (1) generating samples using a sequential Monte Carlo method (\texttt{smc}) that splits the data generation process into generation of the discrete list topology and the continuous value topology and (2) applying selective model averaging to these samples. We begin by factoring the problem of generating the data set into the problem of generating each of the data points:
+In the case of programs that generate list-structured data, we can estimate the likelihood by (1) generating samples using a sequential Monte Carlo method (\texttt{smc}) that generates the discrete structure of the examples, (2) extending each sample by forcing it to generate the continuous parameters, and (3) applying selective model averaging to these samples. We begin by factoring the problem of generating the data set into the problem of generating each of the data points:
 \begin{eqnarray}
 P(T|M) &=& \prod_{t \in M}P(t|M)
 \end{eqnarray}
@@ -345,7 +345,7 @@ We take advantage of the fact we can directly compute the probability of a sampl
 
 (define (thunkify sexpr) `(lambda () ,sexpr))
 \end{lstlisting}
-In the code below, \texttt{smc-core} forces the program to generate the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report. In short, the method is an incremental forward sampler (with re-sampling); for this reason, we separate out the continuous choices, since forward sampling has probability $0$ of generating the observed values.
+In the code below, \texttt{smc-core} forces the program to generate the desired data.  A detailed description of \texttt{smc-core} is beyond the scope of this report. In short, the method is an incremental forward sampler (with re-sampling); we separate out the continuous choices since forward sampling would have probability $0$ of generating the observed real values.
 \begin{lstlisting}[frame=trbl]
 (define (compute-topology-scores+evaluate model tree popsize)
   (let* ([smc-core-arguments (create-smc-core-args model tree popsize)]
@@ -385,15 +385,15 @@ We use the Gaussian parameters for each node's color to determine the probabilit
 \newpage
 \section{Search moves: Program transformations}
 
-Given a program that we generated using data incorporation, we want to propose changes to the program such that its posterior probability improves. We will achieve this mainly using program transformations that compress patterns in the program, thereby increasing its prior probability. In the following, we describe two such transformations, abstraction and deargumentation.
+We start with a program constructed by data incorporation and we want to propose changes such that its posterior probability improves. We will achieve this  using program transformations that isolate patterns and compress the program, thereby increasing its prior probability. In the following, we describe two such transformations, abstraction and deargumentation.
 
 \subsection{Abstraction}
 
-By abstraction, we denote the idea of creating new functions based on syntactic patterns in a program and replacing these patterns with calls to the newly created functions.
+Abstraction aims to create new functions based on syntactic patterns in a program and replace these patterns with calls to the newly created functions.
 This removes duplication in the code and acts as a proxy for recognizing repeated computation.
 In terms of Bayesian model merging, this transformation merges the structure of the model, which potentially leads to models with better generalization properties \cite{Stolcke:1994:IPG:645515.658235}. We can also interpret this process as finding partial symmetries as in the work of Bokeloh et al. \cite{DBLP:journals/tog/BokelohWS10}, which was successful in the domain of inverse-procedural modeling.
 
-The following code fragment implements this procedure. The function \texttt{compressions} finds all (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program). We filter out duplicate abstractions and then create compressed programs by replacing occurrences of the abstraction bodies in the original program.
+The following code fragment implements this procedure. The function \texttt{compressions} finds all (lambda) abstractions that can be formed by anti-unifying (partially matching) pairs of subexpressions in a condensed form of the program (only the bodies of the functions and the body of the program). We filter out duplicate abstractions and then create compressed programs by replacing occurrences of the abstraction bodies in the original program (unification).
 
 \begin{lstlisting}[frame=trbl]
 (define (compressions program . nofilter)
@@ -449,7 +449,7 @@ One way to understand the process is in terms of the syntax trees for the expres
 \begin{figure}[b]
 \begin{center}
 \includegraphics[scale=.40]{../figures/expressionTree.pdf}
-\caption{An expression represented as a tree.}
+\caption{The expression \texttt{(+ (+ 2 2) (- 2 5))} represented as a tree. Anti-unification recursively finds common subtrees between two syntax trees.}
 \label{expressionTree}
 \end{center}
 \end{figure}
@@ -594,7 +594,9 @@ If the expression had been \texttt{(- (+ 2 2) (- 2 5))}, then unification betwee
 Abstraction is a program transformation that identifies repeated computation in a program by finding syntactic patterns. If the program has been generated using data incorporation, syntactic patterns directly correspond to patterns in the observed data. While this formalization of the notion of a pattern may seem limited at first, it is worth contemplating the central role of lambda abstraction in the lambda calculus and the expressiveness of this language.
 
 The abstraction process has two steps: First, create abstractions from common subexpressions in a program using anti-unification. Second, compress the program using these abstractions by replacing instances of the abstractions with function calls via unification.
-We now illustrate this process using the tree example that we first used in the section on data incorporation (figure \ref{fig:tree-obs}).
+It is important to note that a given program will usually have many possible abstraction transformations, corresponding to the different repeated patterns.
+
+We now illustrate abstraction using the tree example that we first used in the section on data incorporation (figure \ref{fig:tree-obs}).
 For this program, anti-unification finds $17$ possible abstractions. As examples, we show both the abstraction that results in the best compression (smallest program) and the abstraction that results in the 5th smallest program:
 \begin{lstlisting}
 (abstraction F1 (V1 V2)
@@ -636,7 +638,7 @@ The programs compressed using these abstractions look like this (size $55$ and $
 \end{lstlisting}
 The second abstraction corresponds to a ``flower''-like pattern. In this pattern, we could capture even more structure by replacing the variables for the petal colors with a fixed value, since they are similar. Instead of explaining the data as drawn from multiple Gaussians with slightly different means, we could explain the data as generated by a single Gaussian. Our second program transformation, deargumentation, addresses this issue.
 \subsection{Deargumentation}
-Deargumentation is a program transformation that takes a function $F$ in a program and changes its definition by removing one of the function arguments. Wherever this removed argument is used within $F$, we replace it depending on the values that the overall program assigns to this argument in all calls to $F$. Depending on how we map these argument values to replacements within $F$ (specified via \texttt{replacement-function}), we create different program transformations.
+Deargumentation is a program transformation that takes a function $F$ in a program and changes its definition by removing one of the function arguments. Wherever this removed argument is used within $F$, we instead have an independent sample from a new constant or distribution. This new value depends on the values of the original argument in the overall program; depending on how we map these argument values to replacements (specified via \texttt{replacement-function}), we create different program transformations.
 
 \begin{lstlisting}[frame=trbl]
 (define (deargument replacement-function program abstraction variable)
@@ -687,7 +689,7 @@ The abstraction whose variable is being removed keeps the same body, but the var
 (define (ith-argument i function-application)
   (list-ref function-application (+ i 1)))
 \end{lstlisting}
-After the abstraction for function $F$ has been adjusted, we change all applications of $F$ by removing the value corresponding to the removed argument.
+After the abstraction for function $F$ has been adjusted, we change all applications of $F$ by removing the appropriate argument.
 \begin{lstlisting}[frame=trbl]
 (define (remove-application-argument program abstraction variable)
   (define (abstraction-application? sexpr)
@@ -719,7 +721,7 @@ After the abstraction for function $F$ has been adjusted, we change all applicat
           (map (curry transform-sexp pred? func) sexp)
           sexp)))
 \end{lstlisting}
-In the following, we demonstrate that this transformation is useful for compactly representing continuous values that may have been distorted by noise and for inducing recursive structure.
+In the following, we demonstrate that this transformation is useful for compactly representing continuous values that may have been distorted by noise, for identifying replicated arguments, and for inducing recursive structure.
 
 \subsubsection{Compactly representing noisy data}
 
@@ -871,7 +873,7 @@ $\includegraphics[scale=.6]{../figures/sameVarTrans2.pdf}$
 
 \subsubsection{Inducing recursive functions}
 
-We now illustrate a deargumentation transform that discovers and compactly represents recursive patterns. The \texttt{replacement-function} for this transform, \texttt{recursion-replacement}, redefines a variable as a random choice between a recursive call and a non-recursive call. This redefinition is useful whenever the argument values that are passed to a function $F$ are calls to $F$ itself. The random choice that determines recursion is parameterized by a probability that we compute as a function of how many variable instances are recursive function calls. We only allow transformations that provably don't result in a nonterminating program. While this approach to inducing recursive programs is limited, we view it as an interesting illustration of how recursion can be identified and captured.
+We now illustrate a deargumentation transform that discovers and compactly represents recursive patterns. The \texttt{replacement-function} for this transform, \texttt{recursion-replacement}, redefines a variable as a random choice between a recursive call and a non-recursive call. This redefinition is useful whenever the argument values that are passed to a function $F$ are calls to $F$ itself. The probability of recursion depends on how many argument instances are in fact   calls to the same function. Every program generated in this way will terminate with probability one. While this approach to inducing recursive programs is limited, we view it as an interesting illustration of how recursion can be identified and captured.
 \begin{lstlisting}[frame=trbl]
 (define (recursion-replacement program abstraction variable variable-instances)
   (let* ([valid-variable-instances (remove has-variable? variable-instances)]
@@ -967,7 +969,7 @@ Our tree programs generate colors using Gaussian distributions. One motivation f
 \label{fig:noiseCons}
 \end{figure}
 
-Without noisy data constructors---i.e., if there were numbers instead of Gaussians inside calls to \texttt{color}---we would need to create a program such as this:
+Without noisy data constructors---i.e., if there was no Gaussian inside calls to \texttt{color}---we would need to create a program such as this:
 \begin{lstlisting}
 (if (flip .9)
     (node (data (color 20) (size .5)) (node (data (color 255) (size .5))))
@@ -1033,7 +1035,7 @@ Bayesian program merging using the search moves we have described so far compres
 $\includegraphics[scale=.6]{../figures/learnnoise-output.pdf}$
 \end{lstlisting}
 
-While the discussion above hints at the representational benefits of using probabilistic data constructors and probabilistic programs, we must refer to other work for a more complete treatment of the implications of this design decision.
+While the discussion above hints at the representational benefits of using probabilistic data constructors and probabilistic programs, we must postpone to future work for a more complete treatment of the implications of this design decision.
 
 
 \subsubsection{Deargumentation as program induction}
