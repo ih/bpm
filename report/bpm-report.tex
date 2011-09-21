@@ -22,6 +22,7 @@
 }
 
 \setlength{\cftbeforesecskip}{0.02in}
+\setlength{\grammarparsep}{2pt plus 1pt minus 1pt} % increase separation between rules
 
 \lstset{
   language=Scheme
@@ -36,7 +37,7 @@
 \thispagestyle{empty}
 \begin{abstract}
 
-This report outlines an approach to learning generative models from data. We express models as probabilistic programs, which allows us to capture abstract patterns within the examples. By choosing our language for programs to be an extension of the algebraic data type of the examples, we can begin with a program that generates all and only the examples. We then introduce greater abstraction, and hence generalization, incrementally to the extent that it improves the posterior probability of the examples given the program. Motivated by previous approaches to model merging and program induction, we search for such explanatory abstractions using program transformations. We consider two types of transformation: {\em Abstraction} merges common subexpressions within a program into new functions (a form of anti-unification). {\em Deargumentation} simplifies functions by reducing the number of arguments. We demonstrate that this approach finds key patterns in the domain of nested lists, including parametrized sub-functions and stochastic recursion.
+This report outlines an approach to learning generative models from data. We express models as probabilistic programs, which allows us to capture abstract patterns within the examples. By choosing our language for programs to be an extension of the algebraic data type of the examples, we can begin with a program that generates all and only the examples. We then introduce greater abstraction, and hence generalization, incrementally to the extent that it improves the posterior probability of the examples given the program. Motivated by previous approaches to model merging and program induction, we search for such explanatory abstractions using program transformations. We consider two types of transformation: {\em Abstraction} merges common subexpressions within a program into new functions (a form of anti-unification). {\em Deargumentation} simplifies functions by reducing the number of arguments. We demonstrate that this approach finds key patterns in the domain of nested lists, including parameterized sub-functions and stochastic recursion.
 
 \end{abstract}
 
@@ -112,15 +113,13 @@ We can model the trees shown in figure \ref{fig:plants} in terms of nested lists
 <size> ::= (size [number])
 \end{grammar}
 The following is an example of a tree expression along with a graphical representation.
-
-\begin{lstlisting}[mathescape=true]
-(node (data (color 50) (size 1))
-  (node (data (color 30) (size 0.3))
-    (node (data (color 225) (size 0.3)))
-    (node (data (color 225) (size 0.3)))
-    (node (data (color 225) (size 0.3)))))
- $\includegraphics[scale=1.0]{../figures/tree.pdf}$ 
-\end{lstlisting}
+\begin{figure}[h]
+  \subfloat{\lstinputlisting[boxpos=b]{treedata2.ss}}
+  \hspace{40pt} %
+  \subfloat{
+    \includegraphics[scale=0.6]{../figures/tree.pdf}
+  }
+\end{figure}
 
 We now have a way of representing data as rudimentary programs.  In order to capture interesting patterns, we need a more expressive language.  We use the following subset of Church for Bayesian program merging in the tree domain:
 \begin{grammar}
@@ -161,9 +160,9 @@ The first step of Bayesian program merging is data incorporation.  Data incorpor
   \subfloat{\lstinputlisting[boxpos=b]{treedata.ss}}
   \hspace{40pt} %
   \subfloat{
-    \includegraphics[scale=1.2]{../figures/initData.pdf}
+    \includegraphics[scale=1]{../figures/initData.pdf}
   }
-\caption{A small set of tree observations.}
+\caption{Two tree observations.}
 \label{fig:tree-obs}
 \end{figure}
 
@@ -423,9 +422,8 @@ The following code fragment implements this procedure. The function \texttt{comp
 The following example illustrates the abstraction transformation on a language slightly simpler than the tree example (no sizes or continuous properties).
 \begin{lstlisting}[mathescape=true]
 (uniform-choice 
- (node
-  (node a (node a (node b) (node b)))
-  (node a (node a (node c) (node c)))))
+ (node a (node a (node b) (node b)))
+ (node a (node a (node c) (node c))))
 $\includegraphics[scale=.40]{../figures/csrExample.pdf}$
 \end{lstlisting}
 A transformed version of this program looks like this:
@@ -433,7 +431,7 @@ A transformed version of this program looks like this:
 (begin
   (define (F1 V1 V2)
     (node a (node a (node V1) (node V2))))
-  (uniform-choice (node (F1 b b) (F1 c c))))
+  (uniform-choice (F1 b b) (F1 c c)))
 $\includegraphics[scale=.40]{../figures/csrDecompose1.pdf}\\
 \includegraphics[scale=.40]{../figures/csrDecompose2.pdf}$
 \end{lstlisting}
@@ -448,7 +446,7 @@ There exists an abstraction transformation for each pair of subexpressions that 
 One way to understand the process is in terms of the syntax trees for the expressions.  Every s-expression is a tree where the lists and sublists of the s-expression make up the interior nodes and the primitive elements of the lists (e.g., symbols, numbers) are the leaves.  The tree in figure \ref{expressionTree} corresponds to the expression \texttt{(+ (+ 2 2) (- 2 5))}. We can find a partial match between two expressions by finding a common subtree between their tree representations.
 \begin{figure}[b]
 \begin{center}
-\includegraphics[scale=.40]{../figures/expressionTree.pdf}
+\includegraphics[scale=.30]{../figures/expressionTree.pdf}
 \caption{The expression \texttt{(+ (+ 2 2) (- 2 5))} represented as a tree. Anti-unification recursively finds common subtrees between two syntax trees.}
 \label{expressionTree}
 \end{center}
@@ -560,7 +558,6 @@ Otherwise, unification succeeds and we return the assignment of each unique vari
       (define (variable? obj)
         (member obj vars))
 
-      ;;deals with a variable that occurs multiple times in sv
       (define (check/remove-repeated unified-vars)
         (let* ([repeated-vars (filter more-than-one (map (curry all-assoc unified-vars) (map first unified-vars)))])
           (if (and (all (map all-equal? repeated-vars)) (not (any false? unified-vars)))
@@ -616,11 +613,11 @@ The programs compressed using these abstractions look like this (size $55$ and $
  (uniform-choice
   (node (F1 70 1)
         (node (F1 37 0.3) (node (F1 213 0.3))
-              (node (F1 207 0.3)) (node (F1 211 0.3)))))
- (node (F1 43 1)
-       (node (F1 47 0.1)
-             (node (F1 33 0.3) (node (F1 220 0.3))
-                   (node (F1 224 0.3)) (node (F1 207 0.3))))))
+              (node (F1 207 0.3)) (node (F1 211 0.3))))
+  (node (F1 43 1)
+        (node (F1 47 0.1)
+              (node (F1 33 0.3) (node (F1 220 0.3))
+                    (node (F1 224 0.3)) (node (F1 207 0.3)))))))
 
 (program
  ((abstraction F1 (V1 V2 V3 V4)
@@ -630,11 +627,11 @@ The programs compressed using these abstractions look like this (size $55$ and $
                      (node (data (color (gaussian V4 25)) (size 0.3))))))
  (uniform-choice
   (node (data (color (gaussian 70 25)) (size 1))
-        (F1 37 213 207 211)))
- (node (data (color (gaussian 43 25)) (size 1))
-       (node
-        (data (color (gaussian 47 25)) (size 0.1))
-        (F1 33 220 224 207))))
+        (F1 37 213 207 211))
+  (node (data (color (gaussian 43 25)) (size 1))
+        (node
+         (data (color (gaussian 47 25)) (size 0.1))
+         (F1 33 220 224 207)))))
 \end{lstlisting}
 The second abstraction corresponds to a ``flower''-like pattern. In this pattern, we could capture even more structure by replacing the variables for the petal colors with a fixed value, since they are similar. Instead of explaining the data as drawn from multiple Gaussians with slightly different means, we could explain the data as generated by a single Gaussian. Our second program transformation, deargumentation, addresses this issue.
 \subsection{Deargumentation}
@@ -795,7 +792,7 @@ $\includegraphics[scale=.6]{../figures/noisyNumberTrans2.pdf}$
 Abstraction creates functions whose arguments represent expression parts that differ between specific abstraction instances. When two different arguments take on the same values in each of their instantiations, we can compress the program by merging these arguments. We achieve this using the deargumentation transform with the following \texttt{replacement-function}:
 \begin{lstlisting}[frame=trbl]
 (define (same-variable-replacement program abstraction variable variable-instances)
-  (let* ([possible-match-variables (delete variable (abstraction->vars abstraction))])
+  (let ([possible-match-variables (delete variable (abstraction->vars abstraction))])
     (find-matching-variable program abstraction variable-instances possible-match-variables)))
 
 (define (find-matching-variable program abstraction variable-instances possible-match-variables)
@@ -829,7 +826,7 @@ Suppose again that we start with the following program:
             (node (data (color (gaussian V4 25)) (size 0.3))))))
   (uniform-choice
    (flower 200 213 207 211)
-   (flower 33 220 224 207)))
+   (flower 33 213 207 206))
 $\includegraphics[scale=.6]{../figures/noisyNumberProgram.pdf}$   
 \end{lstlisting}
 
@@ -846,8 +843,8 @@ If we apply the deargumentation transform with \texttt{same-variable-replacement
                (node (data (color (gaussian V4 25)) (size 0.3)))))
        V3)))
   (uniform-choice
-   (flower 200 207 211)
-   (flower 33 224 207)))
+   (flower 200 213 211)
+   (flower 33 207 206)))
 $\includegraphics[scale=.6]{../figures/sameVarTrans1.pdf}$
 \end{lstlisting}
 
@@ -865,7 +862,7 @@ If the variable does not match a petal---which is only the case for \texttt{V1}-
        V2)))
   (uniform-choice
    (flower 213 207 211)
-   (flower 220 224 207)))
+   (flower 213 207 206)))
 $\includegraphics[scale=.6]{../figures/sameVarTrans2.pdf}$
 \end{lstlisting}
 
@@ -959,33 +956,40 @@ The data generated by this program is much more varied than the data of the prog
 
 \subsubsection{Inducing noisy data constructors}
 
-Our tree programs generate colors using Gaussian distributions. One motivation for this is that we tend to use such programs to model processes that we view as inherently stochastic. A more subtle reason is that, even if the process we model is not inherently stochastic, we can represent patterns more compactly using noise. For example, consider figure \ref{fig:noiseCons}:
+In the following, we demonstrate that noisy data constructors make it possible to represent some datasets much more compactly. We describe an instance of the deargumentation transform that can therefore infer when to use such constructors and we show an example of this process.
+
+%% show how noisy data constructors allow concise representation
+
+Consider this set of observations:
 
 \begin{figure}[h]
 \begin{center}
 \includegraphics[scale=.60]{../figures/noisyConstructor.pdf}
 \end{center}
-\caption{A stochastic generative process allows us to compactly represent the observations.}
-\label{fig:noiseCons}
-\end{figure}
-
-Without noisy data constructors---i.e., if there was no Gaussian inside calls to \texttt{color}---we would need to create a program such as this:
+% \caption{A stochastic generative process allows us to compactly represent the observations.}
+% \label{fig:noiseCons}
+\end{figure} \vskip -.5cm
+Without noisy data constructors---i.e., if there was no \texttt{gaussian} inside calls to \texttt{color}---we would have to represent these observations using a program such as:
 \begin{lstlisting}
 (if (flip .9)
     (node (data (color 20) (size .5)) (node (data (color 255) (size .5))))
     (node (data (color 20) (size .5)) (node (data (color 105) (size .5)))))
 \end{lstlisting}
-If the correct probability of drawing an object that has exactly the same color as the dark object in the examples is small, then this seems like an unreasonably large penalty in terms of model size. Noisy data constructors allow us to represent the same data more compactly:
+If the observations are representative for the generative process we want to model, then we just paid a large penalty in terms of model size for a small gain in explanatory power. Noisy data constructors provide a similar gain at a much lower cost in program size:
 \begin{lstlisting}
 (node (data (color 20) (size .5))
       (node (data (color (gaussian 255 25) (size .5)))))
 \end{lstlisting}
-Previously, we have used noisy data constructors as part of \texttt{incorporate-data}. We now show how the gain in compactness due to the use of noisy constructors allows us to infer when to use them. We make two minor adjustments to \texttt{incorporate-data} and \texttt{noisy-number-replacement}. First, we change \texttt{node-data->expression}, a helper function used by \texttt{incorporate-data}, such that it does not automatically add a call to \texttt{gaussian}:
+
+
+%% say that this allows us to infer when to use them
+
+Previously, we have used noisy data constructors as part of \texttt{incorporate-data}. We now show how the gain in compactness due to the use of noisy constructors allows us to infer when to use them. We make two minor adjustments to \texttt{incorporate-data} and \texttt{noisy-number-replacement}. First, we change \texttt{node-data->expression}, a helper function used by \texttt{incorporate-data}, such that it does \textit{not} automatically add a call to \texttt{gaussian}. Instead, it now constructs deterministic nodes:
 \begin{lstlisting}[frame=trblsingle]
 (define (node-data->expression lst)
   `(data (color ,(first (second lst))) (size ,(first (third lst)))))
 \end{lstlisting}
-Second, instead of having the deargumentation replacement function \texttt{noisy-number-replacement} return the sample mean, we have it return a call to the \texttt{gaussian} function that uses the sample mean and variance as parameters:
+Second, we move the creation of noisy data constructors into the deargumentation replacement function \texttt{noisy-number-replacement}. Instead of returning the sample mean, this function now returns a call to \texttt{gaussian} that uses the sample mean and variance as parameters:
 \begin{lstlisting}[frame=trblsingle]
 (define (noisy-number-replacement program abstraction variable variable-instances)
   (if (all (map number? variable-instances))
@@ -995,7 +999,10 @@ Second, instead of having the deargumentation replacement function \texttt{noisy
       NO-REPLACEMENT))
 \end{lstlisting}
 
-We use the following program to generate trees consisting of three nodes with small variance in the color of the third node.
+
+%% give example of inferred compression using noisy data constructors
+
+To generate observations for an example of inducing noisy data constructors, we use the following program to sample trees. Each tree consists of three nodes with small variance in the color of the third node.
 \begin{lstlisting}[mathescape=true]
 (define (three-node shade)
   (node (data (color 0) (size .3))
@@ -1005,7 +1012,9 @@ We use the following program to generate trees consisting of three nodes with sm
 (list (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200) (three-node 200))
 $\includegraphics[scale=.6]{../figures/learnnoise-data.pdf}$
 \end{lstlisting}
+
 Running data incorporation on a sample from this generative process results in a program that uniformly chooses between ten generated three-node structures.
+
 \begin{lstlisting}[mathescape=true]
 (lambda ()
   (uniform-choice
@@ -1020,7 +1029,9 @@ Running data incorporation on a sample from this generative process results in a
 	 (node (data (color 0) (size 0.3))
 	       (node (data (color 206.0) (size 0.3)))))))
 \end{lstlisting}
+
 Bayesian program merging using the search moves we have described so far compresses this program into a representation that has one function for the three-node structure\footnote{We ran the system with $\alpha=3$, beam width 1, and depth 10 for this example.}. When this function generates the value of the third node, it makes use of a stochastic noise process. 
+
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F2 (lambda (V2) (data (color V2) (size 0.3))))
@@ -1035,7 +1046,8 @@ Bayesian program merging using the search moves we have described so far compres
 $\includegraphics[scale=.6]{../figures/learnnoise-output.pdf}$
 \end{lstlisting}
 
-While the discussion above hints at the representational benefits of using probabilistic data constructors and probabilistic programs, we must postpone to future work for a more complete treatment of the implications of this design decision.
+
+While the discussion above hints at the representational benefits of probabilistic data constructors and probabilistic programs, we must postpone a more complete treatment of the implications of this design decision to future work.
 
 
 \subsubsection{Deargumentation as program induction}
@@ -1211,12 +1223,14 @@ The next program generates a tree made of a single stem of nodes.
   (if (flip .2)
       (node (data (color 200) (size .5)))
       (node (data (color 200) (size .5)) (stem))))
+
+(repeat 5 stem)
 $\includegraphics[scale=.35]{../figures/recursionData.pdf}$
 \end{lstlisting}
 With parameters $\alpha=1$, beam width 1, and depth 10, Bayesian program merging finds the following recursion: \texttt{F1} recursively calls itself or stops at \texttt{F2}, thus building up a line of nodes.
 \begin{lstlisting}[mathescape=true]
 (begin 
-  (define F3 (lambda () (lambda () (F1))))
+  (define F3 (lambda () (F1)))
   (define F2
     (lambda () (data (color (gaussian 200 25)) (size 0.5))))
   (define F1
@@ -1225,12 +1239,12 @@ With parameters $\alpha=1$, beam width 1, and depth 10, Bayesian program merging
        (if (flip 8/9) (F1) (node (F2))))))
   (lambda ()
     (uniform-choice
-     (list (F3) (F3) (F3) (F3) (lambda () (node (F2))))))))
+     (F3) (F3) (F3) (F3) (lambda () (node (F2))))))
 $\includegraphics[scale=.25]{../figures/recursionModel.pdf}$
 \end{lstlisting}
 Once the size of the observations generated by the original recursive program reaches a length threshold, the trade-off between prior and likelihood favors recursive programs due to their small size. We can adjust where this threshold occurs using the size constant, $\alpha$, in the prior. 
 \subsection{Vine}
-In this example, we use Bayesian program merging to induce a model of a ``vine with  identical flowers''. This demonstrates multiple types of program transformations, all applying to the same data. System parameters: $\alpha=1$, beam width 1, depth 10.
+In this example, we use Bayesian program merging to induce a model of a ``vine with identical flowers''. This demonstrates multiple types of program transformations, all applying to the same data. System parameters: $\alpha=1$, beam width 1, depth 10.
 \begin{lstlisting}[mathescape=true]
 (define (vine)
   (if (flip .1)
