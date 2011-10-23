@@ -284,7 +284,7 @@ This prior biases the search towards smaller programs. Increasing the constant $
          [body-size (sexpr-size (program->body program))])
     (+ abstraction-sizes body-size)))
 \end{lstlisting}
-Computing the likelihood is the difficult part of the posterior probability computation. Intuitively, we can think of the likelihood as tracking how good a particular program is at producing a set of target data.  This is important in search, since it gives precise, quantitative information on whether and how to adjust our hypothesis program. However, since there may be a large number of possible settings for the random choices of a program, this can make determining which choices lead to the observed data difficult. Furthermore, for any given data point, there could be multiple settings that generate this data point; to correctly compute the likelihood, we need to take into account all of them. Often, we cannot compute this quantity exactly. In the following, we describe a way to approximate this computation for list data.
+Computing the likelihood is the difficult part of the posterior probability computation. Intuitively, we can think of the likelihood as tracking how good a particular program is at producing a set of target data.  This is important in search, since it gives precise, quantitative information on whether and how to adjust our hypothesis program. However, since there may be a large number of possible settings for the random choices of a program, this can make determining which choices lead to the observed data difficult. Furthermore, for any given data point, there could be multiple settings that generate this data point; to correctly compute the likelihood, we need to take into account all of them. Often, we cannot compute this quantity exactly due to limited computational resources.  In the following, we describe a stochastic approximation of this computation for list data.  It is worth noting since the approximation of the likelihood will not always be the same due to randomness, the final model learned with Bayesian program merging may be different even with the same input data.
 
 \subsection{Likelihood estimation in the list domain}
 
@@ -788,8 +788,8 @@ The more applications of \texttt{flower} exist within the program, the bigger th
    (flower 220 224 207)))
 $\includegraphics[scale=.6]{../figures/noisyNumberTrans2.pdf}$
 \end{lstlisting}
-\subsubsection{Merging identical variables}
-Abstraction creates functions whose arguments represent expression parts that differ between specific abstraction instances. When two different arguments take on the same values in each of their instantiations, we can compress the program by merging these arguments. We achieve this using the deargumentation transform with the following \texttt{replacement-function}:
+\subsubsection{Merging similar variables}
+Abstraction creates functions whose arguments represent expression parts that differ between specific abstraction instances.  Arguments that take on similar values in each of their instantiations might have the same underlying generative process.  We take advantage of this potential redundancy by merging these arguments.  This is achieved by using the deargumentation transform with the following \texttt{replacement-function}:
 \begin{lstlisting}[frame=trbl]
 (define (same-variable-replacement program abstraction variable variable-instances)
   (let ([possible-match-variables (delete variable (abstraction->vars abstraction))])
@@ -811,7 +811,7 @@ Abstraction creates functions whose arguments represent expression parts that di
             (find-matching-variable program abstraction variable-instances (delete hypothesis-variable possible-match-variables))))))
 \end{lstlisting}
 
-If two variables take on the same value in all of their applications, we consider them identical. In order to allow for more compressive proposals, we also consider any two numbers to be equal, relying on the resulting likelihood to filter out models that do not explain the data.
+If two variables take on similar values in all of their applications, we consider them to be the same.  Above, we define two items to be similar if they have the same list structure or if they are both numbers.  We still consider two objects as similar even if the numbers have different values and allow the resulting likelihood to filter out models that do not explain the data.
 
 To detect matching variables, we first choose an abstraction, choose a variable for this abstraction, and then check whether any of the other variables of this abstraction have a matching set of instance values. If a variable matches, we return it as the new definition of the variable that is being removed\footnote{Alternatively, we could directly replace the variable name in the abstraction body and get slightly better compression. We chose to go the redefinition route in order to keep the interface within the class of deargumentation transforms.}.
   
@@ -826,7 +826,7 @@ Suppose again that we start with the following program:
             (node (data (color (gaussian V4 25)) (size 0.3))))))
   (uniform-choice
    (flower 200 213 207 211)
-   (flower 33 213 207 206))
+   (flower 33 220 224 207))
 $\includegraphics[scale=.6]{../figures/noisyNumberProgram.pdf}$   
 \end{lstlisting}
 
@@ -843,8 +843,8 @@ If we apply the deargumentation transform with \texttt{same-variable-replacement
                (node (data (color (gaussian V4 25)) (size 0.3)))))
        V3)))
   (uniform-choice
-   (flower 200 213 211)
-   (flower 33 207 206)))
+   (flower 200 207 211)
+   (flower 33 224 207)))
 $\includegraphics[scale=.6]{../figures/sameVarTrans1.pdf}$
 \end{lstlisting}
 
@@ -862,7 +862,7 @@ If the variable does not match a petal---which is only the case for \texttt{V1}-
        V2)))
   (uniform-choice
    (flower 213 207 211)
-   (flower 213 207 206)))
+   (flower 220 224 207)))
 $\includegraphics[scale=.6]{../figures/sameVarTrans2.pdf}$
 \end{lstlisting}
 
@@ -1138,11 +1138,11 @@ We compute an estimate of the posterior probability of each program by combining
 \newpage
 \section{Examples}
 
-We illustrate our program induction method using small examples drawn from the domain of colored trees. All examples have the following shape: We present a probabilistic program, show observations (trees) sampled from this program, highlight the key patterns that are visible both in the original program and in the observed trees, and then show which patterns Bayesian program merging recovers.
+We illustrate our program induction method using small examples drawn from the domain of colored trees. All examples have the following shape: We present a probabilistic program, show observations (trees) sampled from this program, highlight the key patterns that are visible both in the original program and in the observed trees, and then show which patterns Bayesian program merging recovers.  The results below are representative of running Bayesian program merging on the examples, but due to the stochastic nature of scoring and there is some randomness in the output of the system.
 
 \subsection{Single color flower}
 
-The program below generates ten ``flower'' instances that have the same color.
+The program below generates ten ``flower'' instances that are roughly the same  color.
 \begin{lstlisting}[mathescape=true]
 (define (flower shade)
   (node (data (color (gaussian shade 25)) (size .3))
@@ -1156,7 +1156,7 @@ The program below generates ten ``flower'' instances that have the same color.
 (repeat 10 (lambda () (flower 20)))
 $\includegraphics[scale=.35]{../figures/single-color-data.pdf}$
 \end{lstlisting}
-We create an initial program that represents these ten flowers using data incorporation and then compress it (result shown below).  We learn a function \texttt{F1} that takes no arguments and creates a flower with petals that are all the same color. The system parameters were $\alpha=1$, beam width $1$, and depth $10$.
+We create an initial program that represents these ten flowers using data incorporation and then compress it (result shown below).  We learn a function \texttt{F1} that takes no arguments and creates a flower with petals that are similar in color. The system parameters were $\alpha=1$, beam width $1$, and depth $10$.
 \begin{lstlisting}[mathescape=true]
 (begin
   (define F2
@@ -1271,14 +1271,15 @@ In the induced code below, \texttt{F1} roughly corresponds to \texttt{vine}.
       (data (color (gaussian V4 25)) (size V5))))
   (define F1
     (lambda (V2)
-      ((lambda (V3)
-         ((lambda (V1)
-            (node (F3) V1
-                  (node (F2 V2 0.3) (node (F2 V3 0.3)))))
-          (if (flip 12/13) (F1 1.0) (node (F3)))))
-       7.0)))
-  (lambda ()
-    (uniform-choice (F1 -14.0))))
+      ((lambda (V1)
+	 ((lambda (V3)
+	    (node (F3) V1
+		  (node (F2 V2 0.3) (node (F2 V3 0.3)))))
+	  12.538461538461538))
+       (if (flip 12/13)
+	   (F1 28.0)
+	   (uniform-choice (node (F3)))))))
+  (lambda () (uniform-choice (F1 42.0))))
 $\includegraphics[scale=.25]{../figures/vineModel.pdf}$
 \end{lstlisting}
 \subsection{Tree}
