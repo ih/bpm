@@ -1313,28 +1313,29 @@ $\includegraphics[scale=.25]{../figures/treeData.pdf}$
 Bayesian model merging produces a program that has structure similar to the original generating program.  \texttt{F3} plays a similar role to the \texttt{flower} function by taking a single color as argument and creating three nodes of size $.3$ with the passed in color.  \texttt{F2} is a function that creates a branch that ends in a flower with either blue petals or red petals.
 \begin{lstlisting}[mathescape=true]
 (begin
-   (define F4 (lambda (V9 V10) (node (F1 V9 0.1) V10)))
-   (define F3
-     (lambda (V7)
-       ((lambda (V6)
-          ((lambda (V8)
-             (node (F1 V6 0.3) (node (F1 V7 0.3))
-                   (node (F1 V8 0.3))))
-           V7))
-        V7)))
-   (define F2
-     (lambda (V3 V4)
-       ((lambda (V5) (F4 V3 (F4 V4 V5)))
-        (if (flip 9/11)
-            (F2 121.0 135.0)
-            (uniform-choice (F4 39.0 (F3 47.0)) (F3 187.0))))))
-   (define F1
-     (lambda (V1 V2)
-       (data (color (gaussian V1 25)) (size V2))))
-   (lambda ()
-     (uniform-choice (F3 2e1) (F3 235.0)
-                     (node (F1 34.0 1) (F2 108.0 99.0) (F2 134.0 85.0))
-                     (F3 36.0))))
+  (define F4 (lambda (V9 V10) (node (F1 V9 0.1) V10)))
+  (define F3
+    (lambda (V6)
+      ((lambda (V7)
+	 ((lambda (V8)
+	    (node (F1 V6 0.3) (node (F1 V7 0.3))
+		  (node (F1 V8 0.3))))
+	  V6))
+       V6)))
+  (define F2
+    (lambda (V3 V4)
+      ((lambda (V5) (F4 V3 (F4 V4 V5)))
+       (if (flip 6/7)
+	   (F2 110.0 67.0)
+	   (uniform-choice (F3 225.0) (F4 82.0 (F3 43.0)))))))
+  (define F1
+    (lambda (V1 V2)
+      (data (color (gaussian V1 25)) (size V2))))
+  (lambda ()
+    (uniform-choice (F3 -4.0) (F3 192.0)
+		    (node (F1 48.0 1) (F2 163.0 85.0) (F2 108.0 84.0))
+		    (F3 -6.0))))
+
 $\includegraphics[scale=.25]{../figures/treeModel.pdf}$
 \end{lstlisting}
 
