@@ -1,0 +1,30 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Bayesian model merging}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Bayesian program merging}{3}{subsection.1.2}
+\contentsline {section}{\numberline {2}Data representation and program language}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Data and program representation in the list domain}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Data incorporation}{4}{subsection.2.2}
+\contentsline {section}{\numberline {3}Search objective: Posterior probability of probabilistic programs}{6}{section.3}
+\contentsline {subsection}{\numberline {3.1}Abstract syntax utilities}{6}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Posterior probability}{7}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Likelihood estimation in the list domain}{8}{subsection.3.3}
+\contentsline {section}{\numberline {4}Search moves: Program transformations}{10}{section.4}
+\contentsline {subsection}{\numberline {4.1}Abstraction}{10}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {4.1.1}Anti-unification}{11}{subsubsection.4.1.1}
+\contentsline {subsubsection}{\numberline {4.1.2}Refactoring programs}{12}{subsubsection.4.1.2}
+\contentsline {subsubsection}{\numberline {4.1.3}Unification}{13}{subsubsection.4.1.3}
+\contentsline {subsubsection}{\numberline {4.1.4}Summary}{14}{subsubsection.4.1.4}
+\contentsline {subsection}{\numberline {4.2}Deargumentation}{15}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Compactly representing noisy data}{16}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}Merging similar variables}{18}{subsubsection.4.2.2}
+\contentsline {subsubsection}{\numberline {4.2.3}Inducing recursive functions}{19}{subsubsection.4.2.3}
+\contentsline {subsubsection}{\numberline {4.2.4}Inducing noisy data constructors}{21}{subsubsection.4.2.4}
+\contentsline {subsubsection}{\numberline {4.2.5}Deargumentation as program induction}{22}{subsubsection.4.2.5}
+\contentsline {section}{\numberline {5}Search strategy: Beam search}{24}{section.5}
+\contentsline {section}{\numberline {6}Examples}{26}{section.6}
+\contentsline {subsection}{\numberline {6.1}Single color flower}{26}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Multiple color flower}{26}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Simple recursion}{27}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Vine}{28}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.5}Tree}{29}{subsection.6.5}
+\contentsline {section}{\numberline {7}Conclusion}{31}{section.7}

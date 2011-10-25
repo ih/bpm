@@ -1,0 +1,5 @@
+(node (data (color 50) (size 0.7))
+  (node (data (color 30) (size 0.3))
+    (node (data (color 225) (size 0.3)))
+    (node (data (color 225) (size 0.3)))
+    (node (data (color 225) (size 0.3)))))
